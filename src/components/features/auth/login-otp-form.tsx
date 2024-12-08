@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-
-import { sendEmail } from '@/lib/nodemailer';
+import { useAuthActions } from "@convex-dev/auth/react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
@@ -15,59 +14,32 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/common/ui/card";
-
-import { IOtpLogin } from '@/app/(auth)/otp/page';
-import { toast } from 'sonner';
+import { useState } from "react";
 
 interface OtpLoginFormProps {
-  onSubmit: (data: IOtpLogin) => void;
   isModal?: boolean;
 }
 
-export function OtpLoginForm({ onSubmit, isModal = false }: OtpLoginFormProps) {
-  const [isPending, startTransition] = useTransition();
+export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
+  const { signIn } = useAuthActions();
+  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSendOtp = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Invalid email format');
-      return;
+      toast.error('Invalid email format');
+      return false;
     }
-    setError(null);
-    // TODO: Implement OTP sending logic
-    startTransition(() => {
-      sendEmail({
-        to: email,
-        subject: 'OTP for login',
-        html: `Your OTP is ${otp}`
-      }).then((res) => {
-        if (!res.success) {
-          setError('Failed to send OTP');
-        }
-
-        setIsOtpSent(true);
-        toast.success('OTP sent to email');
-      });
-    });
+    return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      email,
-      otp,
-      options: {
-        onSuccess: () => {
-          toast.success('Login successful');
-        }
-      }
-    });
+  const validateOtp = (otp: string) => {
+    if (otp.length < 6) {
+      toast.error('OTP must be at least 6 characters');
+      return false;
+    }
+    return true;
   };
 
   const content = (
@@ -75,47 +47,139 @@ export function OtpLoginForm({ onSubmit, isModal = false }: OtpLoginFormProps) {
       <CardHeader>
         <CardTitle>Login with OTP</CardTitle>
         <CardDescription>
-          {isOtpSent ? 'Enter the OTP sent to your email' : 'Enter your email to receive OTP'}
+          {step === "signIn" ? 'Enter your email to receive OTP' : 'Enter the OTP sent to your email'}
         </CardDescription>
       </CardHeader>
-      <form onSubmit={isOtpSent ? handleSubmit : handleSendOtp}>
-        <CardContent>
-          <div className="grid w-full items-center gap-4">
+      {step === "signIn" ? (
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const email = formData.get("email") as string;
+
+            if (!validateEmail(email)) return;
+
+            setIsLoading(true);
+            try {
+              await signIn("resend-otp", formData);
+              setStep({ email });
+              toast.success('OTP sent to your email');
+            } catch (error) {
+              toast.error('Failed to send OTP');
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+        >
+          <CardContent>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isOtpSent || isPending}
+                disabled={isLoading}
               />
-              {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
-          </div>
-          {isOtpSent && (
-            <div className="grid w-full items-center gap-4 mt-4">
+          </CardContent>
+          <CardFooter>
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span className="mr-2">
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  </span>
+                  Sending...
+                </>
+              ) : (
+                'Send OTP'
+              )}
+            </Button>
+          </CardFooter>
+        </form>
+      ) : (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const otp = formData.get("code") as string;
+
+            if (!validateOtp(otp)) return;
+
+            setIsLoading(true);
+            void signIn("resend-otp", formData).then(() => {
+              toast.success('Login successful');
+            }).catch(() => {
+              setIsLoading(false);
+              toast.error('Invalid OTP');
+            }).finally(() => {
+              setIsLoading(false);
+            });
+          }}
+        >
+          <CardContent>
+            <div className="grid gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="otp">OTP</Label>
+                <Label>Email</Label>
+                <Input value={step.email} disabled />
+                <Input name="email" value={step.email} type="hidden" />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="code">OTP</Label>
                 <Input
-                  id="otp"
+                  id="code"
+                  name="code"
                   placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
-          )}
-        </CardContent>
-        <CardFooter>
-          <Button disabled={isPending} className="w-full" type="submit">
-            {isOtpSent ? 'Login' : 'Send OTP'}
-          </Button>
-        </CardFooter>
-      </form>
+          </CardContent>
+          <CardFooter className="flex gap-2">
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isLoading}
+            >
+              Login
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setStep("signIn")}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+          </CardFooter>
+        </form>
+      )}
     </>
   );
 
@@ -129,4 +193,3 @@ export function OtpLoginForm({ onSubmit, isModal = false }: OtpLoginFormProps) {
     </Card>
   );
 }
-
