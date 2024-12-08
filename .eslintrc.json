@@ -3,6 +3,9 @@
   "rules": {
     "indent": ["error", 2],
     "semi": ["error", "always"],
-    "no-unused-vars": "error"
+    // "no-unused-vars": "error",
+    "no-trailing-spaces": "error",
+    "no-multi-spaces": "error",
+    "no-multiple-empty-lines": ["error", { "max": 1 }]
   }
 }
