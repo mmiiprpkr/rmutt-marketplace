@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Rmutt Marketplace",
   description: "Rmutt Marketplace",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
