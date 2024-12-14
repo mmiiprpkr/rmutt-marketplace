@@ -166,6 +166,7 @@ export const createPost = mutation({
       title: v.string(),
       postType: v.optional(v.union(v.literal("image"), v.literal("gift"))),
       image: v.optional(v.id("_storage")),
+      gift: v.optional(v.string()),
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
@@ -180,6 +181,7 @@ export const createPost = mutation({
          createdAt: new Date().toISOString(),
          ...(args.postType && { postType: args.postType }),
          ...(args.image && { image: args.image }),
+         ...(args.gift && { gift: args.gift }),
       });
 
       return post;

@@ -16,6 +16,7 @@ type PostFeedProps = {
       createdAt: string;
       userId: Id<"users">;
       image?: string | null;
+      gift?: string | null;
       postType?: "image" | "gift";
       communityId?: Id<"communities">;
       likes?: number;
@@ -82,10 +83,10 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                      </button>
                   )}
                </div>
-               {post.image && (
+               {(post.image || post.gift) && (
                   <div className="relative w-full h-[300px] rounded-lg overflow-hidden">
                      <Image
-                        src={post.image}
+                        src={post.image ?? post.gift ?? ""}
                         alt={post.title}
                         fill
                         className="object-cover"

@@ -16,6 +16,7 @@ const schema = defineSchema({
       likes: v.optional(v.number()),
       postType: v.optional(v.union(v.literal("image"), v.literal("gift"))),
       image: v.optional(v.id("_storage")),
+      gift: v.optional(v.string()),
       createdAt: v.string(),
       communityId: v.optional(v.id("communities")),
    }),
