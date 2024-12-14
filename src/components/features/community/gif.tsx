@@ -1,6 +1,7 @@
 import { Button } from "@/components/common/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/common/ui/dialog";
 import { Input } from "@/components/common/ui/input";
+import { GifFile } from "@/constant/gif";
 import { CreatePostValidation } from "@/validations/create-post.validation";
 import Image from "next/image";
 import { useState } from "react";
@@ -21,11 +22,16 @@ export const Gif = ({ open, onClose }: GifProps) => {
 
          const searchEndpoint = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${search}`;
 
-         fetch(searchEndpoint)
+         await fetch(searchEndpoint)
             .then((response) => response.json())
-            .then((data) => setGifs(data.data));
+            .then((data) => setGifs(data.data))
+            .catch((error) => {
+               console.error(error);
+               setGifs(GifFile);
+            });
       } catch (error) {
          console.error(error);
+         setGifs(GifFile);
       }
    };
    return (

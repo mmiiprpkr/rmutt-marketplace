@@ -119,13 +119,6 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                      <span className="text-sm">{post.commentCount || 0}</span>
                   </Button>
                </div>
-               <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hover:text-gray-700"
-               >
-                  <Share2Icon className="size-5" />
-               </Button>
             </div>
          </CardContent>
       </Card>
