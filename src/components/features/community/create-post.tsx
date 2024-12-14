@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 
-import { z } from "zod";
 import { GiftIcon, ImageIcon, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
+import TextareaAutosize from 'react-textarea-autosize';
 
 import {
    CreatePostValidation,
@@ -16,7 +16,6 @@ import {
 } from "@/validations/create-post.validation";
 
 import { Button } from "@/components/common/ui/button";
-import { Textarea } from "@/components/common/ui/textarea";
 import { useUploadFile } from "@/hooks/upload-file";
 import { useCreatePost } from "@/api/communities/create-post";
 
@@ -25,6 +24,7 @@ import { toast } from "sonner";
 import { useCreatePostStore } from "@/stores/use-create-post-store";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import { Gif } from "./gif";
+import { cn } from "@/lib/utils";
 
 enum OptionalFields {
    NONE = "NONE",
@@ -47,6 +47,7 @@ export const CreatePost = () => {
 
    const form = useForm<CreatePostValidation>({
       resolver: zodResolver(createPostValidation),
+      shouldFocusError: true,
    });
 
    const {
@@ -126,6 +127,9 @@ export const CreatePost = () => {
 
          createPost(args);
          onClose(false);
+         setImage(null);
+         setOptionalFields(OptionalFields.NONE);
+         form.reset();
       } catch (error) {
          toast.error("Failed to create post");
          console.error(error);
@@ -148,7 +152,7 @@ export const CreatePost = () => {
          >
             <form
                onSubmit={handleSubmit(handleCreatePost)}
-               className="max-h-[500px] space-y-4 p-4"
+               className="min-h-fit space-y-4 p-4"
             >
                <div className="space-y-2">
                   <h3 className="text-lg font-semibold">
@@ -159,13 +163,30 @@ export const CreatePost = () => {
                   </p>
                </div>
                <div className="flex flex-col gap-4">
-                  <Textarea
-                     placeholder="What's on your mind?"
+                  <TextareaAutosize
+                     minRows={3} // จำนวนแถวขั้นต่ำ
+                     maxRows={10} // จำนวนแถวสูงสุด
+                     placeholder="Type your text here..."
                      value={title}
-                     className="resize-none outline-none right-0 border-none shadow-none"
-                     {...register("title")}
-                     error={errors.title?.message}
+                     style={{
+                        width: '100%',
+                        padding: '8px',
+                        fontSize: '16px',
+                     }}
+                     className={cn(
+                        "resize-none outline-none right-0 border-none shadow-none focus:outline-primary rounded-md focus:outline-1",
+                        errors?.title && "border-destructive focus:outline-destructive"
+                     )}
+                     onChange={(e) => {
+                        form.setValue("title", e.target.value, {
+                           shouldValidate: true,
+                        })
+                     }}
+                     disabled={isCreatingPost || isUploading}
                   />
+                  {errors?.title && (
+                     <p className="text-red-500">{errors?.title?.message}</p>
+                  )}
                   {optionalFields === OptionalFields.IMAGE && !image && (
                      <div
                         {...getRootProps()}
@@ -179,7 +200,7 @@ export const CreatePost = () => {
                         ) : (
                            <div className="flex flex-col items-center justify-center gap-2">
                               <p className="text-gray-500">Drag n drop an image here, or click to select one</p>
-                              <Button variant="outline">Select Image <ImageIcon className="w-4 h-4" /></Button>
+                              <Button type="button" variant="outline">Select Image <ImageIcon className="w-4 h-4" /></Button>
                            </div>
                         )}
                      </div>

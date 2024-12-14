@@ -1,16 +1,23 @@
-import { Button } from "@/components/common/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/common/ui/dialog";
-import { Input } from "@/components/common/ui/input";
-import { GifFile } from "@/constant/gif";
-import { CreatePostValidation } from "@/validations/create-post.validation";
 import Image from "next/image";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
+
+import { Button } from "@/components/common/ui/button";
+import {
+   Dialog,
+   DialogContent,
+   DialogHeader,
+   DialogTitle,
+} from "@/components/common/ui/dialog";
+import { Input } from "@/components/common/ui/input";
+import { GifFile } from "@/constant/gif";
+import { CreatePostValidation } from "@/validations/create-post.validation";
 
 type GifProps = {
    open: boolean;
    onClose: (isOpen: boolean) => void;
 };
+
 export const Gif = ({ open, onClose }: GifProps) => {
    const [searchGif, setSearchGif] = useState<string>("");
    const [gifs, setGifs] = useState<any[]>([]);

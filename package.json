@@ -63,6 +63,7 @@
     "react-hook-form": "^7.54.0",
     "react-lines-ellipsis": "^0.15.4",
     "react-resizable-panels": "^2.1.7",
+    "react-textarea-autosize": "^8.5.6",
     "recharts": "^2.14.1",
     "resend": "3.2.0",
     "sonner": "^1.7.1",

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useRef, useState } from "react";
 
 import dayjs from "dayjs";
 import { Loader2, SendIcon } from "lucide-react";
@@ -9,12 +9,6 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { useGetComments } from "@/api/communities/get-comment";
 import { useCreateComment } from "@/api/communities/create-comment";
 
-import {
-   Dialog,
-   DialogContent,
-   DialogHeader,
-   DialogTitle
-} from "@/components/common/ui/dialog";
 import { Input } from "@/components/common/ui/input";
 import { ScrollArea } from "@/components/common/ui/scroll-area";
 import {
@@ -23,7 +17,6 @@ import {
    AvatarFallback
 } from "@/components/common/ui/avatar";
 import { Button } from "@/components/common/ui/button";
-import { Drawer, DrawerTitle, DrawerHeader, DrawerContent } from "@/components/common/ui/drawer";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import { useKeyboardVisibility } from "@/hooks/use-keyboard-show-up";
 
@@ -34,7 +27,7 @@ const CommentItem = ({
 }: {
    comment: any;
    level?: number;
-   setReplyTo: Dispatch<SetStateAction<string | null>>
+   setReplyTo: (replyTo: string) => void;
 }) => {
    const [parentCommentId, setParentCommentId] = useQueryState("prarentCommentId");
    const [showFullText, setShowFullText] = useState(false);
@@ -122,6 +115,7 @@ export const Comments = () => {
    const [parentCommentId, setParentCommentId] = useQueryState("prarentCommentId");
    const [replyTo, setReplyTo] = useState<string | null>(null);
    const [comment, setComment] = useState("");
+   const inputRef = useRef<HTMLInputElement>(null);
 
    const isKeyboardVisible = useKeyboardVisibility();
 
@@ -134,11 +128,13 @@ export const Comments = () => {
       isPending: isCreatingComment,
    } = useCreateComment();
 
-   const handleCreateComment = (content: string) => {
+   const handleCreateComment = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
       createComment({
          postId: postId as Id<"posts">,
          parentId: parentCommentId ? (parentCommentId as Id<"comments">) : null,
-         content,
+         content: comment,
       }, {
          onSuccess(data, variables, context) {
             console.log("data", data);
@@ -149,6 +145,12 @@ export const Comments = () => {
          },
       });
    };
+
+   const handleSetReplyTo = (replyTo: string) => {
+      inputRef?.current?.focus?.();
+
+      setReplyTo(replyTo);
+   }
 
    const isDialogOpen = !!postId;
 
@@ -166,10 +168,10 @@ export const Comments = () => {
             desktop: "dialog",
          }}
          dialog={{
-            className: "max-w-[600px]",
+            className: "max-w-[600px] outline-none border-none ring-0",
          }}
       >
-         <div className="p-4 space-y-4" key={parentCommentId}>
+         <div className="p-4 space-y-4">
             <h3 className="text-lg font-semibold">
                Comments
             </h3>
@@ -186,7 +188,7 @@ export const Comments = () => {
                            <CommentItem
                               key={comment._id}
                               comment={comment}
-                              setReplyTo={setReplyTo}
+                              setReplyTo={handleSetReplyTo}
                            />
                         ))
                      ) : (
@@ -213,20 +215,24 @@ export const Comments = () => {
                      </Button>
                   </div>
                )}
-               <div className="flex items-center gap-2">
+               <form
+                  className="flex items-center gap-2"
+                  onSubmit={handleCreateComment}
+               >
                   <Input
+                     ref={inputRef}
                      value={comment}
                      onChange={(e) => setComment(e.target.value)}
                      placeholder={parentCommentId ? "Write a reply..." : "Write a comment..."}
                      disabled={isCreatingComment || isLoading}
                   />
                   <Button
+                     type="submit"
                      disabled={isCreatingComment || isLoading || comment.length === 0}
-                     onClick={() => handleCreateComment(comment)}
                   >
                      <SendIcon className="size-4"/>
                   </Button>
-               </div>
+               </form>
             </div>
          </div>
       </ResponsiveDynamic>
