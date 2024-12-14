@@ -3,6 +3,8 @@
   "rules": {
     "indent": ["error", 3],
     "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "jsx-quotes": ["error", "prefer-double"],
     // "no-unused-vars": "error",
     "no-trailing-spaces": "error",
     "no-multi-spaces": "error",

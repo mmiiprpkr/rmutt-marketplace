@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
    const validateEmail = (email: string) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-         toast.error('Invalid email format');
+         toast.error("Invalid email format");
          return false;
       }
       return true;
@@ -36,7 +36,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
 
    const validateOtp = (otp: string) => {
       if (otp.length < 6) {
-         toast.error('OTP must be at least 6 characters');
+         toast.error("OTP must be at least 6 characters");
          return false;
       }
       return true;
@@ -47,7 +47,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
          <CardHeader>
             <CardTitle>Login with OTP</CardTitle>
             <CardDescription>
-               {step === "signIn" ? 'Enter your email to receive OTP' : 'Enter the OTP sent to your email'}
+               {step === "signIn" ? "Enter your email to receive OTP" : "Enter the OTP sent to your email"}
             </CardDescription>
          </CardHeader>
          {step === "signIn" ? (
@@ -63,9 +63,9 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                   try {
                      await signIn("resend-otp", formData);
                      setStep({ email });
-                     toast.success('OTP sent to your email');
+                     toast.success("OTP sent to your email");
                   } catch (error) {
-                     toast.error('Failed to send OTP');
+                     toast.error("Failed to send OTP");
                   } finally {
                      setIsLoading(false);
                   }
@@ -117,7 +117,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                   Sending...
                         </>
                      ) : (
-                        'Send OTP'
+                        "Send OTP"
                      )}
                   </Button>
                </CardFooter>
@@ -133,10 +133,10 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
 
                   setIsLoading(true);
                   void signIn("resend-otp", formData).then(() => {
-                     toast.success('Login successful');
+                     toast.success("Login successful");
                   }).catch(() => {
                      setIsLoading(false);
-                     toast.error('Invalid OTP');
+                     toast.error("Invalid OTP");
                   }).finally(() => {
                      setIsLoading(false);
                   });

@@ -16,7 +16,9 @@ import type {
 } from "convex/server";
 import type * as ResendOTP from "../ResendOTP.js";
 import type * as auth from "../auth.js";
+import type * as communities from "../communities.js";
 import type * as http from "../http.js";
+import type * as upload from "../upload.js";
 import type * as user from "../user.js";
 
 /**
@@ -30,7 +32,9 @@ import type * as user from "../user.js";
 declare const fullApi: ApiFromModules<{
   ResendOTP: typeof ResendOTP;
   auth: typeof auth;
+  communities: typeof communities;
   http: typeof http;
+  upload: typeof upload;
   user: typeof user;
 }>;
 export declare const api: FilterApi<

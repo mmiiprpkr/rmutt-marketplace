@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { OtpLoginForm } from "@/components/features/auth/login-otp-form";
 

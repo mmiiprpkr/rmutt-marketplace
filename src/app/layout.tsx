@@ -5,8 +5,17 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 import { ConvexAuthNextjsServerProvider} from "@convex-dev/auth/nextjs/server";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const viewport = {
+   width: "device-width",
+   initialScale: 1,
+   maximumScale: 1,
+   userScalable: false,
+   interactiveWidget: "resizes-content",
+};
 
 export const metadata: Metadata = {
    title: "Rmutt Marketplace",
@@ -25,7 +34,9 @@ export default function RootLayout({
             <body className={inter.className}>
                <ConvexClientProvider>
                   <Toaster />
-                  {children}
+                  <NuqsAdapter>
+                     {children}
+                  </NuqsAdapter>
                </ConvexClientProvider>
             </body>
          </html>

@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 if (!process.env.NODEMAILER_EMAIL || !process.env.NODEMAILER_PASSWORD) {
-   throw new Error('Missing Nodemailer credentials in environment variables');
+   throw new Error("Missing Nodemailer credentials in environment variables");
 }
 
 const transporter = nodemailer.createTransport({
@@ -30,7 +30,7 @@ export async function sendEmail(payload: EmailPayload) {
       await transporter.sendMail(mailOptions);
       return { success: true };
    } catch (error) {
-      console.error('Error sending email:', error);
+      console.error("Error sending email:", error);
       return { success: false, error };
    }
 }

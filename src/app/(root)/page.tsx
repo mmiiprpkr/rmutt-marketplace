@@ -1,24 +1,41 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
-import { api } from "../../../convex/_generated/api";
+import { useGetFeed } from "@/api/communities/get-feed";
+
+import { useCreatePostStore } from "@/stores/use-create-post-store";
+
+import { CreatePost } from "@/components/features/community/create-post";
+import { PostFeed } from "@/components/features/community/post-feed";
+import { Comments } from "@/components/features/community/comments";
+
+import { Button } from "@/components/common/ui/button";
+import { Skeleton } from "@/components/common/ui/skeleton";
 
 const RootPage = () => {
-   const {
-      data: user,
-      isLoading,
-      isError
-   } = useQuery(
-      convexQuery(api.user.currentUser, {})
-   );
+   const { isOpen, onOpen } = useCreatePostStore();
+   const { data, isLoading } = useGetFeed();
 
    return (
-      <div>
-         {isLoading && <p>Loading...</p>}
-         {isError && <p>Error</p>}
-         {user && <p>{JSON.stringify(user)}</p>}
-         <h1>Hello World</h1>
+      <div className="px-4 min-h-screen">
+         <CreatePost />
+         <Comments />
+         <Button
+            onClick={() => onOpen("createPost")}
+            disabled={isOpen}
+         >
+            Create Post Community
+         </Button>
+         {isLoading ? (
+            <div className="max-w-[600px] mx-auto space-y-4">
+               <Skeleton className="h-[200px] w-full" />
+            </div>
+         ) : (
+            <div className="max-w-[600px] mx-auto space-y-4">
+               {data?.map((post) => (
+                  <PostFeed key={post._id} post={post} />
+               ))}
+            </div>
+         )}
       </div>
    );
 };
