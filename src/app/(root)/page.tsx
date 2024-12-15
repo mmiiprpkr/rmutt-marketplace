@@ -8,8 +8,9 @@ import { CreatePost } from "@/components/features/community/create-post";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { Comments } from "@/components/features/community/comments";
 
+import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
+
 import { Button } from "@/components/common/ui/button";
-import { Skeleton } from "@/components/common/ui/skeleton";
 
 const RootPage = () => {
    const { isOpen, onOpen } = useCreatePostStore();
@@ -27,7 +28,9 @@ const RootPage = () => {
          </Button>
          {isLoading ? (
             <div className="max-w-[600px] mx-auto space-y-4">
-               <Skeleton className="h-[200px] w-full" />
+               {Array.from({ length: 5 }).map((_, index) => (
+                  <PostFeedSkeleton key={index} />
+               ))}
             </div>
          ) : (
             <div className="max-w-[600px] mx-auto space-y-4">

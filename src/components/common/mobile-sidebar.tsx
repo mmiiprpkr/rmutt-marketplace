@@ -5,7 +5,7 @@ import { Sheet, SheetContent } from "./ui/sheet";
 import { SideBar } from "./side-bar";
 
 export const MobileSidebar = () => {
-   const { 
+   const {
       isOpen,
       onClose
    } = useSideBarStore((state) => state);
