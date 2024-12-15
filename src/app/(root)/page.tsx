@@ -24,7 +24,7 @@ const RootPage = () => {
             <Button
                onClick={() => onOpen("createPost")}
                disabled={isOpen}
-         >
+            >
                Create Post Community
             </Button>
          </div>

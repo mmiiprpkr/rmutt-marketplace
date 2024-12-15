@@ -17,9 +17,9 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 const MyCommunitiesPage = () => {
    const { setIsOpen } = useCreateCommunityStore();
 
-   const { 
-      data: communities, 
-      isLoading: isLoadingCommunities 
+   const {
+      data: communities,
+      isLoading: isLoadingCommunities
    } = useGetMyCommunities();
 
    return (
@@ -49,20 +49,20 @@ const MyCommunitiesPage = () => {
             {Array.isArray(communities) &&
                communities.length > 0 &&
                   communities.map((community) => (
-                  <CommunityCard 
-                  community={{ 
-                     ...community?.community, 
-                     _id: community.community._id as Id<"communities"> | undefined,
-                     userCount: community?.userCount, 
-                     _creationTime: community?.community._creationTime ?? 0,
-                     description: community?.community.description || "No description available",
-                     name: community?.community.name || "Unnamed Community",
-                     createdAt: community?.community.createdAt || new Date().toISOString(),
-                     userId: community?.community.userId as Id<"users">,
-                  }} 
-                     key={community?._id ?? 'default'} 
-                  />
-               ))
+                     <CommunityCard
+                        community={{
+                           ...community?.community,
+                           _id: community.community._id as Id<"communities"> | undefined,
+                           userCount: community?.userCount,
+                           _creationTime: community?.community._creationTime ?? 0,
+                           description: community?.community.description || "No description available",
+                           name: community?.community.name || "Unnamed Community",
+                           createdAt: community?.community.createdAt || new Date().toISOString(),
+                           userId: community?.community.userId as Id<"users">,
+                        }}
+                        key={community?._id ?? "default"}
+                     />
+                  ))
             }
             {isLoadingCommunities &&
                Array.from({ length: 8 }).map((_, index) => (

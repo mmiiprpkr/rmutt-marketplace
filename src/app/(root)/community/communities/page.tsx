@@ -15,9 +15,9 @@ import { Button } from "@/components/common/ui/button";
 const CommunitiesPage = () => {
    const { setIsOpen } = useCreateCommunityStore();
 
-   const { 
-      data: communities, 
-      isLoading: isLoadingCommunities 
+   const {
+      data: communities,
+      isLoading: isLoadingCommunities
    } = useGetCommunities();
 
    return (
@@ -47,8 +47,8 @@ const CommunitiesPage = () => {
             {Array.isArray(communities) &&
                communities.length > 0 &&
                   communities.map((community) => (
-                  <CommunityCard community={community} key={community._id} />
-               ))
+                     <CommunityCard community={community} key={community._id} />
+                  ))
             }
             {isLoadingCommunities &&
                Array.from({ length: 8 }).map((_, index) => (
