@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 import { ConvexAuthNextjsServerProvider} from "@convex-dev/auth/nextjs/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +36,14 @@ export default function RootLayout({
                <ConvexClientProvider>
                   <Toaster />
                   <NuqsAdapter>
-                     {children}
+                     <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                     >
+                        {children}
+                     </ThemeProvider>
                   </NuqsAdapter>
                </ConvexClientProvider>
             </body>

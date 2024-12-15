@@ -216,7 +216,7 @@ export const SideBar = () => {
         </div>
 
         {hasSubmenu && isExpanded && (
-          <div className="ml-2">
+          <div className="ml-4">
             {item.submenu?.map((subItem) => (
               <MenuItem
                 key={subItem.title}

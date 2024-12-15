@@ -5,7 +5,7 @@ import { SideBar } from "@/components/common/side-bar";
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
    return (
       <div className="min-h-screen">
-         <div className="hidden md:block w-[300px] fixed top-0 left-0 inset-y-0 border-r border-gray-200">
+         <div className="hidden md:block w-[300px] fixed top-0 left-0 inset-y-0 border-r border-secondary">
             <SideBar />
          </div>
          <MobileSidebar />
