@@ -8,7 +8,7 @@ import { useDropzone } from "react-dropzone";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
-import TextareaAutosize from 'react-textarea-autosize';
+import TextareaAutosize from "react-textarea-autosize";
 
 import {
    CreatePostValidation,
@@ -25,6 +25,7 @@ import { useCreatePostStore } from "@/stores/use-create-post-store";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import { Gif } from "./gif";
 import { cn } from "@/lib/utils";
+import useIsKeyboardOpen from "@/hooks/use-keyboard";
 
 enum OptionalFields {
    NONE = "NONE",
@@ -44,6 +45,8 @@ export const CreatePost = () => {
    const [gifOpen, setGifOpen] = useState(false);
    const [image, setImage] = useState<File | null>(null);
    const [optionalFields, setOptionalFields] = useState<OptionalFields>(OptionalFields.NONE);
+
+   const isKeyboardOpen = useIsKeyboardOpen();
 
    const form = useForm<CreatePostValidation>({
       resolver: zodResolver(createPostValidation),
@@ -149,10 +152,13 @@ export const CreatePost = () => {
                mobile: "drawer",
                desktop: "dialog",
             }}
+            drawer={{
+               className: "max-h-[80vh]",
+            }}
          >
             <form
                onSubmit={handleSubmit(handleCreatePost)}
-               className="min-h-fit space-y-4 p-4"
+               className="overflow-y-auto space-y-4 p-4 h-[80vh]"
             >
                <div className="space-y-2">
                   <h3 className="text-lg font-semibold">
@@ -169,9 +175,9 @@ export const CreatePost = () => {
                      placeholder="Type your text here..."
                      value={title}
                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        fontSize: '16px',
+                        width: "100%",
+                        padding: "8px",
+                        fontSize: "16px",
                      }}
                      className={cn(
                         "resize-none outline-none right-0 border-none shadow-none focus:outline-primary rounded-md focus:outline-1",
@@ -180,7 +186,7 @@ export const CreatePost = () => {
                      onChange={(e) => {
                         form.setValue("title", e.target.value, {
                            shouldValidate: true,
-                        })
+                        });
                      }}
                      disabled={isCreatingPost || isUploading}
                   />
@@ -228,22 +234,22 @@ export const CreatePost = () => {
 
                   {optionalFields === OptionalFields.GIFT && gift && (
                      <div className="relative inline-block w-[300px] h-[200px]">
-                     <Image
-                        src={gift ?? ""}
-                        alt="Preview"
-                        fill
-                        className="rounded-lg object-cover"
-                     />
-                     <Button
-                        size="icon"
-                        variant="secondary"
-                        className="absolute top-2 right-2"
-                        onClick={() => form.setValue("gift", undefined)}
-                        disabled={isCreatingPost || isUploading}
-                     >
-                        <X className="h-4 w-4" />
-                     </Button>
-                  </div>
+                        <Image
+                           src={gift ?? ""}
+                           alt="Preview"
+                           fill
+                           className="rounded-lg object-cover"
+                        />
+                        <Button
+                           size="icon"
+                           variant="secondary"
+                           className="absolute top-2 right-2"
+                           onClick={() => form.setValue("gift", undefined)}
+                           disabled={isCreatingPost || isUploading}
+                        >
+                           <X className="h-4 w-4" />
+                        </Button>
+                     </div>
                   )}
 
                </div>

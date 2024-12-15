@@ -18,7 +18,7 @@ import {
 } from "@/components/common/ui/avatar";
 import { Button } from "@/components/common/ui/button";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
-import { useKeyboardVisibility } from "@/hooks/use-keyboard-show-up";
+import useIsKeyboardOpen from "@/hooks/use-keyboard";
 
 const CommentItem = ({
    comment,
@@ -116,8 +116,7 @@ export const Comments = () => {
    const [replyTo, setReplyTo] = useState<string | null>(null);
    const [comment, setComment] = useState("");
    const inputRef = useRef<HTMLInputElement>(null);
-
-   const isKeyboardVisible = useKeyboardVisibility();
+   const isKeyboardOpen = useIsKeyboardOpen();
 
    const { data, isLoading } = useGetComments({
       postId: postId as Id<"posts">,
@@ -150,7 +149,7 @@ export const Comments = () => {
       inputRef?.current?.focus?.();
 
       setReplyTo(replyTo);
-   }
+   };
 
    const isDialogOpen = !!postId;
 
@@ -167,40 +166,38 @@ export const Comments = () => {
             mobile: "drawer",
             desktop: "dialog",
          }}
-         dialog={{
-            className: "max-w-[600px] outline-none border-none ring-0",
+         drawer={{
+            className: `min-h-[85vh] ${isKeyboardOpen && "top-3"}`,
          }}
       >
-         <div className="p-4 space-y-4">
+         <div className="overflow-y-auto h-[85vh] space-y-4 p-4 flex flex-col">
             <h3 className="text-lg font-semibold">
                Comments
             </h3>
 
             {isLoading ? (
-               <div className="flex justify-center items-center h-[250px]">
+               <div className="flex-1 flex justify-center items-center">
                   <Loader2 className="animate-spin" />
                </div>
             ) : (
-               <div className="min-h-[250px]">
-                  <ScrollArea className="h-[250px] md:h-[400px]">
-                     {Array.isArray(data) && data.length > 0 ? (
-                        data.map((comment) => (
-                           <CommentItem
-                              key={comment._id}
-                              comment={comment}
-                              setReplyTo={handleSetReplyTo}
-                           />
-                        ))
-                     ) : (
-                        <div className="flex justify-center items-center h-[250px]">
-                           <p>No comments found</p>
-                        </div>
-                     )}
-                  </ScrollArea>
+               <div className="flex-1 flex flex-col overflow-y-auto">
+                  {Array.isArray(data) && data.length > 0 ? (
+                     data.map((comment) => (
+                        <CommentItem
+                           key={comment._id}
+                           comment={comment}
+                           setReplyTo={handleSetReplyTo}
+                        />
+                     ))
+                  ) : (
+                     <div className="flex-1 flex justify-center items-center">
+                        <p>No comments found</p>
+                     </div>
+                  )}
                </div>
             )}
 
-            <div className="flex flex-col gap-4 mt-4">
+            <div className="flex flex-col">
                {parentCommentId && (
                   <div className="text-sm text-blue-500">
                      Replying to {replyTo} ...
