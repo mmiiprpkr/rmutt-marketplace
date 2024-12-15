@@ -20,12 +20,14 @@ const RootPage = () => {
       <div className="px-4 min-h-screen">
          <CreatePost />
          <Comments />
-         <Button
-            onClick={() => onOpen("createPost")}
-            disabled={isOpen}
+         <div className="flex justify-end sticky top-[70px] py-2">
+            <Button
+               onClick={() => onOpen("createPost")}
+               disabled={isOpen}
          >
-            Create Post Community
-         </Button>
+               Create Post Community
+            </Button>
+         </div>
          {isLoading ? (
             <div className="max-w-[600px] mx-auto space-y-4">
                {Array.from({ length: 5 }).map((_, index) => (

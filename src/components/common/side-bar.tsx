@@ -29,6 +29,7 @@ import {
    UserCircle,
    Flag,
    HelpCircle,
+   UsersIcon,
 } from "lucide-react";
 
 import { SideBarMenuItem } from "./side-bar-menu-item";
@@ -111,6 +112,11 @@ const menuItemsDefault: MenuItem[] = [
             href: "/community/my-communities",
          },
          {
+            title: "Communities",
+            icon: UsersIcon,
+            href: "/community/communities",
+         },
+         {
             title: "Saved Posts",
             icon: Bookmark,
             href: "/community/saved",
@@ -186,12 +192,12 @@ export const SideBar = ({
             "transition-width duration-200 ease-in-out"
          )}
       >
-         <div className="flex flex-col gap-1 p-2">
+         <Link href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">
             <div className="flex items-center gap-1">
                <Image src="/logo.svg" alt="RMUTT Marketplace" width={24} height={24} />
                <h1 className="text-base font-semibold">RMUTT Marketplace</h1>
             </div>
-         </div>
+         </Link>
          <div className="flex-1 overflow-auto">
             <nav className="flex flex-col gap-2 p-2">
                {menuItems?.map((item) => (

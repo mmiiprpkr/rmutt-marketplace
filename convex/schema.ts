@@ -7,6 +7,7 @@ const schema = defineSchema({
    communities: defineTable({
       name: v.string(),
       description: v.optional(v.string()),
+      image: v.id("_storage"),
       createdAt: v.string(),
       userId: v.id("users"),
    }),
