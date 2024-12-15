@@ -112,7 +112,7 @@ export const CreateCommunity = () => {
             desktop: "dialog",
             mobile: "drawer",
          }}
-         dialog={{
+         drawer={{
             className: `${isKeyboardOpen && "top-3"}`,
          }}
       >

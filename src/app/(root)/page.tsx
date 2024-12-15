@@ -20,7 +20,7 @@ const RootPage = () => {
       <div className="px-4 min-h-screen">
          <CreatePost />
          <Comments />
-         <div className="flex justify-end sticky top-[70px] py-2">
+         <div className="flex justify-end sticky top-[60px] py-2 bg-background z-10">
             <Button
                onClick={() => onOpen("createPost")}
                disabled={isOpen}
