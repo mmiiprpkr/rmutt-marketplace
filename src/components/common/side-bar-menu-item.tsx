@@ -8,16 +8,21 @@ interface MenuItem {
    icon: any;
    href: string;
    submenu?: MenuItem[];
- }
-
-interface MenuItemProps {
-  item: MenuItem;
-  level?: number;
-  expandedMenus: string[];
-  toggleSubmenu: (title: string) => void;
 }
 
-export const SideBarMenuItem = ({ item, level = 0, expandedMenus, toggleSubmenu }: MenuItemProps) => {
+interface MenuItemProps {
+   item: MenuItem;
+   level?: number;
+   expandedMenus: string[];
+   toggleSubmenu: (title: string) => void;
+}
+
+export const SideBarMenuItem = ({
+   item,
+   level = 0,
+   expandedMenus,
+   toggleSubmenu,
+}: MenuItemProps) => {
    const pathname = usePathname();
    const isExpanded = expandedMenus.includes(item.title);
    const isActive = pathname === item.href;
@@ -49,7 +54,10 @@ export const SideBarMenuItem = ({ item, level = 0, expandedMenus, toggleSubmenu 
                   </span>
                </button>
             ) : (
-               <Link href={item.href} className="flex flex-1 items-center gap-3">
+               <Link
+                  href={item.href}
+                  className="flex flex-1 items-center gap-3"
+               >
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
                </Link>

@@ -30,13 +30,13 @@ export const UserButton = () => {
                onClick={() => handleRedirect("/profile")}
                disabled={isPending}
             >
-          Profile
+               Profile
             </DropdownMenuItem>
             <DropdownMenuItem
                onClick={() => handleRedirect("/settings")}
                disabled={isPending}
             >
-          Settings
+               Settings
             </DropdownMenuItem>
             <DropdownMenuItem
                onClick={() =>
@@ -46,7 +46,7 @@ export const UserButton = () => {
                }
                disabled={isPending}
             >
-          Sign out
+               Sign out
             </DropdownMenuItem>
          </DropdownMenuContent>
       </DropdownMenu>

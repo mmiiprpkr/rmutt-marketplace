@@ -51,7 +51,9 @@ export const Gif = ({ open, onClose }: GifProps) => {
                   onChange={(e) => setSearchGif(e.target.value)}
                   placeholder="Search for a gif"
                />
-               <Button onClick={() => handleSearchGif(searchGif)}>Search</Button>
+               <Button onClick={() => handleSearchGif(searchGif)}>
+                  Search
+               </Button>
             </DialogHeader>
             <div className="grid grid-cols-4 gap-4 overflow-y-auto max-h-[500px]">
                {gifs.map((gif) => (

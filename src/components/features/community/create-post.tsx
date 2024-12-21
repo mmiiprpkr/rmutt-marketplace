@@ -12,7 +12,7 @@ import TextareaAutosize from "react-textarea-autosize";
 
 import {
    CreatePostValidation,
-   createPostValidation
+   createPostValidation,
 } from "@/validations/create-post.validation";
 
 import { Button } from "@/components/common/ui/button";
@@ -30,21 +30,23 @@ import useIsKeyboardOpen from "@/hooks/use-keyboard";
 enum OptionalFields {
    NONE = "NONE",
    IMAGE = "IMAGE",
-   GIFT = "GIFT"
+   GIFT = "GIFT",
 }
 
 type CreatePostArgs = {
-   title: string,
-   postType: "image" | "gift" | undefined,
-   image: Id<"_storage"> | undefined,
-   gift: string | undefined,
-}
+   title: string;
+   postType: "image" | "gift" | undefined;
+   image: Id<"_storage"> | undefined;
+   gift: string | undefined;
+};
 
 export const CreatePost = () => {
    const { type, isOpen, onClose } = useCreatePostStore();
    const [gifOpen, setGifOpen] = useState(false);
    const [image, setImage] = useState<File | null>(null);
-   const [optionalFields, setOptionalFields] = useState<OptionalFields>(OptionalFields.NONE);
+   const [optionalFields, setOptionalFields] = useState<OptionalFields>(
+      OptionalFields.NONE
+   );
 
    const isKeyboardOpen = useIsKeyboardOpen();
 
@@ -61,22 +63,13 @@ export const CreatePost = () => {
       watch,
    } = form;
 
-   const [
-      title,
-      gift,
-   ] = watch(["title", "gift"]);
+   const [title, gift] = watch(["title", "gift"]);
 
    const isCreatePostOpen = type === "createPost" && isOpen;
 
-   const {
-      mutateAsync: uploadFile,
-      isPending: isUploading,
-   } = useUploadFile();
+   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile();
 
-   const {
-      mutate: createPost,
-      isPending: isCreatingPost,
-   } = useCreatePost();
+   const { mutate: createPost, isPending: isCreatingPost } = useCreatePost();
 
    const onDrop = (acceptedFiles: File[]) => {
       console.log(acceptedFiles);
@@ -97,11 +90,12 @@ export const CreatePost = () => {
       try {
          const args: CreatePostArgs = {
             title: data.title,
-            postType: optionalFields === OptionalFields.GIFT
-               ? "gift"
-               : optionalFields === OptionalFields.IMAGE
-                  ? "image"
-                  : undefined,
+            postType:
+               optionalFields === OptionalFields.GIFT
+                  ? "gift"
+                  : optionalFields === OptionalFields.IMAGE
+                     ? "image"
+                     : undefined,
             image: undefined,
             gift: gift,
          };
@@ -141,10 +135,7 @@ export const CreatePost = () => {
 
    return (
       <FormProvider {...form}>
-         <Gif
-            open={gifOpen}
-            onClose={(isOpen) => setGifOpen(isOpen)}
-         />
+         <Gif open={gifOpen} onClose={(isOpen) => setGifOpen(isOpen)} />
          <ResponsiveDynamic
             open={isCreatePostOpen}
             onOpenChange={onClose}
@@ -161,9 +152,7 @@ export const CreatePost = () => {
                className="overflow-y-auto space-y-4 p-4 h-[80vh]"
             >
                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">
-                     Create Post
-                  </h3>
+                  <h3 className="text-lg font-semibold">Create Post</h3>
                   <p className="text-sm text-gray-500">
                      Create a post to share with the community
                   </p>
@@ -181,7 +170,8 @@ export const CreatePost = () => {
                      }}
                      className={cn(
                         "resize-none outline-none right-0 border-none shadow-none focus:outline-primary rounded-md focus:outline-1",
-                        errors?.title && "border-destructive focus:outline-destructive"
+                        errors?.title &&
+                           "border-destructive focus:outline-destructive"
                      )}
                      onChange={(e) => {
                         form.setValue("title", e.target.value, {
@@ -197,16 +187,25 @@ export const CreatePost = () => {
                      <div
                         {...getRootProps()}
                         className={`border-2 border-dashed p-6 text-center rounded-lg transition-colors duration-300 ${
-                           isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-100"
+                           isDragActive
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-300 bg-gray-100"
                         }`}
                      >
                         <input {...getInputProps()} />
                         {isDragActive ? (
-                           <p className="text-blue-500">Drop the files here ...</p>
+                           <p className="text-blue-500">
+                              Drop the files here ...
+                           </p>
                         ) : (
                            <div className="flex flex-col items-center justify-center gap-2">
-                              <p className="text-gray-500">Drag n drop an image here, or click to select one</p>
-                              <Button type="button" variant="outline">Select Image <ImageIcon className="w-4 h-4" /></Button>
+                              <p className="text-gray-500">
+                                 Drag n drop an image here, or click to select
+                                 one
+                              </p>
+                              <Button type="button" variant="outline">
+                                 Select Image <ImageIcon className="w-4 h-4" />
+                              </Button>
                            </div>
                         )}
                      </div>
@@ -251,12 +250,13 @@ export const CreatePost = () => {
                         </Button>
                      </div>
                   )}
-
                </div>
                <div className="flex justify-end items-center">
                   <div className="flex gap-2">
                      <Button
-                        onClick={() => handleChangeOptionalFields(OptionalFields.IMAGE)}
+                        onClick={() =>
+                           handleChangeOptionalFields(OptionalFields.IMAGE)
+                        }
                         variant="ghost"
                         disabled={isCreatingPost || isUploading}
                         type="button"

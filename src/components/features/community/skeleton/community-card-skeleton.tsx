@@ -1,9 +1,5 @@
 import { Skeleton } from "@/components/common/ui/skeleton";
-import {
-   Card,
-   CardFooter,
-   CardHeader
-} from "@/components/common/ui/card";
+import { Card, CardFooter, CardHeader } from "@/components/common/ui/card";
 
 export const CommunityCardSkeleton = () => {
    return (

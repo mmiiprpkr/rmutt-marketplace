@@ -41,7 +41,7 @@ export const CreateCommunity = () => {
    const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile();
 
    const { mutateAsync: createCommunity, isPending: isCreatingCommunity } =
-    useCreateCommunity();
+      useCreateCommunity();
 
    const onDrop = (acceptedFiles: File[]) => {
       setImage(acceptedFiles[0]);
@@ -118,7 +118,10 @@ export const CreateCommunity = () => {
       >
          <div className="overflow-y-auto h-[85vh] md:h-fit space-y-4 p-4 flex flex-col">
             <h3 className="text-lg font-semibold">Create Community</h3>
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+            <form
+               className="flex flex-col gap-4"
+               onSubmit={handleSubmit(onSubmit)}
+            >
                <Input
                   placeholder="Name"
                   {...register("name")}
@@ -133,7 +136,9 @@ export const CreateCommunity = () => {
                   minRows={3}
                   placeholder="Description"
                   onChange={(e) => {
-                     setValue("description", e.target.value, { shouldValidate: true });
+                     setValue("description", e.target.value, {
+                        shouldValidate: true,
+                     });
                   }}
                   disabled={isCreatingCommunity || isUploading}
                />
@@ -156,15 +161,15 @@ export const CreateCommunity = () => {
                      <input {...getInputProps()} />
                      {isDragActive ? (
                         <p className="text-primary dark:text-primary-foreground">
-                  Drop the files here ...
+                           Drop the files here ...
                         </p>
                      ) : (
                         <div className="flex flex-col items-center justify-center gap-2">
                            <p className="text-muted-foreground">
-                    Drag n drop an image here, or click to select one
+                              Drag n drop an image here, or click to select one
                            </p>
                            <Button type="button" variant="outline">
-                    Select Image <ImageIcon className="w-4 h-4" />
+                              Select Image <ImageIcon className="w-4 h-4" />
                            </Button>
                         </div>
                      )}
@@ -197,7 +202,7 @@ export const CreateCommunity = () => {
                      type="submit"
                      disabled={isCreatingCommunity || isUploading}
                   >
-              Create Community
+                     Create Community
                   </Button>
                </div>
             </form>

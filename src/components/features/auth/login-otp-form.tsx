@@ -12,12 +12,12 @@ import {
    CardDescription,
    CardFooter,
    CardHeader,
-   CardTitle
+   CardTitle,
 } from "@/components/common/ui/card";
 import { useState } from "react";
 
 interface OtpLoginFormProps {
-  isModal?: boolean;
+   isModal?: boolean;
 }
 
 export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
@@ -47,7 +47,9 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
          <CardHeader>
             <CardTitle>Login with OTP</CardTitle>
             <CardDescription>
-               {step === "signIn" ? "Enter your email to receive OTP" : "Enter the OTP sent to your email"}
+               {step === "signIn"
+                  ? "Enter your email to receive OTP"
+                  : "Enter the OTP sent to your email"}
             </CardDescription>
          </CardHeader>
          {step === "signIn" ? (
@@ -85,11 +87,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                   </div>
                </CardContent>
                <CardFooter>
-                  <Button
-                     className="w-full"
-                     type="submit"
-                     disabled={isLoading}
-                  >
+                  <Button className="w-full" type="submit" disabled={isLoading}>
                      {isLoading ? (
                         <>
                            <span className="mr-2">
@@ -114,7 +112,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                                  />
                               </svg>
                            </span>
-                  Sending...
+                           Sending...
                         </>
                      ) : (
                         "Send OTP"
@@ -132,14 +130,17 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                   if (!validateOtp(otp)) return;
 
                   setIsLoading(true);
-                  void signIn("resend-otp", formData).then(() => {
-                     toast.success("Login successful");
-                  }).catch(() => {
-                     setIsLoading(false);
-                     toast.error("Invalid OTP");
-                  }).finally(() => {
-                     setIsLoading(false);
-                  });
+                  void signIn("resend-otp", formData)
+                     .then(() => {
+                        toast.success("Login successful");
+                     })
+                     .catch(() => {
+                        setIsLoading(false);
+                        toast.error("Invalid OTP");
+                     })
+                     .finally(() => {
+                        setIsLoading(false);
+                     });
                }}
             >
                <CardContent>
@@ -162,12 +163,8 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                   </div>
                </CardContent>
                <CardFooter className="flex gap-2">
-                  <Button
-                     className="w-full"
-                     type="submit"
-                     disabled={isLoading}
-                  >
-              Login
+                  <Button className="w-full" type="submit" disabled={isLoading}>
+                     Login
                   </Button>
                   <Button
                      type="button"
@@ -175,7 +172,7 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
                      onClick={() => setStep("signIn")}
                      disabled={isLoading}
                   >
-              Cancel
+                     Cancel
                   </Button>
                </CardFooter>
             </form>
@@ -187,9 +184,5 @@ export function OtpLoginForm({ isModal = false }: OtpLoginFormProps) {
       return content;
    }
 
-   return (
-      <Card className="w-[350px]">
-         {content}
-      </Card>
-   );
+   return <Card className="w-[350px]">{content}</Card>;
 }

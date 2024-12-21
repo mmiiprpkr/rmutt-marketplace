@@ -19,7 +19,7 @@ type CommunityCardProps = {
       name: string;
       createdAt: string;
       userId: Id<"users">;
-  }
+   };
 };
 
 export const CommunityCard = ({ community }: CommunityCardProps) => {
@@ -56,7 +56,7 @@ export const CommunityCard = ({ community }: CommunityCardProps) => {
                size="sm"
                className="transition-colors hover:bg-primary hover:text-primary-foreground"
             >
-          Join
+               Join
             </Button>
          </CardFooter>
       </Card>

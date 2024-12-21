@@ -35,10 +35,10 @@ import {
 import { SideBarMenuItem } from "./side-bar-menu-item";
 
 interface MenuItem {
-  title: string;
-  icon: any;
-  href: string;
-  submenu?: MenuItem[];
+   title: string;
+   icon: any;
+   href: string;
+   submenu?: MenuItem[];
 }
 
 const menuItemsDefault: MenuItem[] = [
@@ -166,7 +166,7 @@ const footerItems = [
 type SideBarProps = {
    defaultExpandedMenus?: string[];
    menuItems?: MenuItem[];
-}
+};
 
 export const SideBar = ({
    defaultExpandedMenus = [],
@@ -194,7 +194,12 @@ export const SideBar = ({
       >
          <Link href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">
             <div className="flex items-center gap-1">
-               <Image src="/logo.svg" alt="RMUTT Marketplace" width={24} height={24} />
+               <Image
+                  src="/logo.svg"
+                  alt="RMUTT Marketplace"
+                  width={24}
+                  height={24}
+               />
                <h1 className="text-base font-semibold">RMUTT Marketplace</h1>
             </div>
          </Link>
@@ -217,7 +222,7 @@ export const SideBar = ({
                      key={item.title}
                      href={item.href}
                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                      )}
                   >
                      <item.icon className="h-4 w-4" />

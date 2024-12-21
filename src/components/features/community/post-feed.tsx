@@ -1,7 +1,18 @@
 import { useState } from "react";
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/common/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/common/ui/avatar";
+import {
+   Card,
+   CardContent,
+   CardDescription,
+   CardFooter,
+   CardHeader,
+   CardTitle,
+} from "@/components/common/ui/card";
+import {
+   Avatar,
+   AvatarFallback,
+   AvatarImage,
+} from "@/components/common/ui/avatar";
 import Image from "next/image";
 import { Separator } from "@/components/common/ui/separator";
 import { Button } from "@/components/common/ui/button";
@@ -22,8 +33,8 @@ type PostFeedProps = {
       likes?: number;
       commentCount?: number;
       user: Doc<"users"> | null;
-   }
-}
+   };
+};
 
 export const PostFeed = ({ post }: PostFeedProps) => {
    const [postId, setPostId] = useQueryState("communityPostId");
@@ -31,7 +42,10 @@ export const PostFeed = ({ post }: PostFeedProps) => {
    const [showFullText, setShowFullText] = useState(false);
 
    return (
-      <Card key={post._id} className="hover:shadow-lg transition-shadow duration-200">
+      <Card
+         key={post._id}
+         className="hover:shadow-lg transition-shadow duration-200"
+      >
          <CardContent className="p-4">
             {/* User Info Section */}
             <CardHeader className="p-0 mb-4">
@@ -56,7 +70,9 @@ export const PostFeed = ({ post }: PostFeedProps) => {
             {/* Post Content Section */}
             <div className="space-y-4">
                <div>
-                  <p className={`text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}>
+                  <p
+                     className={`text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
+                  >
                      {post.title}
                   </p>
                   {post.title.length > 150 && (
@@ -78,7 +94,11 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                            viewBox="0 0 24 24"
                            stroke="currentColor"
                         >
-                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                           <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M19 9l-7 7-7-7"
+                           />
                         </svg>
                      </button>
                   )}
@@ -115,7 +135,7 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                         setPostId(post._id);
                      }}
                   >
-                     <MessageSquareIcon className="size-5"/>
+                     <MessageSquareIcon className="size-5" />
                      <span className="text-sm">{post.commentCount || 0}</span>
                   </Button>
                </div>

@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/common/ui/scroll-area";
 import {
    Avatar,
    AvatarImage,
-   AvatarFallback
+   AvatarFallback,
 } from "@/components/common/ui/avatar";
 import { Button } from "@/components/common/ui/button";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
@@ -29,7 +29,8 @@ const CommentItem = ({
    level?: number;
    setReplyTo: (replyTo: string) => void;
 }) => {
-   const [parentCommentId, setParentCommentId] = useQueryState("prarentCommentId");
+   const [parentCommentId, setParentCommentId] =
+      useQueryState("prarentCommentId");
    const [showFullText, setShowFullText] = useState(false);
    const [showReplies, setShowReplies] = useState(true);
 
@@ -40,10 +41,14 @@ const CommentItem = ({
                <div className="flex items-start gap-2">
                   <Avatar>
                      <AvatarImage src={comment?.user?.image} />
-                     <AvatarFallback>{comment?.user?.name?.charAt(0)}</AvatarFallback>
+                     <AvatarFallback>
+                        {comment?.user?.name?.charAt(0)}
+                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1">
-                     <p className={`text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}>
+                     <p
+                        className={`text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
+                     >
                         {comment.content}
                      </p>
                      <p className="text-sm text-gray-500">
@@ -65,7 +70,11 @@ const CommentItem = ({
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        <path
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           d="M19 9l-7 7-7-7"
+                        />
                      </svg>
                   </button>
                )}
@@ -89,7 +98,8 @@ const CommentItem = ({
                   size="sm"
                   onClick={() => setShowReplies(!showReplies)}
                >
-                  {showReplies ? "Hide replies" : "Show replies"} ({comment.replies.length})
+                  {showReplies ? "Hide replies" : "Show replies"} (
+                  {comment.replies.length})
                </Button>
 
                {showReplies && (
@@ -112,7 +122,8 @@ const CommentItem = ({
 
 export const Comments = () => {
    const [postId, setPostId] = useQueryState("communityPostId");
-   const [parentCommentId, setParentCommentId] = useQueryState("prarentCommentId");
+   const [parentCommentId, setParentCommentId] =
+      useQueryState("prarentCommentId");
    const [replyTo, setReplyTo] = useState<string | null>(null);
    const [comment, setComment] = useState("");
    const inputRef = useRef<HTMLInputElement>(null);
@@ -122,27 +133,30 @@ export const Comments = () => {
       postId: postId as Id<"posts">,
    });
 
-   const {
-      mutate: createComment,
-      isPending: isCreatingComment,
-   } = useCreateComment();
+   const { mutate: createComment, isPending: isCreatingComment } =
+      useCreateComment();
 
    const handleCreateComment = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      createComment({
-         postId: postId as Id<"posts">,
-         parentId: parentCommentId ? (parentCommentId as Id<"comments">) : null,
-         content: comment,
-      }, {
-         onSuccess(data, variables, context) {
-            console.log("data", data);
-            setComment("");
+      createComment(
+         {
+            postId: postId as Id<"posts">,
+            parentId: parentCommentId
+               ? (parentCommentId as Id<"comments">)
+               : null,
+            content: comment,
          },
-         onError(error, variables, context) {
-            console.log("error", error);
-         },
-      });
+         {
+            onSuccess(data, variables, context) {
+               console.log("data", data);
+               setComment("");
+            },
+            onError(error, variables, context) {
+               console.log("error", error);
+            },
+         }
+      );
    };
 
    const handleSetReplyTo = (replyTo: string) => {
@@ -171,9 +185,7 @@ export const Comments = () => {
          }}
       >
          <div className="overflow-y-auto h-[85vh] space-y-4 p-4 flex flex-col">
-            <h3 className="text-lg font-semibold">
-               Comments
-            </h3>
+            <h3 className="text-lg font-semibold">Comments</h3>
 
             {isLoading ? (
                <div className="flex-1 flex justify-center items-center">
@@ -220,14 +232,20 @@ export const Comments = () => {
                      ref={inputRef}
                      value={comment}
                      onChange={(e) => setComment(e.target.value)}
-                     placeholder={parentCommentId ? "Write a reply..." : "Write a comment..."}
+                     placeholder={
+                        parentCommentId
+                           ? "Write a reply..."
+                           : "Write a comment..."
+                     }
                      disabled={isCreatingComment || isLoading}
                   />
                   <Button
                      type="submit"
-                     disabled={isCreatingComment || isLoading || comment.length === 0}
+                     disabled={
+                        isCreatingComment || isLoading || comment.length === 0
+                     }
                   >
-                     <SendIcon className="size-4"/>
+                     <SendIcon className="size-4" />
                   </Button>
                </form>
             </div>

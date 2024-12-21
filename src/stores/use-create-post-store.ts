@@ -7,7 +7,7 @@ interface CreatePostStore {
    isOpen: boolean;
    onOpen: (type: CreatePostType) => void;
    onClose: (isOpen: boolean) => void;
-};
+}
 
 export const useCreatePostStore = create<CreatePostStore>()((set) => ({
    type: "createPost",

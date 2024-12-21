@@ -5,7 +5,7 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 type GetCommentArgs = {
    postId: Id<"posts">;
-}
+};
 
 export const useGetComments = (args: GetCommentArgs) => {
    const getComments = useQuery(

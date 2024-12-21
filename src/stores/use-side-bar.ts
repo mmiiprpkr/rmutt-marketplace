@@ -4,7 +4,7 @@ type SideBarStore = {
    isOpen: boolean;
    onOpen: () => void;
    onClose: (isOpen: boolean) => void;
-}
+};
 
 export const useSideBarStore = create<SideBarStore>((set) => ({
    isOpen: false,
