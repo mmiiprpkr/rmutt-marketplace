@@ -14,7 +14,7 @@ export const ResendOTP = Email({
       const { error } = await resend.emails.send({
          from: "My App <onboarding@resend.dev>",
          to: [email],
-         subject: `Sign in to RMUTT Marketplace`,
+         subject: "Sign in to RMUTT Marketplace",
          html: generateEmailTemplate(token),
       });
 

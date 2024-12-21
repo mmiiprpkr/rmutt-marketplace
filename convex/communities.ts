@@ -233,7 +233,7 @@ const populateCommunities = async (
       ...communities,
       image: communities?.image ? await ctx.storage.getUrl(communities.image) : null,
    };
-}
+};
 
 export const getMyCommunities = query({
    args: {},
@@ -288,7 +288,7 @@ export const createCommunity = mutation({
 
       return community;
    }
-})
+});
 
 export const joinCommunity = mutation({
    args: {
@@ -306,7 +306,7 @@ export const joinCommunity = mutation({
          communityId: args.communityId,
       });
    }
-})
+});
 
 export const leaveCommunity = mutation({
    args: {
