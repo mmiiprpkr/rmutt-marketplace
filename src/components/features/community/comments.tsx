@@ -47,11 +47,11 @@ const CommentItem = ({
                   </Avatar>
                   <div className="flex flex-col gap-1">
                      <p
-                        className={`text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
+                        className={`text-xs md:text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
                      >
                         {comment.content}
                      </p>
-                     <p className="text-sm text-gray-500">
+                     <p className="text-xs text-gray-500">
                         {dayjs(comment.createdAt).format("DD MMM YYYY hh:mm")}
                      </p>
                   </div>
@@ -59,7 +59,7 @@ const CommentItem = ({
                {comment.content.length > 150 && (
                   <button
                      onClick={() => setShowFullText(!showFullText)}
-                     className="text-blue-500 hover:text-blue-700 text-sm mt-1 transition-colors duration-200 flex items-center gap-1"
+                     className="text-blue-500 hover:text-blue-700 text-xs md:text-base mt-1 transition-colors duration-200 flex items-center gap-1"
                   >
                      {showFullText ? "See less" : "See more"}
                      <svg
@@ -177,14 +177,17 @@ export const Comments = () => {
          open={isDialogOpen}
          onOpenChange={handleCloseDialog}
          type={{
-            mobile: "drawer",
-            desktop: "dialog",
+            mobile: "sheet",
+            desktop: "sheet",
          }}
          drawer={{
             className: `min-h-[85vh] ${isKeyboardOpen && "top-3"}`,
          }}
+         sheet={{
+            className: "p-0 w-full md:min-w-[600px]"
+         }}
       >
-         <div className="overflow-y-auto h-[85vh] space-y-4 p-4 flex flex-col">
+         <div className="overflow-y-auto h-full space-y-4 p-4 flex flex-col">
             <h3 className="text-lg font-semibold">Comments</h3>
 
             {isLoading ? (
@@ -192,7 +195,7 @@ export const Comments = () => {
                   <Loader2 className="animate-spin" />
                </div>
             ) : (
-               <div className="flex-1 flex flex-col overflow-y-auto">
+               <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
                   {Array.isArray(data) && data.length > 0 ? (
                      data.map((comment) => (
                         <CommentItem

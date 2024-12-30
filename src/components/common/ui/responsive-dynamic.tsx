@@ -4,8 +4,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerTrigger } from "./drawer";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTrigger } from "./dialog";
+import { Sheet, SheetContent } from "./sheet";
 
-type ResponsiveDialogDrawerType = "drawer" | "dialog";
+type ResponsiveDialogDrawerType = "drawer" | "dialog" | "sheet";
 
 interface ResponsiveDynamicProps {
    children: React.ReactNode;
@@ -24,6 +25,10 @@ interface ResponsiveDynamicProps {
       className?: string;
       triggerClassName?: string;
     };
+    sheet?: {
+      className?: string;
+      triggerClassName?: string;
+    }
 }
 
 export const ResponsiveDynamic = ({
@@ -34,6 +39,7 @@ export const ResponsiveDynamic = ({
    type,
    dialog,
    drawer,
+   sheet,
 }: ResponsiveDynamicProps) => {
    const isMobile = useIsMobile();
 
@@ -56,6 +62,27 @@ export const ResponsiveDynamic = ({
                {children}
             </DrawerContent>
          </Drawer>
+      );
+   }
+
+   if (
+      (isMobile && type?.mobile === "sheet") ||
+      (!isMobile && type?.desktop === "sheet")
+   ) {
+      return (
+         <Sheet
+            open={open}
+            onOpenChange={onOpenChange}
+         >
+            {trigger && (
+               <DialogTrigger className={cn(dialog?.triggerClassName)}>
+                  {trigger}
+               </DialogTrigger>
+            )}
+            <SheetContent className={cn(sheet?.className,)}>
+               {children}
+            </SheetContent>
+         </Sheet>
       );
    }
 

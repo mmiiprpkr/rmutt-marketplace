@@ -33,6 +33,10 @@ const nextConfig = {
             protocol: "https",
             hostname: "media2.giphy.com",
          },
+         {
+            protocol: "https",
+            hostname: "kindly-wolf-784.convex.cloud",
+         }
       ],
    },
 };
