@@ -32,7 +32,54 @@ const schema = defineSchema({
       userId: v.id("users"),
       communityId: v.id("communities"),
    }),
-   // Your other tables...
+   likes: defineTable({
+      userId: v.id("users"),
+      postId: v.id("posts"),
+      createdAt: v.string(),
+   }),
+   savedPosts: defineTable({
+      userId: v.id("users"),
+      postId: v.id("posts"),
+      createdAt: v.string(),
+   }),
+   products: defineTable({
+      sellerId: v.id("users"),
+      name: v.string(),
+      description: v.string(),
+      price: v.number(),
+      images: v.array(v.id("_storage")),
+      category: v.string(),
+      type: v.union(v.literal("fixed"), v.literal("unlimited")),
+      quantity: v.optional(v.number()),
+      status: v.union(v.literal("available"), v.literal("sold_out")),
+      createdAt: v.string(),
+   }),
+   orders: defineTable({
+      productId: v.id("products"),
+      buyerId: v.id("users"),
+      sellerId: v.id("users"),
+      quantity: v.number(),
+      totalPrice: v.number(),
+      status: v.union(
+         v.literal("pending"), // รอยืนยัน (ลด quantity แล้ว)
+         v.literal("accepted"), // ยืนยันแล้ว สร้าง conversation
+         v.literal("rejected"), // ปฏิเสธ (เพิ่ม quantity กลับ)
+         v.literal("completed"), // ส่งของแล้ว
+         v.literal("cancelled") // ยกเลิก (เพิ่ม quantity กลับ)
+      ),
+      createdAt: v.string(),
+   }),
+   conversations: defineTable({
+      userId1: v.id("users"),
+      userId2: v.id("users"),
+      createdAt: v.string(),
+   }),
+   messages: defineTable({
+      conversationId: v.id("conversations"),
+      senderId: v.id("users"),
+      content: v.string(),
+      createdAt: v.string(),
+   }),
 });
 
 export default schema;
