@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pm2": "pm2 start ecosystem.config.js"
   },
   "dependencies": {
     "@auth/core": "0.34.2",
