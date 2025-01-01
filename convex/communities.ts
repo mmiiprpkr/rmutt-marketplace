@@ -65,23 +65,78 @@ export const getFeed = query({
          throw new Error("Unauthorized");
       }
 
+      const userCommunities = await ctx.db
+         .query("userCommunities")
+         .filter((q) => q.eq(q.field("userId"), userId))
+         .collect();
+
+      const userCommunityIds = userCommunities.map((uc) => uc.communityId);
+
       let posts;
+
       if (args.communityId) {
+         if (!userCommunityIds.includes(args.communityId)) {
+            throw new Error("Not a member of this community");
+         }
+
          posts = await ctx.db
             .query("posts")
             .filter((q) => q.eq(q.field("communityId"), args.communityId))
             .order("desc")
             .take(100);
       } else {
-         posts = await ctx.db.query("posts").order("desc").take(100);
-      }
-
-      if (!posts) {
-         throw new Error("No posts found");
+         posts = await ctx.db
+            .query("posts")
+            .filter((q) =>
+               q.or(
+                  q.eq(q.field("communityId"), undefined),
+                  ...userCommunityIds.map((communityId) =>
+                     q.eq(q.field("communityId"), communityId)
+                  )
+               )
+            )
+            .order("desc")
+            .take(100);
       }
 
       const refactoredPosts = await Promise.all(
          posts.map(async (post) => {
+            const interactions = await populateInteractions(ctx, post._id, userId);
+            return {
+               ...post,
+               image: post.image ? await ctx.storage.getUrl(post.image) : null,
+               user: await populateUser(ctx, post.userId),
+               commentCount: await populateCommentCounts(ctx, post._id),
+               ...interactions,
+            };
+         })
+      );
+
+      return refactoredPosts;
+   },
+});
+export const getSavedPosts = query({
+   args: {},
+   handler: async (ctx) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const savedPosts = await ctx.db
+         .query("savedPosts")
+         .filter((q) => q.eq(q.field("userId"), userId))
+         .collect();
+
+      const refactoredPosts = await Promise.all(
+         savedPosts.map(async (savedPost) => {
+            const post = await ctx.db.get(savedPost.postId);
+
+            if (!post) {
+               return null;
+            }
+
             const interactions = await populateInteractions(
                ctx,
                post._id,
@@ -93,12 +148,15 @@ export const getFeed = query({
                image: post.image ? await ctx.storage.getUrl(post.image) : null,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
-               ...interactions, // Spread isLiked, likeCount, isSaved
+               ...interactions,
             };
          })
       );
 
-      return refactoredPosts;
+      // Filter out null values and assert the type
+      return refactoredPosts.filter(
+         (post): post is NonNullable<typeof post> => post !== null
+      );
    },
 });
 
@@ -335,7 +393,9 @@ export const getCommunities = query({
 
       const refactoredCommunities = await Promise.all(
          communities
-            .filter((community) => !joinedCommunityIds.has(community._id.toString()))
+            .filter(
+               (community) => !joinedCommunityIds.has(community._id.toString())
+            )
             .map(async (community) => ({
                ...community,
                image: community.image
@@ -372,7 +432,7 @@ export const getCommunity = query({
             ? await ctx.storage.getUrl(community.image)
             : null,
       };
-   }
+   },
 });
 
 const populateCommunities = async (
@@ -459,12 +519,15 @@ export const joinCommunity = mutation({
          throw new Error("Unauthorized");
       }
 
-      const existingMembership = await ctx.db.query("userCommunities").filter((q) =>
-         q.and(
-            q.eq(q.field("userId"), userId),
-            q.eq(q.field("communityId"), args.communityId)
+      const existingMembership = await ctx.db
+         .query("userCommunities")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("userId"), userId),
+               q.eq(q.field("communityId"), args.communityId)
+            )
          )
-      ).first();
+         .first();
 
       if (existingMembership) {
          await ctx.db.delete(existingMembership._id);

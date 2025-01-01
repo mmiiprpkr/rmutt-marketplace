@@ -97,11 +97,6 @@ const menuItemsDefault: MenuItem[] = [
       href: "/community",
       submenu: [
          {
-            title: "Feed",
-            icon: FileText,
-            href: "/community/feed",
-         },
-         {
             title: "My Posts",
             icon: MessageSquare,
             href: "/community/posts",
