@@ -12,7 +12,7 @@ export const ResendOTP = Email({
    async sendVerificationRequest({ identifier: email, provider, token }) {
       const resend = new ResendAPI(provider.apiKey);
       const { error } = await resend.emails.send({
-         from: "My App <onboarding@resend.dev>",
+         from: "no-reply@mmiiprpkr.store",
          to: [email],
          subject: "Sign in to RMUTT Marketplace",
          html: generateEmailTemplate(token),

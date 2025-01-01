@@ -2,8 +2,6 @@
 
 import { CircleHelpIcon, PlusCircleIcon } from "lucide-react";
 
-import { useGetCommunities } from "@/api/communities/get-communities";
-
 import { useCreateCommunityStore } from "@/stores/use-create-community";
 
 import { CommunityCard } from "@/components/features/community/community-card";
@@ -11,7 +9,7 @@ import { CreateCommunity } from "@/components/features/community/create-communit
 import { CommunityCardSkeleton } from "@/components/features/community/skeleton/community-card-skeleton";
 
 import { Button } from "@/components/common/ui/button";
-import { useGetMyCommunities } from "@/api/communities/get-community";
+import { useGetMyCommunities } from "@/api/communities/get-my-community";
 import { Id } from "../../../../../convex/_generated/dataModel";
 
 const MyCommunitiesPage = () => {
@@ -61,6 +59,7 @@ const MyCommunitiesPage = () => {
                            userId: community?.community.userId as Id<"users">,
                         }}
                         key={community?._id ?? "default"}
+                        type="my-community"
                      />
                   ))
             }

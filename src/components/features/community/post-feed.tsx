@@ -16,8 +16,10 @@ import {
 import Image from "next/image";
 import { Separator } from "@/components/common/ui/separator";
 import { Button } from "@/components/common/ui/button";
-import { HeartIcon, MessageSquareIcon, Share2Icon } from "lucide-react";
+import { BookmarkCheckIcon, BookmarkIcon, HeartIcon, MessageSquareIcon, Share2Icon } from "lucide-react";
 import { useQueryState } from "nuqs";
+import { useSavePost } from "@/api/communities/save-post";
+import { useLikePost } from "@/api/communities/like-post";
 
 type PostFeedProps = {
    post: {
@@ -33,11 +35,29 @@ type PostFeedProps = {
       likes?: number;
       commentCount?: number;
       user: Doc<"users"> | null;
+      isLiked: boolean;
+      isSaved: boolean;
+      likeCount: number;
    };
 };
 
 export const PostFeed = ({ post }: PostFeedProps) => {
    const [postId, setPostId] = useQueryState("communityPostId");
+   const { mutate: savePost, isPending: savePostPending } = useSavePost();
+   const { mutate: likePost, isPending: likePostPending } = useLikePost();
+
+   const handleLikeReactionsPost = (type: "like" | "save", postId: Id<"posts">) => {
+      if (type === "save") {
+         savePost({
+            postId,
+         });
+         return;
+      }
+
+      likePost({
+         postId,
+      });
+   };
 
    const [showFullText, setShowFullText] = useState(false);
 
@@ -123,9 +143,10 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                      variant="ghost"
                      size="sm"
                      className="flex items-center space-x-2 hover:text-red-500 transition-colors"
+                     onClick={() => handleLikeReactionsPost("like", post._id)}
                   >
                      <HeartIcon className="size-5" />
-                     <span className="text-sm">{post.likes || 0}</span>
+                     <span className="text-sm">{post.likeCount || 0}</span>
                   </Button>
                   <Button
                      variant="ghost"
@@ -139,6 +160,18 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                      <span className="text-sm">{post.commentCount || 0}</span>
                   </Button>
                </div>
+               <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 hover:text-green-500 transition-colors"
+                  onClick={() => handleLikeReactionsPost("save", post._id)}
+               >
+                  {post.isSaved ? (
+                     <BookmarkCheckIcon className="size-5" />
+                  ): (
+                     <BookmarkIcon className="size-5" />
+                  )}
+               </Button>
             </div>
          </CardContent>
       </Card>

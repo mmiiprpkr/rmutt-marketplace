@@ -47,7 +47,7 @@ const CommunitiesPage = () => {
             {Array.isArray(communities) &&
                communities.length > 0 &&
                   communities.map((community) => (
-                     <CommunityCard community={community} key={community._id} />
+                     <CommunityCard community={community} key={community._id} type="community"/>
                   ))
             }
             {isLoadingCommunities &&

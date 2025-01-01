@@ -26,6 +26,8 @@ import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import { Gif } from "./gif";
 import { cn } from "@/lib/utils";
 import useIsKeyboardOpen from "@/hooks/use-keyboard";
+import { useParams } from "next/navigation";
+import { useCommunityId } from "@/hooks/use-communityId";
 
 enum OptionalFields {
    NONE = "NONE",
@@ -38,9 +40,11 @@ type CreatePostArgs = {
    postType: "image" | "gift" | undefined;
    image: Id<"_storage"> | undefined;
    gift: string | undefined;
+   communityId: Id<"communities"> | undefined;
 };
 
 export const CreatePost = () => {
+   const communityId = useCommunityId();
    const { type, isOpen, onClose } = useCreatePostStore();
    const [gifOpen, setGifOpen] = useState(false);
    const [image, setImage] = useState<File | null>(null);
@@ -98,6 +102,7 @@ export const CreatePost = () => {
                      : undefined,
             image: undefined,
             gift: gift,
+            communityId: communityId || undefined,
          };
 
          if (image) {
