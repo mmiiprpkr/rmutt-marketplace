@@ -115,6 +115,38 @@ export const getFeed = query({
       return refactoredPosts;
    },
 });
+
+export const getMyPosts = query({
+   args: {},
+   handler: async (ctx) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const posts = await ctx.db
+         .query("posts")
+         .filter((q) => q.eq(q.field("userId"), userId))
+         .collect();
+
+      const refactoredPosts = await Promise.all(
+         posts.map(async (post) => {
+            const interactions = await populateInteractions(ctx, post._id, userId);
+            return {
+               ...post,
+               image: post.image ? await ctx.storage.getUrl(post.image) : null,
+               user: await populateUser(ctx, post.userId),
+               commentCount: await populateCommentCounts(ctx, post._id),
+               ...interactions,
+            };
+         })
+      );
+
+      return refactoredPosts;
+   }
+});
+
 export const getSavedPosts = query({
    args: {},
    handler: async (ctx) => {
