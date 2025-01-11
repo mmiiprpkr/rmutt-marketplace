@@ -20,6 +20,7 @@ import { BookmarkCheckIcon, BookmarkIcon, HeartIcon, MessageSquareIcon, Share2Ic
 import { useQueryState } from "nuqs";
 import { useSavePost } from "@/api/communities/save-post";
 import { useLikePost } from "@/api/communities/like-post";
+import { cn } from "@/lib/utils";
 
 type PostFeedProps = {
    post: {
@@ -145,7 +146,10 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                      className="flex items-center space-x-2 hover:text-red-500 transition-colors"
                      onClick={() => handleLikeReactionsPost("like", post._id)}
                   >
-                     <HeartIcon className="size-5" />
+                     <HeartIcon className={cn(
+                        "size-5",
+                        post.isLiked ? "fill-rose-500 stroke-rose-500" : "",
+                     )} />
                      <span className="text-sm">{post.likeCount || 0}</span>
                   </Button>
                   <Button
