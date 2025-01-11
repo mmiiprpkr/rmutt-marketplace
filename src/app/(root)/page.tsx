@@ -20,7 +20,7 @@ const RootPage = () => {
       <div className="px-4 min-h-screen">
          <CreatePost />
          <Comments />
-         <div className="flex justify-end sticky top-[60px] py-2 bg-background z-10">
+         <div className="flex justify-end sticky top-[60px] pt-2 bg-background z-10">
             <Button
                onClick={() => onOpen("createPost")}
                disabled={isOpen}
@@ -28,19 +28,25 @@ const RootPage = () => {
                Create Post Community
             </Button>
          </div>
-         {isLoading ? (
-            <div className="max-w-[600px] mx-auto space-y-4">
-               {Array.from({ length: 5 }).map((_, index) => (
-                  <PostFeedSkeleton key={index} />
-               ))}
+         <div className="grid grid-cols-3">
+            {isLoading ? (
+               <div className="max-w-[600px] mx-auto col-span-2 w-full space-y-4">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                     <PostFeedSkeleton key={index} />
+                  ))}
+               </div>
+            ) : (
+               <div className="max-w-[600px] mx-auto space-y-4 col-span-2 w-full">
+                  {data?.map((post) => (
+                     <PostFeed key={post._id} post={post} />
+                  ))}
+               </div>
+            )}
+
+            <div className="sticky top-[110px] max-h-[700px] bg-background p-4 rounded-lg border">
+               Stats
             </div>
-         ) : (
-            <div className="max-w-[600px] mx-auto space-y-4">
-               {data?.map((post) => (
-                  <PostFeed key={post._id} post={post} />
-               ))}
-            </div>
-         )}
+         </div>
       </div>
    );
 };
