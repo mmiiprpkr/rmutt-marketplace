@@ -38,7 +38,7 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
          <CreatePost />
          <Comments />
 
-         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 relative">
             {feedLoading ? (
                <div className="w-full col-span-2 space-y-4">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -99,8 +99,10 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
                   )}
                </div>
             )}
-            <div className="sticky top-[70px] max-h-[700px] bg-background p-4 rounded-lg border hidden lg:block">
-               Stats
+            <div className="lg:block hidden">
+               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border">
+                  Stats
+               </div>
             </div>
          </div>
       </div>

@@ -33,8 +33,10 @@ const PostsPage = () => {
                )}
             </div>
 
-            <div className="sticky top-[70px] max-h-[700px] bg-background p-4 rounded-lg border hidden lg:block">
-               Stats
+            <div className="lg:block hidden">
+               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border">
+                  Stats
+               </div>
             </div>
          </div>
       </div>
