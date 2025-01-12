@@ -21,7 +21,7 @@ const MyCommunitiesPage = () => {
    } = useGetMyCommunities();
 
    return (
-      <div className="min-h-screen p-4 space-y-4">
+      <div className="min-h-screen p-4 space-y-4 max-w-7xl mx-auto w-full">
          <CreateCommunity />
          <div className="w-full bg-background flex items-center justify-between sticky py-2 top-[60px] z-10">
             <h1 className="text-2xl font-bold">Communities</h1>

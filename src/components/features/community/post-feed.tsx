@@ -65,7 +65,7 @@ export const PostFeed = ({ post }: PostFeedProps) => {
    return (
       <Card
          key={post._id}
-         className="hover:shadow-lg transition-shadow duration-200"
+         className="shadow-none"
       >
          <CardContent className="p-4">
             {/* User Info Section */}

@@ -13,40 +13,30 @@ const PostsPage = () => {
    }
 
    return (
-      <div className="p-4 min-h-screen space-y-4">
-         <div className="text-2xl font-bold sticky top-[60px] bg-background py-2 z-10">
-            My Saved Post
-         </div>
+      <div className="p-4 min-h-screen space-y-4 max-w-7xl w-full mx-auto">
          <Comments />
-         {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-               {Array.from({ length: 5 }).map((_, index) => (
-                  <PostFeedSkeleton key={index} />
-               ))}
-            </div>
-         ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-               {Array.isArray(data) && data.length === 0 ? (
+         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="w-full col-span-2 space-y-4">
+               <div className="sticky top-[60px] backdrop-blur-sm bg-white/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
+                  <h2 className="text-xl font-semibold text-foreground/80">
+                     My Posts
+                  </h2>
+               </div>
+               {isLoading ? (
+                  Array.from({ length: 5 }).map((_, index) => (
+                     <PostFeedSkeleton key={index} />
+                  ))
+               ) : Array.isArray(data) && data.length === 0 ? (
                   <div>No Saved Post</div>
                ) : (
-                  <div className="col-span-3 lg:grid grid-cols-3">
-                     <div className="col-span-2 flex justify-center w-full">
-                        <div className="max-w-[600px] w-full space-y-4">
-                           {data?.map((post) => (
-                              <PostFeed key={post._id} post={post} />
-                           ))}
-                        </div>
-                     </div>
-                     <div className="col-span-1 hidden lg:block">
-                        <div className="sticky top-[60px]">
-                           <div className="text-2xl font-bold">Trending</div>
-                           <div className="text-muted-foreground">Trending post</div>
-                        </div>
-                     </div>
-                  </div>
+                  data?.map((post) => <PostFeed key={post._id} post={post} />)
                )}
             </div>
-         )}
+
+            <div className="sticky top-[70px] max-h-[700px] bg-background p-4 rounded-lg border hidden lg:block">
+               Stats
+            </div>
+         </div>
       </div>
    );
 };

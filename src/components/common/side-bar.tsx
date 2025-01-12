@@ -184,7 +184,7 @@ export const SideBar = ({
       <div
          className={cn(
             "h-screen overflow-y-auto flex flex-col w-full bg-background",
-            "transition-width duration-200 ease-in-out sticky top-0"
+            "transition-width duration-200 ease-in-out"
          )}
       >
          <Link href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">

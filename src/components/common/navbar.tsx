@@ -14,7 +14,7 @@ export const Navbar = () => {
    return (
       <div className="flex justify-between items-center p-4 h-[60px] sticky top-0 z-10 bg-background border-b border-secondary">
          <MenuIcon
-            className="size-5 cursor-pointer md:hidden"
+            className="size-5 cursor-pointer lg:hidden"
             onClick={onOpen}
          />
          <div className="w-full flex items-center space-x-4 justify-end">
