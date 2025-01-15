@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 
 import { SideBarMenuItem } from "./side-bar-menu-item";
+import { useSideBarStore } from "@/stores/use-side-bar";
 
 interface MenuItem {
    title: string;
@@ -167,6 +168,7 @@ export const SideBar = ({
    defaultExpandedMenus = [],
    menuItems = menuItemsDefault,
 }: SideBarProps) => {
+   const { onClose } = useSideBarStore();
    const [expandedMenus, setExpandedMenus] = useState<string[]>([
       "Marketplace",
       "Community",
@@ -187,7 +189,7 @@ export const SideBar = ({
             "transition-width duration-200 ease-in-out"
          )}
       >
-         <Link href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">
+         <Link onClick={() => onClose(false)} href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">
             <div className="flex items-center gap-1">
                <Image
                   src="/logo.svg"
@@ -219,6 +221,7 @@ export const SideBar = ({
                      className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                      )}
+                     onClick={() => onClose(false)}
                   >
                      <item.icon className="h-4 w-4" />
                      <span>{item.title}</span>

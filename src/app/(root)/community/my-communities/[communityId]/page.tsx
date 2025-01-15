@@ -47,7 +47,7 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
                </div>
             ) : (
                <div className="w-full col-span-2 space-y-4">
-                  <div className="sticky top-[60px] backdrop-blur-sm bg-white/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
+                  <div className="sticky top-[60px] backdrop-blur-sm bg-background/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
                      <div className="flex items-center gap-3">
                         <Image
                            src={community?.image ?? ""}
@@ -72,7 +72,6 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
                      <Button
                         onClick={() => onOpen("createPost")}
                         disabled={isOpen}
-                        className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-md transition-all duration-200 hover:shadow-lg"
                         size="lg"
                      >
                         Create Post

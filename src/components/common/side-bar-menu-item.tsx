@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useSideBarStore } from "@/stores/use-side-bar";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,6 +24,7 @@ export const SideBarMenuItem = ({
    expandedMenus,
    toggleSubmenu,
 }: MenuItemProps) => {
+   const { onClose } = useSideBarStore();
    const pathname = usePathname();
    const isExpanded = expandedMenus.includes(item.title);
    const isActive = pathname === item.href;
@@ -57,6 +59,7 @@ export const SideBarMenuItem = ({
                <Link
                   href={item.href}
                   className="flex flex-1 items-center gap-3"
+                  onClick={() => onClose(false)}
                >
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>

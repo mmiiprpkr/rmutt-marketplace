@@ -22,14 +22,13 @@ const RootPage = () => {
          <Comments />
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
             <div className="w-full col-span-2 space-y-4">
-               <div className="sticky top-[60px] backdrop-blur-sm bg-white/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
+               <div className="sticky top-[60px] backdrop-blur-sm bg-background/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
                   <h2 className="text-xl font-semibold text-foreground/80">
                      Feed
                   </h2>
                   <Button
                      onClick={() => onOpen("createPost")}
                      disabled={isOpen}
-                     className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-md transition-all duration-200 hover:shadow-lg"
                      size="lg"
                   >
                      Create Post
