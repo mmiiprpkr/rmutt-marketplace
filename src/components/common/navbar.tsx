@@ -7,9 +7,13 @@ import { useSideBarStore } from "@/stores/use-side-bar";
 import { ModeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { UserButton } from "./user-button";
+import { useConvexAuth } from "convex/react";
+import { useGetCurrentUser } from "@/api/get-current-user";
+import { Skeleton } from "./ui/skeleton";
 
 export const Navbar = () => {
    const { onOpen } = useSideBarStore((state) => state);
+   const { data, isLoading } = useGetCurrentUser();
 
    return (
       <div className="flex justify-between items-center p-4 h-[60px] sticky top-0 z-10 bg-background border-b border-secondary">
@@ -28,7 +32,11 @@ export const Navbar = () => {
             <Button variant="ghost">
                <Store className="w-5 h-5" />
             </Button>
-            <UserButton />
+            {isLoading ? (
+               <Skeleton className="size-6" />
+            ): (
+               <UserButton imageUrl={data?.image ?? ""} type="settings" />
+            )}
          </div>
       </div>
    );

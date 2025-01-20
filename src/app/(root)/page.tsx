@@ -11,10 +11,12 @@ import { Comments } from "@/components/features/community/comments";
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 
 import { Button } from "@/components/common/ui/button";
+import { useGetCurrentUser } from "@/api/get-current-user";
 
 const RootPage = () => {
    const { isOpen, onOpen } = useCreatePostStore();
    const { data, isLoading } = useGetFeed();
+   const { data: userData, isLoading: userLoading } = useGetCurrentUser();
 
    return (
       <div className="px-4 min-h-screen max-w-7xl w-full mx-auto">
@@ -34,12 +36,12 @@ const RootPage = () => {
                      Create Post
                   </Button>
                </div>
-               {isLoading
+               {isLoading || userLoading
                   ? Array.from({ length: 5 }).map((_, index) => (
                      <PostFeedSkeleton key={index} />
                   ))
                   : data?.map((post) => (
-                     <PostFeed key={post._id} post={post} />
+                     <PostFeed key={post._id} post={post} userId={userData?._id} />
                   ))}
             </div>
 

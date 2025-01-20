@@ -19,32 +19,37 @@ import {
 import { Button } from "@/components/common/ui/button";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import useIsKeyboardOpen from "@/hooks/use-keyboard";
+import { UserButton } from "@/components/common/user-button";
+import { useGetCurrentUser } from "@/api/get-current-user";
 
 const CommentItem = ({
    comment,
    level = 0,
    setReplyTo,
+   imageUrl,
+   userId,
+   currentUserId,
 }: {
    comment: any;
    level?: number;
    setReplyTo: (replyTo: string) => void;
+   imageUrl?: string;
+   userId: Id<"users">;
+   currentUserId?: Id<"users">;
 }) => {
    const [parentCommentId, setParentCommentId] =
       useQueryState("prarentCommentId");
    const [showFullText, setShowFullText] = useState(false);
    const [showReplies, setShowReplies] = useState(true);
 
+   console.log(comment);
+
    return (
       <div className={`ml-${level * 1}`}>
          <div className="flex justify-between items-start">
             <div>
                <div className="flex items-start gap-2">
-                  <Avatar>
-                     <AvatarImage src={comment?.user?.image} />
-                     <AvatarFallback>
-                        {comment?.user?.name?.charAt(0)}
-                     </AvatarFallback>
-                  </Avatar>
+                  <UserButton type={currentUserId === userId ? "settings" : "profile"} imageUrl={imageUrl ?? ""} />
                   <div className="flex flex-col gap-1">
                      <p
                         className={`text-xs md:text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
@@ -110,6 +115,9 @@ const CommentItem = ({
                            comment={reply}
                            level={level + 1}
                            setReplyTo={setReplyTo}
+                           imageUrl={reply?.user?.image}
+                           userId={reply?.user?._id}
+                           currentUserId={currentUserId}
                         />
                      ))}
                   </div>
@@ -121,6 +129,7 @@ const CommentItem = ({
 };
 
 export const Comments = () => {
+   const { data: userDate, isLoading: userLoading } = useGetCurrentUser();
    const [postId, setPostId] = useQueryState("communityPostId");
    const [parentCommentId, setParentCommentId] =
       useQueryState("prarentCommentId");
@@ -202,6 +211,9 @@ export const Comments = () => {
                            key={comment._id}
                            comment={comment}
                            setReplyTo={handleSetReplyTo}
+                           imageUrl={comment?.user?.image}
+                           userId={comment?.user?._id}
+                           currentUserId={userDate?._id}
                         />
                      ))
                   ) : (

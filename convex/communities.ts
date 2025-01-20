@@ -199,9 +199,13 @@ export const getComments = query({
    handler: async (ctx, args) => {
       console.log("args", args);
 
+      type Comment = Doc<"comments"> &{
+         user: Doc<"users"> | undefined;
+      }
+
       async function getReplies(
          parentId: Id<"comments">
-      ): Promise<Doc<"comments">[]> {
+      ): Promise<Comment[]> {
          const replies = await ctx.db
             .query("comments")
             .filter((q) => q.eq(q.field("parentId"), parentId))
@@ -209,10 +213,10 @@ export const getComments = query({
 
          console.log("replies", replies);
 
-         const repliesWithNested: Doc<"comments">[] = await Promise.all(
+         const repliesWithNested: Comment[] = await Promise.all(
             replies.map(async (reply) => ({
                ...reply,
-               user: await populateUser(ctx, reply.author),
+               user: await populateUser(ctx, reply.author) as Doc<"users">,
                replies: await getReplies(reply._id),
             }))
          );
@@ -238,6 +242,7 @@ export const getComments = query({
          parentComments.map(async (comment) => ({
             ...comment,
             replies: await getReplies(comment._id),
+            user: await populateUser(ctx, comment.author) as Doc<"users">,
          }))
       );
 

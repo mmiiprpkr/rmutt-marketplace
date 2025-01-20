@@ -11,6 +11,7 @@ import { CircleHelpIcon, PlusCircleIcon } from "lucide-react";
 import { useCreatePostStore } from "@/stores/use-create-post-store";
 import { Button } from "@/components/common/ui/button";
 import Image from "next/image";
+import { useGetCurrentUser } from "@/api/get-current-user";
 
 type MyCommunityIdPageProps = {
    params: {
@@ -25,11 +26,16 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
       isLoading: communityLoading,
       isError: communityError,
    } = useGetCommunity(params.communityId as Id<"communities">);
+   const {
+      data: userData,
+      isLoading: userLoading,
+      isError: userError
+   } = useGetCurrentUser();
    const { data: feed, isLoading: feedLoading } = useGetFeed(
       params.communityId as Id<"communities">
    );
 
-   if (communityError) {
+   if (communityError || userError) {
       return <div>Error</div>;
    }
 
@@ -39,7 +45,7 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
          <Comments />
 
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 relative">
-            {feedLoading ? (
+            {feedLoading || userLoading ? (
                <div className="w-full col-span-2 space-y-4">
                   {Array.from({ length: 5 }).map((_, index) => (
                      <PostFeedSkeleton key={index} />
@@ -93,7 +99,7 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
                      </div>
                   ) : (
                      feed?.map((post) => (
-                        <PostFeed key={post._id} post={post} />
+                        <PostFeed key={post._id} post={post} userId={userData?._id} />
                      ))
                   )}
                </div>

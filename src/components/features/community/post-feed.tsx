@@ -8,11 +8,6 @@ import {
    CardHeader,
    CardTitle,
 } from "@/components/common/ui/card";
-import {
-   Avatar,
-   AvatarFallback,
-   AvatarImage,
-} from "@/components/common/ui/avatar";
 import Image from "next/image";
 import { Separator } from "@/components/common/ui/separator";
 import { Button } from "@/components/common/ui/button";
@@ -20,7 +15,8 @@ import { BookmarkCheckIcon, BookmarkIcon, HeartIcon, MessageSquareIcon, Share2Ic
 import { useQueryState } from "nuqs";
 import { useSavePost } from "@/api/communities/save-post";
 import { useLikePost } from "@/api/communities/like-post";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
+import { UserButton } from "@/components/common/user-button";
 
 type PostFeedProps = {
    post: {
@@ -40,10 +36,12 @@ type PostFeedProps = {
       isSaved: boolean;
       likeCount: number;
    };
+   userId: Id<"users"> | undefined;
 };
 
-export const PostFeed = ({ post }: PostFeedProps) => {
+export const PostFeed = ({ post, userId }: PostFeedProps) => {
    const [postId, setPostId] = useQueryState("communityPostId");
+
    const { mutate: savePost, isPending: savePostPending } = useSavePost();
    const { mutate: likePost, isPending: likePostPending } = useLikePost();
 
@@ -71,18 +69,16 @@ export const PostFeed = ({ post }: PostFeedProps) => {
             {/* User Info Section */}
             <CardHeader className="p-0 mb-4">
                <div className="flex items-center space-x-3">
-                  <Avatar>
-                     <AvatarImage src={post?.user?.image} />
-                     <AvatarFallback>
-                        {post?.user?.email?.charAt(0).toUpperCase()}
-                     </AvatarFallback>
-                  </Avatar>
+                  <UserButton
+                     imageUrl={post?.user?.image ?? ""}
+                     type={userId === post.userId ? "settings" : "profile"}
+                  />
                   <div>
                      <CardTitle className="text-sm font-medium">
                         {post?.user?.email}
                      </CardTitle>
                      <CardDescription className="text-xs">
-                        {new Date(post.createdAt).toLocaleDateString()}
+                        {formatDate(post.createdAt)}
                      </CardDescription>
                   </div>
                </div>
@@ -125,12 +121,12 @@ export const PostFeed = ({ post }: PostFeedProps) => {
                   )}
                </div>
                {(post.image || post.gift) && (
-                  <div className="relative w-full h-[300px] rounded-lg overflow-hidden">
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
                      <Image
                         src={post.image ?? post.gift ?? ""}
                         alt={post.title}
                         fill
-                        className="object-cover"
+                        className="object-center"
                      />
                   </div>
                )}

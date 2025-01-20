@@ -1,12 +1,17 @@
 "use client";
 
 import { useGetMySavePosts } from "@/api/communities/get-my-post";
+import { useGetCurrentUser } from "@/api/get-current-user";
 import { Comments } from "@/components/features/community/comments";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 
 const PostsPage = () => {
    const { data, isLoading, error } = useGetMySavePosts();
+   const {
+      data: userData,
+      isLoading: userLoading,
+   } = useGetCurrentUser();
 
    if (error) {
       throw new Error(error.message);
@@ -29,7 +34,7 @@ const PostsPage = () => {
                ) : Array.isArray(data) && data.length === 0 ? (
                   <div>No Saved Post</div>
                ) : (
-                  data?.map((post) => <PostFeed key={post._id} post={post} />)
+                  data?.map((post) => <PostFeed key={post._id} post={post} userId={userData?._id} />)
                )}
             </div>
 

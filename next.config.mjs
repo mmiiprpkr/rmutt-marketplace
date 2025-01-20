@@ -36,6 +36,10 @@ const nextConfig = {
          {
             protocol: "https",
             hostname: "kindly-wolf-784.convex.cloud",
+         },
+         {
+            protocol: "https",
+            hostname: "api.dicebear.com",
          }
       ],
    },
