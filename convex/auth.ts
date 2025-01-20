@@ -18,7 +18,6 @@ export const { auth, signIn, signOut, store } = convexAuth({
             "Sadie",
             "Mason",
             "Luis",
-            "Robert",
             "Oliver",
             "Eden",
             "Ryan",
@@ -32,9 +31,9 @@ export const { auth, signIn, signOut, store } = convexAuth({
             "Christian"
          ];
 
-         let profile_imgs_collections_list = ["adventurer", "adventurer-neutral"];
+         let profile_imgs_collections_list = ["adventurer-neutral"];
 
-         const generateImageURL = `https://api.dicebear.com/9.x/${profile_imgs_collections_list[Math.floor(Math.random() * profile_imgs_collections_list.length)]}/svg?seed=${profile_imgs_name_list[Math.floor(Math.random() * profile_imgs_name_list.length)]}`;
+         const generateImageURL = "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Aidan";
 
          return ctx.db.patch(args.userId, {
             image: generateImageURL,

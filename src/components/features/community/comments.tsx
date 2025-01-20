@@ -49,8 +49,14 @@ const CommentItem = ({
          <div className="flex justify-between items-start">
             <div>
                <div className="flex items-start gap-2">
-                  <UserButton type={currentUserId === userId ? "settings" : "profile"} imageUrl={imageUrl ?? ""} />
+                  <UserButton
+                     type={currentUserId === userId ? "settings" : "profile"}
+                     imageUrl={imageUrl ?? ""}
+                     userId1={currentUserId}
+                     userId2={userId}
+                  />
                   <div className="flex flex-col gap-1">
+                     {comment?.user?.email}
                      <p
                         className={`text-xs md:text-base font-normal text-balance ${!showFullText ? "line-clamp-3" : ""}`}
                      >

@@ -72,6 +72,8 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                   <UserButton
                      imageUrl={post?.user?.image ?? ""}
                      type={userId === post.userId ? "settings" : "profile"}
+                     userId1={userId}
+                     userId2={post.userId}
                   />
                   <div>
                      <CardTitle className="text-sm font-medium">

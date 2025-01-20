@@ -18,6 +18,7 @@ import type * as ResendOTP from "../ResendOTP.js";
 import type * as auth from "../auth.js";
 import type * as communities from "../communities.js";
 import type * as http from "../http.js";
+import type * as messages from "../messages.js";
 import type * as upload from "../upload.js";
 import type * as user from "../user.js";
 
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   communities: typeof communities;
   http: typeof http;
+  messages: typeof messages;
   upload: typeof upload;
   user: typeof user;
 }>;
