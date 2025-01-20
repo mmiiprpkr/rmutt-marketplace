@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetSavePost } from "@/api/communities/get-savePost";
+import { useGetCurrentUser } from "@/api/get-current-user";
 import { Comments } from "@/components/features/community/comments";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
@@ -8,6 +9,10 @@ import { SavePostSkeleton } from "@/components/features/community/skeleton/save-
 
 const SavedPostPage = () => {
    const { data, isLoading } = useGetSavePost();
+   const {
+      data: currentUser,
+      isLoading: currentUserLoading,
+   } = useGetCurrentUser();
 
    return (
       <div className="p-4 min-h-screen max-w-7xl w-full mx-auto">
@@ -19,14 +24,14 @@ const SavedPostPage = () => {
                      My Saved Post
                   </h2>
                </div>
-               {isLoading ? (
+               {isLoading || currentUserLoading ? (
                   Array.from({ length: 5 }).map((_, index) => (
                      <SavePostSkeleton key={index} />
                   ))
                ) : Array.isArray(data) && data.length === 0 ? (
                   <div>No Saved Post</div>
                ) : (
-                  data?.map((post) => <PostFeed key={post._id} post={post} />)
+                  data?.map((post) => <PostFeed key={post._id} post={post} userId={currentUser?._id} />)
                )}
             </div>
 
