@@ -13,22 +13,16 @@ import {
    LogOut,
    Heart,
    ShoppingBag,
-   FileText,
    Users2,
-   ChevronDown,
-   ChevronRight,
    TrendingUp,
    Package,
    MessageSquare,
    Bell,
-   Wallet,
    History,
    Tag,
    ShoppingCart,
    Bookmark,
    UserCircle,
-   Flag,
-   HelpCircle,
    UsersIcon,
 } from "lucide-react";
 
@@ -79,11 +73,6 @@ const menuItemsDefault: MenuItem[] = [
                   href: "/market-place/selling/history",
                },
             ],
-         },
-         {
-            title: "Wallet",
-            icon: Wallet,
-            href: "/market-place/wallet",
          },
          {
             title: "Analytics",
@@ -137,16 +126,6 @@ const menuItemsDefault: MenuItem[] = [
 ];
 
 const footerItems = [
-   {
-      title: "Help Center",
-      icon: HelpCircle,
-      href: "/help",
-   },
-   {
-      title: "Report Issue",
-      icon: Flag,
-      href: "/report",
-   },
    {
       title: "Settings",
       icon: Settings,
