@@ -51,7 +51,7 @@ const ConversationsIdPage = ({
    };
 
    return (
-      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto px-4 flex flex-col">
+      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto p-4 flex flex-col">
          <div className="flex-grow overflow-y-auto flex flex-col w-full space-y-3">
             {messages?.map((message, i) => {
                const isCurrentUser = userData?._id === message?.senderId;
