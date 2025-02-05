@@ -47,9 +47,6 @@ export const getCommunities = query({
             )
             .map(async (community) => ({
                ...community,
-               image: community.image
-                  ? await ctx.storage.getUrl(community.image)
-                  : null,
                userCount: await getCommunityUserCount(ctx, community._id),
             }))
       );
@@ -77,9 +74,6 @@ export const getCommunity = query({
 
       return {
          ...community,
-         image: community.image
-            ? await ctx.storage.getUrl(community.image)
-            : null,
       };
    },
 });
@@ -95,9 +89,6 @@ const populateCommunities = async (
 
    return {
       ...communities,
-      image: communities?.image
-         ? await ctx.storage.getUrl(communities.image)
-         : null,
    };
 };
 
@@ -131,7 +122,7 @@ export const createCommunity = mutation({
    args: {
       name: v.string(),
       description: v.optional(v.string()),
-      image: v.id("_storage"),
+      image: v.string(),
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);

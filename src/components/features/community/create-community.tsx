@@ -21,6 +21,7 @@ import { useUploadFile } from "@/hooks/upload-file";
 import { useCreateCommunity } from "@/api/communities/create-community";
 import { toast } from "sonner";
 import { useCreateCommunityStore } from "@/stores/use-create-community";
+import { uploadFiles } from "@/lib/uploadthing";
 
 export const CreateCommunity = () => {
    const { isOpen, setIsOpen } = useCreateCommunityStore();
@@ -30,7 +31,7 @@ export const CreateCommunity = () => {
    const {
       register,
       handleSubmit,
-      formState: { errors },
+      formState: { errors, isSubmitting },
       setValue,
       watch,
       reset,
@@ -38,10 +39,10 @@ export const CreateCommunity = () => {
       resolver: zodResolver(createCommunitySchema),
    });
 
-   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile();
-
-   const { mutateAsync: createCommunity, isPending: isCreatingCommunity } =
+   const { mutateAsync: createCommunity, isPending } =
       useCreateCommunity();
+
+   const isCreatingCommunity = isPending || isSubmitting;
 
    const onDrop = (acceptedFiles: File[]) => {
       setImage(acceptedFiles[0]);
@@ -56,35 +57,27 @@ export const CreateCommunity = () => {
 
    const onSubmit = async (data: CreateCommunitySchema) => {
       try {
-         const reformattedData = {
-            ...data,
-            image: null,
-         };
-
-         const url = await uploadFile({});
-
-         if (!url) {
+         if (!image) {
             throw new Error("Failed to upload image");
          }
 
-         const result = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": image?.type || "" },
-            body: image,
+         const res = await uploadFiles("imageUploader", {
+            files: [image],
          });
 
-         if (!result.ok) {
+         if (!res) {
             throw new Error("Failed to upload image");
          }
 
-         const { storageId } = await result.json();
-
-         reformattedData.image = storageId;
+         if (!res[0].url) {
+            throw new Error("Failed to upload image");
+         }
 
          await createCommunity(
             {
-               ...reformattedData,
-               image: storageId,
+               image: res[0].url,
+               name: data.name,
+               description: data?.description,
             },
             {
                onSuccess(data, variables, context) {
@@ -126,7 +119,7 @@ export const CreateCommunity = () => {
                   placeholder="Name"
                   {...register("name")}
                   error={errors.name?.message}
-                  disabled={isCreatingCommunity || isUploading}
+                  disabled={isCreatingCommunity}
                />
                <TextareaAutosize
                   className={cn(
@@ -140,7 +133,7 @@ export const CreateCommunity = () => {
                         shouldValidate: true,
                      });
                   }}
-                  disabled={isCreatingCommunity || isUploading}
+                  disabled={isCreatingCommunity}
                />
                {errors.description && (
                   <p className="text-destructive text-sm">
@@ -191,7 +184,7 @@ export const CreateCommunity = () => {
                            setImage(null);
                            setValue("image", "", { shouldValidate: true });
                         }}
-                        disabled={isCreatingCommunity || isUploading}
+                        disabled={isCreatingCommunity}
                      >
                         <X className="h-4 w-4" />
                      </Button>
@@ -200,7 +193,7 @@ export const CreateCommunity = () => {
                <div className="flex justify-end">
                   <Button
                      type="submit"
-                     disabled={isCreatingCommunity || isUploading}
+                     disabled={isCreatingCommunity}
                   >
                      Create Community
                   </Button>

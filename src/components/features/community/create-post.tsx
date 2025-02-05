@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import useIsKeyboardOpen from "@/hooks/use-keyboard";
 import { useParams } from "next/navigation";
 import { useCommunityId } from "@/hooks/use-communityId";
+import { uploadFiles } from "@/lib/uploadthing";
 
 enum OptionalFields {
    NONE = "NONE",
@@ -38,7 +39,7 @@ enum OptionalFields {
 type CreatePostArgs = {
    title: string;
    postType: "image" | "gift" | undefined;
-   image: Id<"_storage"> | undefined;
+   image: string | undefined;
    gift: string | undefined;
    communityId: Id<"communities"> | undefined;
 };
@@ -52,8 +53,6 @@ export const CreatePost = () => {
       OptionalFields.NONE
    );
 
-   const isKeyboardOpen = useIsKeyboardOpen();
-
    const form = useForm<CreatePostValidation>({
       resolver: zodResolver(createPostValidation),
       shouldFocusError: true,
@@ -62,7 +61,7 @@ export const CreatePost = () => {
    const {
       register,
       handleSubmit,
-      formState: { errors },
+      formState: { errors, isSubmitting },
       setValue,
       watch,
    } = form;
@@ -71,14 +70,14 @@ export const CreatePost = () => {
 
    const isCreatePostOpen = type === "createPost" && isOpen;
 
-   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile();
-
-   const { mutate: createPost, isPending: isCreatingPost } = useCreatePost();
+   const { mutate: createPost, isPending } = useCreatePost();
 
    const onDrop = (acceptedFiles: File[]) => {
       console.log(acceptedFiles);
       setImage(acceptedFiles[0]);
    };
+
+   const isCreatingPost = isSubmitting || isPending;
 
    const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop,
@@ -106,25 +105,17 @@ export const CreatePost = () => {
          };
 
          if (image) {
-            const url = await uploadFile({});
-
-            if (!url) {
-               throw new Error("Failed to upload image");
-            }
-
-            const result = await fetch(url, {
-               method: "POST",
-               headers: { "Content-Type": image.type },
-               body: image,
+            const res = await uploadFiles("imageUploader", {
+               files: [image],
             });
 
-            if (!result.ok) {
+            if (!res) {
                throw new Error("Failed to upload image");
             }
 
-            const { storageId } = await result.json();
+            console.log("res posts", res);
 
-            args.image = storageId;
+            args.image = res[0].url;
          }
 
          createPost(args);
@@ -183,7 +174,7 @@ export const CreatePost = () => {
                            shouldValidate: true,
                         });
                      }}
-                     disabled={isCreatingPost || isUploading}
+                     disabled={isCreatingPost}
                   />
                   {errors?.title && (
                      <p className="text-red-500">{errors?.title?.message}</p>
@@ -229,7 +220,7 @@ export const CreatePost = () => {
                            variant="secondary"
                            className="absolute top-2 right-2"
                            onClick={() => setImage(null)}
-                           disabled={isCreatingPost || isUploading}
+                           disabled={isCreatingPost}
                         >
                            <X className="h-4 w-4" />
                         </Button>
@@ -249,7 +240,7 @@ export const CreatePost = () => {
                            variant="secondary"
                            className="absolute top-2 right-2"
                            onClick={() => form.setValue("gift", undefined)}
-                           disabled={isCreatingPost || isUploading}
+                           disabled={isCreatingPost}
                         >
                            <X className="h-4 w-4" />
                         </Button>
@@ -263,7 +254,7 @@ export const CreatePost = () => {
                            handleChangeOptionalFields(OptionalFields.IMAGE)
                         }
                         variant="ghost"
-                        disabled={isCreatingPost || isUploading}
+                        disabled={isCreatingPost}
                         type="button"
                      >
                         <ImageIcon className="w-4 h-4" />
@@ -274,14 +265,14 @@ export const CreatePost = () => {
                            setGifOpen(true);
                         }}
                         variant="ghost"
-                        disabled={isCreatingPost || isUploading}
+                        disabled={isCreatingPost}
                         type="button"
                      >
                         <GiftIcon className="w-4 h-4" />
                      </Button>
                      <Button
                         type="submit"
-                        disabled={isCreatingPost || isUploading}
+                        disabled={isCreatingPost}
                      >
                         Create
                      </Button>

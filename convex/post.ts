@@ -56,7 +56,6 @@ export const getFeed = query({
             const interactions = await populateInteractions(ctx, post._id, userId);
             return {
                ...post,
-               image: post.image ? await ctx.storage.getUrl(post.image) : null,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
                ...interactions,
@@ -87,7 +86,6 @@ export const getMyPosts = query({
             const interactions = await populateInteractions(ctx, post._id, userId);
             return {
                ...post,
-               image: post.image ? await ctx.storage.getUrl(post.image) : null,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
                ...interactions,
@@ -119,7 +117,6 @@ export const getPost = query({
       const interactions = await populateInteractions(ctx, post._id, userId);
       return {
          ...post,
-         image: post.image? await ctx.storage.getUrl(post.image) : null,
          user: await populateUser(ctx, post.userId),
          commentCount: await populateCommentCounts(ctx, post._id),
          ...interactions,
@@ -157,7 +154,6 @@ export const getSavedPosts = query({
 
             return {
                ...post,
-               image: post.image ? await ctx.storage.getUrl(post.image) : null,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
                ...interactions,
@@ -256,7 +252,7 @@ export const createPost = mutation({
    args: {
       title: v.string(),
       postType: v.optional(v.union(v.literal("image"), v.literal("gift"))),
-      image: v.optional(v.id("_storage")),
+      image: v.optional(v.string()),
       gift: v.optional(v.string()),
       communityId: v.optional(v.id("communities")),
    },
