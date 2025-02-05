@@ -5,7 +5,7 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 export const useGetFeed = (communityId?: Id<"communities">) => {
    const getFeed = useQuery(
-      convexQuery(api.communities.getFeed, communityId ? { communityId } : {})
+      convexQuery(api.post.getFeed, communityId ? { communityId } : {})
    );
 
    return getFeed;

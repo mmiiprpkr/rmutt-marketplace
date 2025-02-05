@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 
 export const useGetMySavePosts = () => {
    const getSavePosts = useQuery(
-      convexQuery(api.communities.getMyPosts, {})
+      convexQuery(api.post.getMyPosts, {})
    );
 
    return getSavePosts;

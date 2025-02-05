@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 
 export const useCreateComment = () => {
    const createComment = useMutation({
-      mutationFn: useConvexMutation(api.communities.createComment),
+      mutationFn: useConvexMutation(api.comment.createComment),
    });
 
    return createComment;

@@ -9,7 +9,7 @@ type GetCommentArgs = {
 
 export const useGetComments = (args: GetCommentArgs) => {
    const getComments = useQuery(
-      convexQuery(api.communities.getComments, {
+      convexQuery(api.comment.getComments, {
          postId: args.postId,
       })
    );

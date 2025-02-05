@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 
 export const useLikePost = () => {
    const likePost = useMutation({
-      mutationFn: useConvexMutation(api.communities.likePost),
+      mutationFn: useConvexMutation(api.post.likePost),
    });
 
    return likePost;
