@@ -99,6 +99,34 @@ export const getMyPosts = query({
    }
 });
 
+export const getPost = query({
+   args: {
+      postId: v.id("posts"),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const post = await ctx.db.get(args.postId);
+
+      if (!post) {
+         throw new Error("Post not found");
+      }
+
+      const interactions = await populateInteractions(ctx, post._id, userId);
+      return {
+         ...post,
+         image: post.image? await ctx.storage.getUrl(post.image) : null,
+         user: await populateUser(ctx, post.userId),
+         commentCount: await populateCommentCounts(ctx, post._id),
+         ...interactions,
+      };
+   },
+});
+
 export const getSavedPosts = query({
    args: {},
    handler: async (ctx) => {
