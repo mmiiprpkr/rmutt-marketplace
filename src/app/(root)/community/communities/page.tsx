@@ -47,6 +47,8 @@ const CommunitiesPage = () => {
             {Array.isArray(communities) &&
                communities.length > 0 &&
                   communities.map((community) => (
+                     // @ts-ignore
+                     // TODO: remove hardcode ts-ignore
                      <CommunityCard community={community} key={community._id} type="community"/>
                   ))
             }

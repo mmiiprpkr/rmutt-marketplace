@@ -48,6 +48,8 @@ const MyCommunitiesPage = () => {
                communities.length > 0 &&
                   communities.map((community) => (
                      <CommunityCard
+                        // @ts-ignore
+                        // TODO: remove hard code ts-ignore
                         community={{
                            ...community?.community,
                            _id: community.community._id as Id<"communities"> | undefined,

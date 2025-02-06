@@ -36,9 +36,7 @@ export const CommunityCard = ({ community, type }: CommunityCardProps) => {
       if (!communityId) {
          return;
       }
-      const basePath = type === "my-community"
-         ? "/community/my-communities/"
-         : "/community/communities/";
+      const basePath = "/community/communities/";
       router.push(`${basePath}${communityId}`);
    };
 
