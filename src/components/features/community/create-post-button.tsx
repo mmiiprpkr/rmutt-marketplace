@@ -8,11 +8,11 @@ interface CreatePostButtonProps {
 
 export const CreatePostButton = ({ redirect }:CreatePostButtonProps) => {
    const router = useRouter();
-   const { isOpen, onOpen } = useCreatePostStore();
+   const { onOpen } = useCreatePostStore();
 
    return (
       <>
-         <Button type="button" onClick={() => onOpen("createPost")} disabled={isOpen} size="lg" className="hidden md:block">
+         <Button type="button" onClick={() => onOpen("createPost")} size="lg" className="hidden md:block">
             Create Post
          </Button>
          <Button type="button" onClick={() => router.push(redirect)} size="lg" className="md:hidden">

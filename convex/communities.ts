@@ -3,6 +3,7 @@ import { mutation, query, QueryCtx } from "./_generated/server";
 
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { Id } from "./_generated/dataModel";
+import { populateUser } from "./helper";
 
 const getCommunityUserCount = async (
    ctx: QueryCtx,
@@ -74,6 +75,17 @@ export const getCommunity = query({
 
       return {
          ...community,
+         userCount: await getCommunityUserCount(ctx, community._id),
+         user: await populateUser(ctx, community.userId),
+         isFollowing: !!await ctx.db
+           .query("userCommunities")
+           .filter((q) =>
+               q.and(
+                  q.eq(q.field("userId"), userId),
+                  q.eq(q.field("communityId"), community._id)
+               )
+           )
+           .first(),
       };
    },
 });
