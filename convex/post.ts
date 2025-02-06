@@ -251,7 +251,6 @@ export const savePost = mutation({
 export const createPost = mutation({
    args: {
       title: v.string(),
-      postType: v.optional(v.union(v.literal("image"), v.literal("gift"))),
       image: v.optional(v.string()),
       gift: v.optional(v.string()),
       communityId: v.optional(v.id("communities")),
@@ -267,7 +266,6 @@ export const createPost = mutation({
          userId,
          title: args.title,
          createdAt: new Date().toISOString(),
-         ...(args.postType && { postType: args.postType }),
          ...(args.image && { image: args.image }),
          ...(args.gift && { gift: args.gift }),
          ...(args.communityId && { communityId: args.communityId }),

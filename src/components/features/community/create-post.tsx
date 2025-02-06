@@ -35,7 +35,6 @@ enum OptionalFields {
 
 type CreatePostArgs = {
    title: string;
-   postType: "image" | "gift" | undefined;
    image: string | undefined;
    gift: string | undefined;
    communityId: Id<"communities"> | undefined;
@@ -90,12 +89,6 @@ export const CreatePost = () => {
       try {
          const args: CreatePostArgs = {
             title: data.title,
-            postType:
-               optionalFields === OptionalFields.GIFT
-                  ? "gift"
-                  : optionalFields === OptionalFields.IMAGE
-                     ? "image"
-                     : undefined,
             image: undefined,
             gift: gift,
             communityId: communityId || undefined,

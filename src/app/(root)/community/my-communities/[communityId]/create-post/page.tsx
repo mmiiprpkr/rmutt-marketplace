@@ -31,7 +31,6 @@ import { useCommunityId } from "@/hooks/use-communityId"
 
 type CreatePostArgs = {
    title: string
-   postType: "image" | "gift" | undefined
    image: string | undefined
    gift: string | undefined
    communityId: Id<"communities"> | undefined
@@ -75,7 +74,6 @@ const CreatePostPage = () => {
       try {
          const args: CreatePostArgs = {
             title: data.title,
-            postType: undefined,
             image: undefined,
             gift: gift,
             communityId: communityId as Id<"communities">,
