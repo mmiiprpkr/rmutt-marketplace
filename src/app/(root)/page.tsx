@@ -2,19 +2,16 @@
 
 import { useGetFeed } from "@/api/communities/get-feed";
 
-import { useCreatePostStore } from "@/stores/use-create-post-store";
-
 import { CreatePost } from "@/components/features/community/create-post";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { Comments } from "@/components/features/community/comments";
 
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 
-import { Button } from "@/components/common/ui/button";
 import { useGetCurrentUser } from "@/api/get-current-user";
+import { CreatePostButton } from "@/components/features/community/create-post-button";
 
 const RootPage = () => {
-   const { isOpen, onOpen } = useCreatePostStore();
    const { data, isLoading } = useGetFeed();
    const { data: userData, isLoading: userLoading } = useGetCurrentUser();
 
@@ -28,13 +25,7 @@ const RootPage = () => {
                   <h2 className="text-xl font-semibold text-foreground/80">
                      Feed
                   </h2>
-                  <Button
-                     onClick={() => onOpen("createPost")}
-                     disabled={isOpen}
-                     size="lg"
-                  >
-                     Create Post
-                  </Button>
+                  <CreatePostButton redirect="/create-post" />
                </div>
                {isLoading || userLoading
                   ? Array.from({ length: 5 }).map((_, index) => (

@@ -16,7 +16,6 @@ import {
 } from "@/validations/create-post.validation";
 
 import { Button } from "@/components/common/ui/button";
-import { useUploadFile } from "@/hooks/upload-file";
 import { useCreatePost } from "@/api/communities/create-post";
 
 import { Id } from "../../../../convex/_generated/dataModel";
@@ -25,10 +24,8 @@ import { useCreatePostStore } from "@/stores/use-create-post-store";
 import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import { Gif } from "./gif";
 import { cn } from "@/lib/utils";
-import useIsKeyboardOpen from "@/hooks/use-keyboard";
-import { useParams } from "next/navigation";
-import { useCommunityId } from "@/hooks/use-communityId";
 import { uploadFiles } from "@/lib/uploadthing";
+import { useCommunityId } from "@/hooks/use-communityId";
 
 enum OptionalFields {
    NONE = "NONE",
@@ -145,7 +142,7 @@ export const CreatePost = () => {
          >
             <form
                onSubmit={handleSubmit(handleCreatePost)}
-               className="overflow-y-auto space-y-4 p-4 h-[80vh]"
+               className="overflow-y-auto space-y-4 p-4 h-fit"
             >
                <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Create Post</h3>

@@ -12,6 +12,7 @@ import { useCreatePostStore } from "@/stores/use-create-post-store";
 import { Button } from "@/components/common/ui/button";
 import Image from "next/image";
 import { useGetCurrentUser } from "@/api/get-current-user";
+import { CreatePostButton } from "@/components/features/community/create-post-button";
 
 type MyCommunityIdPageProps = {
    params: {
@@ -75,13 +76,9 @@ const MyCommunityIdPage = ({ params }: MyCommunityIdPageProps) => {
                            </p>
                         </div>
                      </div>
-                     <Button
-                        onClick={() => onOpen("createPost")}
-                        disabled={isOpen}
-                        size="lg"
-                     >
-                        Create Post
-                     </Button>
+                     <CreatePostButton
+                        redirect={`/community/my-communities/${params.communityId}/create-post`}
+                     />
                   </div>
                   {Array.isArray(feed) && feed.length === 0 ? (
                      <div className="w-full h-[40vh] flex flex-col items-center justify-center">
