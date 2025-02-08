@@ -47,11 +47,11 @@ const schema = defineSchema({
       name: v.string(),
       description: v.string(),
       price: v.number(),
-      images: v.array(v.string()),
+      image: v.string(),
       category: v.string(),
       productType: v.union(v.literal("food"), v.literal("goods")), // เพิ่มเพื่อแยกประเภทสินค้า
       quantity: v.optional(v.number()),
-      status: v.union(v.literal("available"), v.literal("sold_out")),
+      status: v.union(v.literal("available"), v.literal("unavailable")),
       createdAt: v.string(),
    }),
    orders: defineTable({
@@ -79,6 +79,9 @@ const schema = defineSchema({
       senderId: v.id("users"),
       content: v.string(),
       createdAt: v.string(),
+   }),
+   categories: defineTable({
+      name: v.string(),
    }),
 })
 
