@@ -1,6 +1,6 @@
-import { defineSchema, defineTable } from "convex/server";
-import { authTables } from "@convex-dev/auth/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from "convex/server"
+import { authTables } from "@convex-dev/auth/server"
+import { v } from "convex/values"
 
 const schema = defineSchema({
    ...authTables,
@@ -17,6 +17,7 @@ const schema = defineSchema({
       likes: v.optional(v.number()),
       image: v.optional(v.string()),
       gift: v.optional(v.string()),
+      productId: v.optional(v.id("products")),
       createdAt: v.string(),
       communityId: v.optional(v.id("communities")),
    }),
@@ -48,7 +49,7 @@ const schema = defineSchema({
       price: v.number(),
       images: v.array(v.string()),
       category: v.string(),
-      type: v.union(v.literal("fixed"), v.literal("unlimited")),
+      productType: v.union(v.literal("food"), v.literal("goods")), // เพิ่มเพื่อแยกประเภทสินค้า
       quantity: v.optional(v.number()),
       status: v.union(v.literal("available"), v.literal("sold_out")),
       createdAt: v.string(),
@@ -64,7 +65,7 @@ const schema = defineSchema({
          v.literal("accepted"), // ยืนยันแล้ว สร้าง conversation
          v.literal("rejected"), // ปฏิเสธ (เพิ่ม quantity กลับ)
          v.literal("completed"), // ส่งของแล้ว
-         v.literal("cancelled") // ยกเลิก (เพิ่ม quantity กลับ)
+         v.literal("cancelled"), // ยกเลิก (เพิ่ม quantity กลับ)
       ),
       createdAt: v.string(),
    }),
@@ -79,6 +80,6 @@ const schema = defineSchema({
       content: v.string(),
       createdAt: v.string(),
    }),
-});
+})
 
-export default schema;
+export default schema
