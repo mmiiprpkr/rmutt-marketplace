@@ -31,12 +31,9 @@ export const columns: ColumnDef<Product>[] = [
       header: "Image",
       cell: ({ row }) => {
          return (
-            <MorphingDialogImg image={row.original.image} />
-            // <img
-            //    src={row.getValue("image")}
-            //    alt={row.getValue("name")}
-            //    className="aspect-video object-cover rounded-md size-20"
-            // />
+            <div className="size-20 aspect-video relative">
+               <MorphingDialogImg image={row.original.image} />
+            </div>
          );
       },
    },
