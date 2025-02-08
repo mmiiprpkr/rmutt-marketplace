@@ -72,6 +72,7 @@
     "react-use": "^17.6.0",
     "recharts": "^2.14.1",
     "resend": "3.2.0",
+    "sharp": "^0.33.5",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

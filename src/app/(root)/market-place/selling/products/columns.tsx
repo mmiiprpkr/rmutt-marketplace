@@ -13,12 +13,12 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu"
-import { Ellipsis, Menu } from "lucide-react"
-import { useDeleteProduct } from "@/api/market-place/product/use-delete-product"
-import { useProductController } from "@/stores/use-product-controller"
-import { useConfirm } from "@/hooks/use-confirm"
+import { Ellipsis } from "lucide-react"
+import { useDeleteProduct as DeleteProduct } from "@/api/market-place/product/use-delete-product"
+import { useProductController as ProductController } from "@/stores/use-product-controller"
+import { useConfirm as Confirm } from "@/hooks/use-confirm"
 import { toast } from "sonner"
-import { useUpdateProductStatus } from "@/api/market-place/product/use-update-status"
+import { useUpdateProductStatus as UpdateProductStatus } from "@/api/market-place/product/use-update-status"
 import { MorphingDialogImg } from "@/components/features/market-place/product/morphing-dialog-img"
 
 // This type is used to define the shape of our data.
@@ -78,18 +78,16 @@ export const columns: ColumnDef<Product>[] = [
          const {
             mutate: updateProductStatus,
             isPending: updateProductStatusPending,
-         } = useUpdateProductStatus()
+         } = UpdateProductStatus()
          const { mutate: deleteProduct, isPending: deleteProductPending } =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            useDeleteProduct()
-         // eslint-disable-next-line react-hooks/rules-of-hooks
-         const { onOpen } = useProductController()
-         const [Confirmation, confirm] = useConfirm(
+            DeleteProduct()
+         const { onOpen } = ProductController()
+         const [Confirmation, confirm] = Confirm(
             "Delete Product",
             "Are you sure you want to delete this product?",
             "destructive",
          )
-         const [ConfirmationUpdateStatus, confirmUpdateStatus] = useConfirm(
+         const [ConfirmationUpdateStatus, confirmUpdateStatus] = Confirm(
             "Update Status",
             `Are you sure you want to update this product's to ${
                row.getValue("status") === "available"
