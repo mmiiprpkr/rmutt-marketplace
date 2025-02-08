@@ -87,6 +87,36 @@ export const create = mutation({
    },
 })
 
+export const updateStatus = mutation({
+   args: {
+      id: v.id("products"),
+      status: v.union(v.literal("available"), v.literal("unavailable")),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx)
+      if (!userId) {
+         throw new Error("Unauthorized")
+      }
+
+      const isProductOwner = await ctx.db
+         .query("products")
+         .filter((q) => q.eq(q.field("sellerId"), userId))
+         .filter((q) => q.eq(q.field("_id"), args.id))
+         .collect()
+         .then((results) => results.length > 0)
+
+      if (!isProductOwner) {
+         throw new Error("Unauthorized")
+      }
+
+      const products = await ctx.db.patch(args.id, {
+         status: args.status,
+      })
+
+      return products
+   }
+})
+
 export const update = mutation({
    args: {
       id: v.id("products"),

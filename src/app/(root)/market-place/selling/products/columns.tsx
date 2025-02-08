@@ -18,6 +18,7 @@ import { useDeleteProduct } from "@/api/market-place/product/use-delete-product"
 import { useProductController } from "@/stores/use-product-controller"
 import { useConfirm } from "@/hooks/use-confirm"
 import { toast } from "sonner"
+import { useUpdateProductStatus } from "@/api/market-place/product/use-update-status"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -72,6 +73,10 @@ export const columns: ColumnDef<Product>[] = [
       header: "Actions",
       cell: ({ row }) => {
          const productId = row.original._id
+         const {
+            mutate: updateProductStatus,
+            isPending: updateProductStatusPending,
+         } = useUpdateProductStatus()
          const { mutate: deleteProduct, isPending: deleteProductPending } =
             // eslint-disable-next-line react-hooks/rules-of-hooks
             useDeleteProduct()
@@ -80,6 +85,15 @@ export const columns: ColumnDef<Product>[] = [
          const [Confirmation, confirm] = useConfirm(
             "Delete Product",
             "Are you sure you want to delete this product?",
+            "destructive",
+         )
+         const [ConfirmationUpdateStatus, confirmUpdateStatus] = useConfirm(
+            "Update Status",
+            `Are you sure you want to update this product's to ${
+               row.getValue("status") === "available"
+                  ? "unavailable"
+                  : "available"
+            }`,
             "destructive",
          )
 
@@ -97,13 +111,32 @@ export const columns: ColumnDef<Product>[] = [
             }
          }
 
+         const handleUpdateStatus = async () => {
+            try {
+               const ok = await confirmUpdateStatus()
+               if (!ok) return
+
+               updateProductStatus({
+                  id: productId,
+                  status:
+                     row.getValue("status") === "available"
+                        ? "unavailable"
+                        : "available",
+               })
+               toast.success("Product status updated successfully")
+            } catch (error) {
+               toast.error("Failed to update product status")
+            }
+         }
+
          return (
             <>
                <Confirmation />
+               <ConfirmationUpdateStatus />
 
                <DropdownMenu>
                   <DropdownMenuTrigger>
-                     <Menu className="size-4" />
+                     <Menu className="size-6 cursor-pointer hover:opacity-75" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
@@ -126,7 +159,12 @@ export const columns: ColumnDef<Product>[] = [
                      >
                         Delete Product
                      </DropdownMenuItem>
-                     <DropdownMenuItem>Update Status</DropdownMenuItem>
+                     <DropdownMenuItem
+                        onClick={handleUpdateStatus}
+                        disabled={updateProductStatusPending}
+                     >
+                        Update Status
+                     </DropdownMenuItem>
                   </DropdownMenuContent>
                </DropdownMenu>
             </>
