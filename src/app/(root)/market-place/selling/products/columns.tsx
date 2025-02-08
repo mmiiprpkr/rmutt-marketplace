@@ -13,12 +13,13 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu"
-import { Menu } from "lucide-react"
+import { Ellipsis, Menu } from "lucide-react"
 import { useDeleteProduct } from "@/api/market-place/product/use-delete-product"
 import { useProductController } from "@/stores/use-product-controller"
 import { useConfirm } from "@/hooks/use-confirm"
 import { toast } from "sonner"
 import { useUpdateProductStatus } from "@/api/market-place/product/use-update-status"
+import { MorphingDialogImg } from "@/components/features/market-place/product/morphing-dialog-img"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -30,11 +31,12 @@ export const columns: ColumnDef<Product>[] = [
       header: "Image",
       cell: ({ row }) => {
          return (
-            <img
-               src={row.getValue("image")}
-               alt={row.getValue("name")}
-               className="w-10 h-10 rounded-full"
-            />
+            <MorphingDialogImg image={row.original.image}/>
+            // <img
+            //    src={row.getValue("image")}
+            //    alt={row.getValue("name")}
+            //    className="aspect-video object-cover rounded-md size-20"
+            // />
          )
       },
    },
@@ -136,7 +138,7 @@ export const columns: ColumnDef<Product>[] = [
 
                <DropdownMenu>
                   <DropdownMenuTrigger>
-                     <Menu className="size-6 cursor-pointer hover:opacity-75" />
+                     <Ellipsis className="size-6 cursor-pointer hover:opacity-75" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
