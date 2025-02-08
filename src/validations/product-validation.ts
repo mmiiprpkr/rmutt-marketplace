@@ -48,7 +48,9 @@ export const productValidationSchema = z.object({
 }).refine(
    (data) => {
       if (data.productType === "goods") {
-         return data.quantity !== null
+         if (!data.quantity) {
+            return false
+         }
       }
       return true
    },
