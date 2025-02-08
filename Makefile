@@ -18,3 +18,6 @@ build-pm2:
 
 prettier:
 	bunx prettier ./src --write
+
+con:
+	bun con
