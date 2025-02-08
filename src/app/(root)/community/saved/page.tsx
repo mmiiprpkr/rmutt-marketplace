@@ -9,10 +9,8 @@ import { SavePostSkeleton } from "@/components/features/community/skeleton/save-
 
 const SavedPostPage = () => {
    const { data, isLoading } = useGetSavePost();
-   const {
-      data: currentUser,
-      isLoading: currentUserLoading,
-   } = useGetCurrentUser();
+   const { data: currentUser, isLoading: currentUserLoading } =
+      useGetCurrentUser();
 
    return (
       <div className="p-4 min-h-screen max-w-7xl w-full mx-auto">
@@ -31,7 +29,13 @@ const SavedPostPage = () => {
                ) : Array.isArray(data) && data.length === 0 ? (
                   <div>No Saved Post</div>
                ) : (
-                  data?.map((post) => <PostFeed key={post._id} post={post} userId={currentUser?._id} />)
+                  data?.map((post) => (
+                     <PostFeed
+                        key={post._id}
+                        post={post}
+                        userId={currentUser?._id}
+                     />
+                  ))
                )}
             </div>
 

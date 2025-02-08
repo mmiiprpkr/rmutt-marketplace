@@ -1,50 +1,50 @@
-"use client"
+"use client";
 
-import { useGetCommunity } from "@/api/communities/get-community"
-import { useCommunityId } from "@/hooks/use-communityId"
-import { Id } from "../../../../../../convex/_generated/dataModel"
-import { CreatePost } from "@/components/features/community/create-post"
-import { Comments } from "@/components/features/community/comments"
-import { useGetCurrentUser } from "@/api/get-current-user"
-import { useGetFeed } from "@/api/communities/get-feed"
-import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton"
-import Image from "next/image"
-import { CreatePostButton } from "@/components/features/community/create-post-button"
-import { CircleHelpIcon, MenuIcon, MinusSquareIcon } from "lucide-react"
-import { PostFeed } from "@/components/features/community/post-feed"
-import { UserIcon, Users2Icon, CalendarIcon } from "lucide-react" // Add this import
-import { ImageIcon } from "lucide-react" // Add this import
-import { Button } from "@/components/common/ui/button"
-import { useJoinCommunity } from "@/api/communities/join-community"
+import { useGetCommunity } from "@/api/communities/get-community";
+import { useCommunityId } from "@/hooks/use-communityId";
+import { Id } from "../../../../../../convex/_generated/dataModel";
+import { CreatePost } from "@/components/features/community/create-post";
+import { Comments } from "@/components/features/community/comments";
+import { useGetCurrentUser } from "@/api/get-current-user";
+import { useGetFeed } from "@/api/communities/get-feed";
+import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
+import Image from "next/image";
+import { CreatePostButton } from "@/components/features/community/create-post-button";
+import { CircleHelpIcon, MenuIcon, MinusSquareIcon } from "lucide-react";
+import { PostFeed } from "@/components/features/community/post-feed";
+import { UserIcon, Users2Icon, CalendarIcon } from "lucide-react"; // Add this import
+import { ImageIcon } from "lucide-react"; // Add this import
+import { Button } from "@/components/common/ui/button";
+import { useJoinCommunity } from "@/api/communities/join-community";
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
-} from "@/components/common/ui/dropdown-menu"
+} from "@/components/common/ui/dropdown-menu";
 
 const CommunityIdPage = () => {
-   const communityId = useCommunityId()
+   const communityId = useCommunityId();
 
    const {
       data: community,
       isLoading: communityLoading,
       isError: communityError,
-   } = useGetCommunity(communityId as Id<"communities">)
+   } = useGetCommunity(communityId as Id<"communities">);
    const {
       data: userData,
       isLoading: userLoading,
       isError: userError,
-   } = useGetCurrentUser()
+   } = useGetCurrentUser();
    const { mutateAsync: joinCommunity, isPending: joinPending } =
-      useJoinCommunity()
+      useJoinCommunity();
 
    const { data: feed, isLoading: feedLoading } = useGetFeed(
       communityId as Id<"communities">,
-   )
+   );
 
    if (communityError || userError) {
-      return <div>Error</div>
+      return <div>Error</div>;
    }
 
    return (
@@ -104,7 +104,7 @@ const CommunityIdPage = () => {
                            onClick={async () => {
                               await joinCommunity({
                                  communityId: communityId as Id<"communities">,
-                              })
+                              });
                            }}
                            disabled={joinPending}
                         >
@@ -235,7 +235,7 @@ const CommunityIdPage = () => {
             </div>
          </div>
       </div>
-   )
-}
+   );
+};
 
-export default CommunityIdPage
+export default CommunityIdPage;

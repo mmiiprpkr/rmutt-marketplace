@@ -1,4 +1,4 @@
-import { Button } from "@/components/common/ui/button"
+import { Button } from "@/components/common/ui/button";
 import { useProductController } from "@/stores/use-product-controller";
 import Link from "next/link";
 
@@ -20,13 +20,10 @@ export const CreateProductButton = ({
             Create Product
          </Button>
          <Link href={redirectTo}>
-            <Button
-               type="button"
-               className="md:hidden"
-            >
+            <Button type="button" className="md:hidden">
                Create Product
             </Button>
          </Link>
       </div>
-   )
-}
+   );
+};

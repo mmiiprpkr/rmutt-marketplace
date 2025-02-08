@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
    Sheet,
@@ -6,22 +6,22 @@ import {
    SheetDescription,
    SheetHeader,
    SheetTitle,
-} from "@/components/common/ui/sheet"
-import { useProductController } from "@/stores/use-product-controller"
-import { ProductForm } from "./product-form"
-import { useCreateProduct } from "@/api/market-place/product/use-create-product"
-import { ProductValidationSchema } from "@/validations/product-validation"
-import { toast } from "sonner"
+} from "@/components/common/ui/sheet";
+import { useProductController } from "@/stores/use-product-controller";
+import { ProductForm } from "./product-form";
+import { useCreateProduct } from "@/api/market-place/product/use-create-product";
+import { ProductValidationSchema } from "@/validations/product-validation";
+import { toast } from "sonner";
 
 export const CreateProductSheet = () => {
-   const { isOpen, type, onClose } = useProductController()
+   const { isOpen, type, onClose } = useProductController();
 
-   const isSheetOpen = isOpen && type === "create"
+   const isSheetOpen = isOpen && type === "create";
    const handleClose = (open: boolean) => {
-      onClose(open)
-   }
+      onClose(open);
+   };
 
-   const { mutateAsync, isPending } = useCreateProduct()
+   const { mutateAsync, isPending } = useCreateProduct();
 
    const handleSubmit = async (data: ProductValidationSchema) => {
       try {
@@ -33,14 +33,14 @@ export const CreateProductSheet = () => {
             price: data.price,
             quantity: data.quantity,
             productType: data.productType,
-         })
+         });
 
-         onClose(false)
-         toast.success("Product created successfully")
+         onClose(false);
+         toast.success("Product created successfully");
       } catch (error) {
-         toast.error("Something went wrong")
+         toast.error("Something went wrong");
       }
-   }
+   };
 
    return (
       <Sheet open={isSheetOpen} onOpenChange={handleClose}>
@@ -68,5 +68,5 @@ export const CreateProductSheet = () => {
             </SheetHeader>
          </SheetContent>
       </Sheet>
-   )
-}
+   );
+};

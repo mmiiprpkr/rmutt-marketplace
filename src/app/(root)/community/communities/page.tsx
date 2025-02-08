@@ -15,10 +15,8 @@ import { Button } from "@/components/common/ui/button";
 const CommunitiesPage = () => {
    const { setIsOpen } = useCreateCommunityStore();
 
-   const {
-      data: communities,
-      isLoading: isLoadingCommunities
-   } = useGetCommunities();
+   const { data: communities, isLoading: isLoadingCommunities } =
+      useGetCommunities();
 
    return (
       <div className="min-h-screen p-4 space-y-4 max-w-7xl mx-auto w-full">
@@ -29,34 +27,39 @@ const CommunitiesPage = () => {
                Create New Community <PlusCircleIcon className="size-4 ml-2" />
             </Button>
          </div>
-         {Array.isArray(communities) && communities.length === 0 && !isLoadingCommunities && (
-            <div className="w-full h-[40vh] flex flex-col items-center justify-center">
-               <div className="mb-4">
-                  <CircleHelpIcon className="size-10 text-primary" />
+         {Array.isArray(communities) &&
+            communities.length === 0 &&
+            !isLoadingCommunities && (
+               <div className="w-full h-[40vh] flex flex-col items-center justify-center">
+                  <div className="mb-4">
+                     <CircleHelpIcon className="size-10 text-primary" />
+                  </div>
+                  <p className="text-primary text-xl font-semibold">
+                     No Communities Found
+                  </p>
+                  <p className="text-muted-foreground text-sm text-center mt-2">
+                     It seems like there are no communities available at the
+                     moment. <br />
+                     Please check back later or create a new community!
+                  </p>
                </div>
-               <p className="text-primary text-xl font-semibold">
-                  No Communities Found
-               </p>
-               <p className="text-muted-foreground text-sm text-center mt-2">
-                  It seems like there are no communities available at the moment. <br />
-                  Please check back later or create a new community!
-               </p>
-            </div>
-         )}
+            )}
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.isArray(communities) &&
                communities.length > 0 &&
-                  communities.map((community) => (
-                     // @ts-ignore
-                     // TODO: remove hardcode ts-ignore
-                     <CommunityCard community={community} key={community._id} type="community"/>
-                  ))
-            }
+               communities?.map((community) => (
+                  // TODO: remove hardcode ts-ignore
+                  <CommunityCard
+                  // @ts-ignore
+                     community={community}
+                     key={community._id}
+                     type="community"
+                  />
+               ))}
             {isLoadingCommunities &&
                Array.from({ length: 8 }).map((_, index) => (
                   <CommunityCardSkeleton key={index} />
-               ))
-            }
+               ))}
          </div>
       </div>
    );

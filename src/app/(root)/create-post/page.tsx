@@ -1,47 +1,47 @@
-"use client"
+"use client";
 
-import { Controller, useForm } from "react-hook-form"
-import { Id } from "../../../../convex/_generated/dataModel"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Controller, useForm } from "react-hook-form";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
    CreatePostValidation,
    createPostValidation,
-} from "@/validations/create-post.validation"
-import { CreatePostCommunityValidation } from "@/validations/create-post-community"
-import TextareaAutosize from "react-textarea-autosize"
-import { cn } from "@/lib/utils"
+} from "@/validations/create-post.validation";
+import { CreatePostCommunityValidation } from "@/validations/create-post-community";
+import TextareaAutosize from "react-textarea-autosize";
+import { cn } from "@/lib/utils";
 import {
    Tabs,
    TabsContent,
    TabsList,
    TabsTrigger,
-} from "@/components/common/ui/tabs"
-import Image from "next/image"
-import { useState } from "react"
-import { Button } from "@/components/common/ui/button"
-import { ImageIcon, X } from "lucide-react"
-import { useDropzone } from "react-dropzone"
-import { Input } from "@/components/common/ui/input"
-import { GifFile } from "@/constant/gif"
-import { uploadFiles } from "@/lib/uploadthing"
-import { toast } from "sonner"
-import { useCreatePost } from "@/api/communities/create-post"
-import { useRouter } from "next/navigation"
+} from "@/components/common/ui/tabs";
+import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/components/common/ui/button";
+import { ImageIcon, X } from "lucide-react";
+import { useDropzone } from "react-dropzone";
+import { Input } from "@/components/common/ui/input";
+import { GifFile } from "@/constant/gif";
+import { uploadFiles } from "@/lib/uploadthing";
+import { toast } from "sonner";
+import { useCreatePost } from "@/api/communities/create-post";
+import { useRouter } from "next/navigation";
 
 type CreatePostArgs = {
-   title: string
-   image: string | undefined
-   gift: string | undefined
-   communityId: Id<"communities"> | undefined
-}
+   title: string;
+   image: string | undefined;
+   gift: string | undefined;
+   communityId: Id<"communities"> | undefined;
+};
 
 const CreatePostPage = () => {
-   const router = useRouter()
-   const [image, setImage] = useState<File | null>(null)
-   const [gifs, setGifs] = useState<any[]>([])
-   const [searchGif, setSearchGif] = useState<string>("")
+   const router = useRouter();
+   const [image, setImage] = useState<File | null>(null);
+   const [gifs, setGifs] = useState<any[]>([]);
+   const [searchGif, setSearchGif] = useState<string>("");
 
-   const { mutate: createPost, isPending } = useCreatePost()
+   const { mutate: createPost, isPending } = useCreatePost();
 
    const form = useForm<CreatePostCommunityValidation>({
       resolver: zodResolver(createPostValidation),
@@ -51,22 +51,22 @@ const CreatePostPage = () => {
          gift: undefined,
          image: undefined,
       },
-   })
+   });
 
-   const { gift } = form.watch()
+   const { gift } = form.watch();
 
-   const isSubmitting = isPending || form.formState.isSubmitting
+   const isSubmitting = isPending || form.formState.isSubmitting;
 
    const onDrop = (acceptedFiles: File[]) => {
-      console.log(acceptedFiles)
-      setImage(acceptedFiles[0])
-   }
+      console.log(acceptedFiles);
+      setImage(acceptedFiles[0]);
+   };
 
    const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop,
       accept: { "image/*": [] },
       multiple: false,
-   })
+   });
 
    const handleCreatePost = async (data: CreatePostValidation) => {
       try {
@@ -75,52 +75,52 @@ const CreatePostPage = () => {
             image: undefined,
             gift: gift,
             communityId: undefined,
-         }
+         };
 
          if (image) {
             const res = await uploadFiles("imageUploader", {
                files: [image],
-            })
+            });
 
             if (!res) {
-               throw new Error("Failed to upload image")
+               throw new Error("Failed to upload image");
             }
 
-            console.log("res posts", res)
+            console.log("res posts", res);
 
-            args.image = res[0].url
+            args.image = res[0].url;
          }
 
-         createPost(args)
-         setImage(null)
-         router.back()
-         form.reset()
+         createPost(args);
+         setImage(null);
+         router.back();
+         form.reset();
       } catch (error) {
-         toast.error("Failed to create post")
-         console.error(error)
+         toast.error("Failed to create post");
+         console.error(error);
       }
-   }
+   };
 
    const handleSearchGif = async (search: string) => {
       try {
-         const apiKey = "XjVJqqCc4zaj9K8hW8ZL2CwYekN8nuJQ"
+         const apiKey = "XjVJqqCc4zaj9K8hW8ZL2CwYekN8nuJQ";
 
-         const searchEndpoint = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${search}`
+         const searchEndpoint = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${search}`;
 
          await fetch(searchEndpoint)
             .then((response) => response.json())
             .then((data) => setGifs(data.data))
             .catch((error) => {
-               console.error(error)
-               setGifs(GifFile)
-            })
+               console.error(error);
+               setGifs(GifFile);
+            });
       } catch (error) {
-         console.error(error)
-         setGifs(GifFile)
+         console.error(error);
+         setGifs(GifFile);
       }
-   }
+   };
 
-   const errors = form.formState.errors
+   const errors = form.formState.errors;
 
    return (
       <div className="max-w-3xl mx-auto h-[calc(100vh-60px)] p-4">
@@ -161,7 +161,7 @@ const CreatePostPage = () => {
                         )}
                         disabled={isSubmitting}
                      />
-                  )
+                  );
                }}
             />
 
@@ -170,12 +170,12 @@ const CreatePostPage = () => {
                className="w-full"
                onValueChange={(value) => {
                   if (value === "image") {
-                     form.setValue("gift", undefined)
+                     form.setValue("gift", undefined);
                   }
 
                   if (value === "gif") {
-                     form.setValue("image", undefined)
-                     setImage(null)
+                     form.setValue("image", undefined);
+                     setImage(null);
                   }
                }}
             >
@@ -272,7 +272,7 @@ const CreatePostPage = () => {
                                     form.setValue(
                                        "gift",
                                        gif.images.original.url,
-                                    )
+                                    );
                                  }}
                               />
                            ))}
@@ -303,7 +303,7 @@ const CreatePostPage = () => {
             </Tabs>
          </form>
       </div>
-   )
-}
+   );
+};
 
-export default CreatePostPage
+export default CreatePostPage;

@@ -5,11 +5,11 @@ import {
    MorphingDialogClose,
    MorphingDialogImage,
    MorphingDialogContainer,
-} from "@/components/common/ui/morphing-dialog"
-import { XIcon } from "lucide-react"
+} from "@/components/common/ui/morphing-dialog";
+import { XIcon } from "lucide-react";
 
 interface MorphingDialogImgProps {
-   image: string
+   image: string;
 }
 
 export const MorphingDialogImg = ({ image }: MorphingDialogImgProps) => {
@@ -50,5 +50,5 @@ export const MorphingDialogImg = ({ image }: MorphingDialogImgProps) => {
             </MorphingDialogClose>
          </MorphingDialogContainer>
       </MorphingDialog>
-   )
-}
+   );
+};

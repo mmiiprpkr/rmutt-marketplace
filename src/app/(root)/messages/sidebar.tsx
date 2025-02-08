@@ -29,7 +29,9 @@ export const Sidebar = () => {
                         key={conversation._id}
                         className={cn(
                            "flex items-center p-2 cursor-pointer hover:opacity-75",
-                           conversation._id === conversationId ? "bg-secondary" : ""
+                           conversation._id === conversationId
+                              ? "bg-secondary"
+                              : "",
                         )}
                         onClick={() => {
                            router.push(`/messages/${conversation._id}`);

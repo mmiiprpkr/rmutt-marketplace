@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 
 export const useGetCommunities = () => {
    const getCommunities = useQuery(
-      convexQuery(api.communities.getCommunities, {})
+      convexQuery(api.communities.getCommunities, {}),
    );
 
    return getCommunities;

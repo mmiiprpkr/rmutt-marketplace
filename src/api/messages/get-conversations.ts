@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 
 export const useFetchConversations = () => {
    const getCurrentUser = useQuery(
-      convexQuery(api.messages.getConversations, {})
+      convexQuery(api.messages.getConversations, {}),
    );
 
    return getCurrentUser;

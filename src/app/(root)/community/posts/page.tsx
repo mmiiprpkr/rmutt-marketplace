@@ -8,10 +8,7 @@ import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-
 
 const PostsPage = () => {
    const { data, isLoading, error } = useGetMySavePosts();
-   const {
-      data: userData,
-      isLoading: userLoading,
-   } = useGetCurrentUser();
+   const { data: userData, isLoading: userLoading } = useGetCurrentUser();
 
    if (error) {
       throw new Error(error.message);
@@ -34,7 +31,13 @@ const PostsPage = () => {
                ) : Array.isArray(data) && data.length === 0 ? (
                   <div>No Saved Post</div>
                ) : (
-                  data?.map((post) => <PostFeed key={post._id} post={post} userId={userData?._id} />)
+                  data?.map((post) => (
+                     <PostFeed
+                        key={post._id}
+                        post={post}
+                        userId={userData?._id}
+                     />
+                  ))
                )}
             </div>
 

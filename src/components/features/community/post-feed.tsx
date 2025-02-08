@@ -11,7 +11,13 @@ import {
 import Image from "next/image";
 import { Separator } from "@/components/common/ui/separator";
 import { Button } from "@/components/common/ui/button";
-import { BookmarkCheckIcon, BookmarkIcon, HeartIcon, MessageSquareIcon, Share2Icon } from "lucide-react";
+import {
+   BookmarkCheckIcon,
+   BookmarkIcon,
+   HeartIcon,
+   MessageSquareIcon,
+   Share2Icon,
+} from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useSavePost } from "@/api/communities/save-post";
 import { useLikePost } from "@/api/communities/like-post";
@@ -45,7 +51,10 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
    const { mutate: savePost, isPending: savePostPending } = useSavePost();
    const { mutate: likePost, isPending: likePostPending } = useLikePost();
 
-   const handleLikeReactionsPost = (type: "like" | "save", postId: Id<"posts">) => {
+   const handleLikeReactionsPost = (
+      type: "like" | "save",
+      postId: Id<"posts">,
+   ) => {
       if (type === "save") {
          savePost({
             postId,
@@ -61,10 +70,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
    const [showFullText, setShowFullText] = useState(false);
 
    return (
-      <Card
-         key={post._id}
-         className="shadow-none"
-      >
+      <Card key={post._id} className="shadow-none">
          <CardContent className="p-4">
             {/* User Info Section */}
             <CardHeader className="p-0 mb-4">
@@ -144,10 +150,12 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                      className="flex items-center space-x-2 hover:text-red-500 transition-colors"
                      onClick={() => handleLikeReactionsPost("like", post._id)}
                   >
-                     <HeartIcon className={cn(
-                        "size-5",
-                        post.isLiked ? "fill-rose-500 stroke-rose-500" : "",
-                     )} />
+                     <HeartIcon
+                        className={cn(
+                           "size-5",
+                           post.isLiked ? "fill-rose-500 stroke-rose-500" : "",
+                        )}
+                     />
                      <span className="text-sm">{post.likeCount || 0}</span>
                   </Button>
                   <Button
@@ -170,7 +178,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                >
                   {post.isSaved ? (
                      <BookmarkCheckIcon className="size-5" />
-                  ): (
+                  ) : (
                      <BookmarkIcon className="size-5" />
                   )}
                </Button>

@@ -13,29 +13,21 @@ import { UserButton } from "@/components/common/user-button";
 type ConversationsIdPageProps = {
    params: {
       conversationId: string;
-   }
-}
+   };
+};
 
-const ConversationsIdPage = ({
-   params,
-}: ConversationsIdPageProps) => {
+const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    const [message, setMessage] = useState("");
 
    const { data: userData, isLoading: dataLoading } = useGetCurrentUser();
    const { data: messages, isLoading: messageLoading } = useGetMessage({
       conversationId: params.conversationId as Id<"conversations">,
    });
-   const {
-      mutateAsync: createMessageAsync,
-      isPending: createMessagePending,
-   } = useCreateMessage();
+   const { mutateAsync: createMessageAsync, isPending: createMessagePending } =
+      useCreateMessage();
 
    if (dataLoading || messageLoading) {
-      return (
-         <div>
-            Loading...
-         </div>
-      );
+      return <div>Loading...</div>;
    }
 
    const handleSendMessage = async () => {
@@ -59,7 +51,7 @@ const ConversationsIdPage = ({
                   <div
                      className={cn(
                         "flex gap-2 items-start",
-                        isCurrentUser ? "justify-end" : "justify-start"
+                        isCurrentUser ? "justify-end" : "justify-start",
                      )}
                      key={i}
                   >
@@ -74,7 +66,9 @@ const ConversationsIdPage = ({
                      <div
                         className={cn(
                            "rounded-lg p-2 max-w-xs",
-                           isCurrentUser ? "bg-foreground text-white dark:text-black" : "bg-primary-foreground text-foreground"
+                           isCurrentUser
+                              ? "bg-foreground text-white dark:text-black"
+                              : "bg-primary-foreground text-foreground",
                         )}
                      >
                         {message?.content}

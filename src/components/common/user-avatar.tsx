@@ -5,14 +5,16 @@ import { Skeleton } from "./ui/skeleton";
 
 type UserAvatarProps = {
    imageUrl?: string;
-}
+};
 
-export const UserAvatar = ({
-   imageUrl,
-}: UserAvatarProps) => {
+export const UserAvatar = ({ imageUrl }: UserAvatarProps) => {
    return (
       <Avatar>
-         <AvatarImage src={imageUrl} className="size-10 rounded-full" alt="@shadcn" />
+         <AvatarImage
+            src={imageUrl}
+            className="size-10 rounded-full"
+            alt="@shadcn"
+         />
          <AvatarFallback>
             <Skeleton className="size-6 rounded-full" />
          </AvatarFallback>

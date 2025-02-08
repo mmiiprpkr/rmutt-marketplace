@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
    Select,
@@ -6,31 +6,31 @@ import {
    SelectItem,
    SelectTrigger,
    SelectValue,
-} from "@/components/common/ui/select"
+} from "@/components/common/ui/select";
 import CreatableSelect from "react-select/creatable";
 
-import { Input } from "@/components/common/ui/input"
-import { cn } from "@/lib/utils"
+import { Input } from "@/components/common/ui/input";
+import { cn } from "@/lib/utils";
 import {
    productValidationSchema,
    ProductValidationSchema,
-} from "@/validations/product-validation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import TextareaAutosize from "react-textarea-autosize"
-import { useState } from "react"
-import { useDropzone } from "react-dropzone"
-import Image from "next/image"
-import { Loader, UploadCloudIcon } from "lucide-react"
-import { uploadFiles } from "@/lib/uploadthing"
-import { toast } from "sonner"
+} from "@/validations/product-validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import TextareaAutosize from "react-textarea-autosize";
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { Loader, UploadCloudIcon } from "lucide-react";
+import { uploadFiles } from "@/lib/uploadthing";
+import { toast } from "sonner";
 import { useGetCategory } from "@/api/market-place/use-get-category";
 import { useCreateCategory } from "@/api/market-place/use-create-category";
 import { Button } from "@/components/common/ui/button";
 
 interface ProductFormProps {
-   onSubmit: (data: ProductValidationSchema) => void
-   initialValues: Partial<ProductValidationSchema>,
+   onSubmit: (data: ProductValidationSchema) => void;
+   initialValues: Partial<ProductValidationSchema>;
    isUpdate?: boolean;
 }
 
@@ -46,9 +46,10 @@ export const ProductForm = ({
    });
 
    const { data: categoryDate, isLoading: categoryLoading } = useGetCategory();
-   const { mutate: createCategory, isPending: createCategoryPending } = useCreateCategory();
+   const { mutate: createCategory, isPending: createCategoryPending } =
+      useCreateCategory();
 
-   const { image, productType } = form.watch()
+   const { image, productType } = form.watch();
 
    const { getRootProps, getInputProps, isDragActive } = useDropzone({
       accept: {
@@ -58,11 +59,11 @@ export const ProductForm = ({
       onDrop: async (acceptedFiles) => {
          try {
             setImageLoading(true);
-            const file = acceptedFiles[0]
-            if (!file) return
+            const file = acceptedFiles[0];
+            if (!file) return;
 
             const res = await uploadFiles("imageUploader", {
-               files: [file]
+               files: [file],
             });
 
             if (res) {
@@ -76,10 +77,10 @@ export const ProductForm = ({
             setImageLoading(false);
          }
       },
-   })
+   });
 
-   const isSubmitting = form.formState.isSubmitting
-   const errors = form.formState.errors
+   const isSubmitting = form.formState.isSubmitting;
+   const errors = form.formState.errors;
 
    console.log(errors);
 
@@ -99,7 +100,7 @@ export const ProductForm = ({
                      disabled={isSubmitting}
                      error={errors?.name?.message}
                   />
-               )
+               );
             }}
          />
          <Controller
@@ -124,7 +125,7 @@ export const ProductForm = ({
                      )}
                      disabled={isSubmitting}
                   />
-               )
+               );
             }}
          />
          <div className="w-full lg:w-[250px]">
@@ -134,8 +135,7 @@ export const ProductForm = ({
                   "w-full cursor-pointer relative group border-2 border-dashed border-neutral_n4 rounded-lg",
                   "aspect-square flex items-center justify-center", // Changed to aspect-square
                   isDragActive && "border-main bg-main/5",
-                  (isSubmitting) &&
-                     "cursor-not-allowed opacity-60",
+                  isSubmitting && "cursor-not-allowed opacity-60",
                   errors?.image?.message && "border-destructive",
                )}
             >
@@ -185,11 +185,11 @@ export const ProductForm = ({
                      disabled={isSubmitting}
                      error={errors?.price?.message}
                      onChange={(e) => {
-                        field.onChange(Number(e.target.value))
+                        field.onChange(Number(e.target.value));
                      }}
                      value={field.value || undefined}
                   />
-               )
+               );
             }}
          />
          {productType === "goods" && (
@@ -202,14 +202,14 @@ export const ProductForm = ({
                      <Input
                         {...field}
                         onChange={(e) => {
-                           field.onChange(Number(e.target.value))
+                           field.onChange(Number(e.target.value));
                         }}
                         value={field.value || undefined}
                         placeholder="Quantity"
                         disabled={isSubmitting}
                         error={errors?.quantity?.message}
                      />
-                  )
+                  );
                }}
             />
          )}
@@ -218,10 +218,13 @@ export const ProductForm = ({
             name="productType"
             render={({ field }) => {
                return (
-                  <Select value={field.value} onValueChange={(value) => {
-                     field.onChange(value);
-                     form.setValue("quantity", undefined);
-                  }}>
+                  <Select
+                     value={field.value}
+                     onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("quantity", undefined);
+                     }}
+                  >
                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="ProductType" />
                      </SelectTrigger>
@@ -230,61 +233,73 @@ export const ProductForm = ({
                         <SelectItem value="goods">Goods</SelectItem>
                      </SelectContent>
                   </Select>
-               )
+               );
             }}
          />
          <Controller
             control={form.control}
             name="category"
             render={({ field }) => {
-               const options = categoryDate?.map((category) => ({
-                  label: category.name,
-                  value: category.name,
-               })) || [];
+               const options =
+                  categoryDate?.map((category) => ({
+                     label: category.name,
+                     value: category.name,
+                  })) || [];
 
                return (
                   <CreatableSelect
                      isLoading={categoryLoading}
                      options={options}
-                     value={field.value ? { label: field.value, value: field.value } : null}
+                     value={
+                        field.value
+                           ? { label: field.value, value: field.value }
+                           : null
+                     }
                      onChange={(newValue) => field.onChange(newValue?.value)}
                      isClearable
                      onCreateOption={(inputValue) => {
-                        createCategory({ category: inputValue }, {
-                           onSuccess: () => {
-                              field.onChange(inputValue);
-                              toast.success("Category created successfully");
+                        createCategory(
+                           { category: inputValue },
+                           {
+                              onSuccess: () => {
+                                 field.onChange(inputValue);
+                                 toast.success("Category created successfully");
+                              },
+                              onError: () => {
+                                 toast.error("Failed to create category");
+                              },
                            },
-                           onError: () => {
-                              toast.error("Failed to create category");
-                           }
-                        });
+                        );
                      }}
                      placeholder="Category"
-                     formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+                     formatCreateLabel={(inputValue) =>
+                        `Create "${inputValue}"`
+                     }
                      styles={{
                         control: (baseStyles, state) => ({
                            ...baseStyles,
-                           borderColor: errors?.category ? "hsl(var(--destructive))" : state.isFocused ? "hsl(var(--input))" : "hsl(var(--input))",
+                           borderColor: errors?.category
+                              ? "hsl(var(--destructive))"
+                              : state.isFocused
+                                ? "hsl(var(--input))"
+                                : "hsl(var(--input))",
                            "&:hover": {
-                              borderColor: errors?.category ? "hsl(var(--destructive))" : "hsl(var(--input))"
-                           }
-                        })
+                              borderColor: errors?.category
+                                 ? "hsl(var(--destructive))"
+                                 : "hsl(var(--input))",
+                           },
+                        }),
                      }}
                      classNames={{
                         control: () => "border rounded-md",
                         placeholder: () => "text-muted-foreground",
                      }}
                   />
-               )
+               );
             }}
          />
 
-         <Button
-            type="submit"
-         >
-            {isUpdate? "Update" : "Create"}
-         </Button>
+         <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
       </form>
-   )
-}
+   );
+};

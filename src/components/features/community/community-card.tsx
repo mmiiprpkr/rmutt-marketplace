@@ -32,7 +32,9 @@ export const CommunityCard = ({ community, type }: CommunityCardProps) => {
    const router = useRouter();
    const { mutate: joinCommunity, isPending } = useJoinCommunity();
 
-   const handleRedirectToCommunity = (communityId: Id<"communities"> | undefined) => {
+   const handleRedirectToCommunity = (
+      communityId: Id<"communities"> | undefined,
+   ) => {
       if (!communityId) {
          return;
       }
@@ -40,9 +42,7 @@ export const CommunityCard = ({ community, type }: CommunityCardProps) => {
       router.push(`${basePath}${communityId}`);
    };
 
-   const handleJoinCommunity = (
-      e: React.MouseEvent<HTMLButtonElement>
-   ) => {
+   const handleJoinCommunity = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
 
       if (!community._id) {
@@ -57,7 +57,7 @@ export const CommunityCard = ({ community, type }: CommunityCardProps) => {
             onError: (error) => {
                toast.error(error.message || "Failed to join community");
             },
-         }
+         },
       );
    };
 
@@ -100,7 +100,11 @@ export const CommunityCard = ({ community, type }: CommunityCardProps) => {
                disabled={isPending}
                aria-label={`${type === "my-community" ? "Leave" : "Join"} ${community.name} community`}
             >
-               {isPending ? "Loading..." : (type === "my-community" ? "Leave" : "Join")}
+               {isPending
+                  ? "Loading..."
+                  : type === "my-community"
+                    ? "Leave"
+                    : "Join"}
             </Button>
          </CardFooter>
       </Card>

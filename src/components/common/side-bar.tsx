@@ -157,7 +157,7 @@ export const SideBar = ({
       setExpandedMenus((current) =>
          current.includes(title)
             ? current.filter((item) => item !== title)
-            : [...current, title]
+            : [...current, title],
       );
    };
 
@@ -165,10 +165,14 @@ export const SideBar = ({
       <div
          className={cn(
             "h-screen overflow-y-auto flex flex-col w-full bg-background",
-            "transition-width duration-200 ease-in-out"
+            "transition-width duration-200 ease-in-out",
          )}
       >
-         <Link onClick={() => onClose(false)} href="/" className="flex flex-col gap-1 p-2 hover:opacity-80">
+         <Link
+            onClick={() => onClose(false)}
+            href="/"
+            className="flex flex-col gap-1 p-2 hover:opacity-80"
+         >
             <div className="flex items-center gap-1">
                <Image
                   src="/logo.svg"
@@ -198,7 +202,7 @@ export const SideBar = ({
                      key={item.title}
                      href={item.href}
                      className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
                      )}
                      onClick={() => onClose(false)}
                   >

@@ -3,9 +3,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
 
 export const useGetMySavePosts = () => {
-   const getSavePosts = useQuery(
-      convexQuery(api.post.getMyPosts, {})
-   );
+   const getSavePosts = useQuery(convexQuery(api.post.getMyPosts, {}));
 
    return getSavePosts;
 };

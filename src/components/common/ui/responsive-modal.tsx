@@ -1,14 +1,8 @@
 import { useMediaQuery } from "usehooks-ts";
 
-import {
-   Dialog,
-   DialogContent,
-} from "@/components/common/ui/dialog"
+import { Dialog, DialogContent } from "@/components/common/ui/dialog";
 
-import {
-   Drawer,
-   DrawerContent,
-} from "@/components/common/ui/drawer"
+import { Drawer, DrawerContent } from "@/components/common/ui/drawer";
 
 interface ResponsiveModalProps {
    children: React.ReactNode;
@@ -25,18 +19,14 @@ export const ResponsiveModal = ({
    if (isSmallScreen) {
       return (
          <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent>
-               {children}
-            </DrawerContent>
+            <DrawerContent>{children}</DrawerContent>
          </Drawer>
-      )
+      );
    } else {
       return (
          <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
-               {children}
-            </DialogContent>
+            <DialogContent>{children}</DialogContent>
          </Dialog>
-      )
+      );
    }
-}
+};

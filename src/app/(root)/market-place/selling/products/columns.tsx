@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Doc } from "../../../../../../convex/_generated/dataModel"
-import Link from "next/link"
-import dayjs from "dayjs"
+import { ColumnDef } from "@tanstack/react-table";
+import { Doc } from "../../../../../../convex/_generated/dataModel";
+import Link from "next/link";
+import dayjs from "dayjs";
 
 import {
    DropdownMenu,
@@ -12,18 +12,18 @@ import {
    DropdownMenuLabel,
    DropdownMenuSeparator,
    DropdownMenuTrigger,
-} from "@/components/common/ui/dropdown-menu"
-import { Ellipsis } from "lucide-react"
-import { useDeleteProduct as DeleteProduct } from "@/api/market-place/product/use-delete-product"
-import { useProductController as ProductController } from "@/stores/use-product-controller"
-import { useConfirm as Confirm } from "@/hooks/use-confirm"
-import { toast } from "sonner"
-import { useUpdateProductStatus as UpdateProductStatus } from "@/api/market-place/product/use-update-status"
-import { MorphingDialogImg } from "@/components/features/market-place/product/morphing-dialog-img"
+} from "@/components/common/ui/dropdown-menu";
+import { Ellipsis } from "lucide-react";
+import { useDeleteProduct as DeleteProduct } from "@/api/market-place/product/use-delete-product";
+import { useProductController as ProductController } from "@/stores/use-product-controller";
+import { useConfirm as Confirm } from "@/hooks/use-confirm";
+import { toast } from "sonner";
+import { useUpdateProductStatus as UpdateProductStatus } from "@/api/market-place/product/use-update-status";
+import { MorphingDialogImg } from "@/components/features/market-place/product/morphing-dialog-img";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Product = Doc<"products">
+export type Product = Doc<"products">;
 
 export const columns: ColumnDef<Product>[] = [
    {
@@ -31,13 +31,13 @@ export const columns: ColumnDef<Product>[] = [
       header: "Image",
       cell: ({ row }) => {
          return (
-            <MorphingDialogImg image={row.original.image}/>
+            <MorphingDialogImg image={row.original.image} />
             // <img
             //    src={row.getValue("image")}
             //    alt={row.getValue("name")}
             //    className="aspect-video object-cover rounded-md size-20"
             // />
-         )
+         );
       },
    },
    {
@@ -68,25 +68,25 @@ export const columns: ColumnDef<Product>[] = [
       accessorKey: "createdAt",
       header: "Created At",
       cell: ({ row }) => {
-         return dayjs(row.getValue("createdAt")).format("DD MMM YYYY HH:mm")
+         return dayjs(row.getValue("createdAt")).format("DD MMM YYYY HH:mm");
       },
    },
    {
       header: "Actions",
       cell: ({ row }) => {
-         const productId = row.original._id
+         const productId = row.original._id;
          const {
             mutate: updateProductStatus,
             isPending: updateProductStatusPending,
-         } = UpdateProductStatus()
+         } = UpdateProductStatus();
          const { mutate: deleteProduct, isPending: deleteProductPending } =
-            DeleteProduct()
-         const { onOpen } = ProductController()
+            DeleteProduct();
+         const { onOpen } = ProductController();
          const [Confirmation, confirm] = Confirm(
             "Delete Product",
             "Are you sure you want to delete this product?",
             "destructive",
-         )
+         );
          const [ConfirmationUpdateStatus, confirmUpdateStatus] = Confirm(
             "Update Status",
             `Are you sure you want to update this product's to ${
@@ -95,26 +95,26 @@ export const columns: ColumnDef<Product>[] = [
                   : "available"
             }`,
             "destructive",
-         )
+         );
 
          const handleDeleteProduct = async () => {
             try {
-               const ok = await confirm()
+               const ok = await confirm();
 
-               if (!ok) return
+               if (!ok) return;
 
-               deleteProduct({ id: productId })
+               deleteProduct({ id: productId });
 
-               toast.success("Product deleted successfully")
+               toast.success("Product deleted successfully");
             } catch (error) {
-               toast.error("Failed to delete product")
+               toast.error("Failed to delete product");
             }
-         }
+         };
 
          const handleUpdateStatus = async () => {
             try {
-               const ok = await confirmUpdateStatus()
-               if (!ok) return
+               const ok = await confirmUpdateStatus();
+               if (!ok) return;
 
                updateProductStatus({
                   id: productId,
@@ -122,12 +122,12 @@ export const columns: ColumnDef<Product>[] = [
                      row.getValue("status") === "available"
                         ? "unavailable"
                         : "available",
-               })
-               toast.success("Product status updated successfully")
+               });
+               toast.success("Product status updated successfully");
             } catch (error) {
-               toast.error("Failed to update product status")
+               toast.error("Failed to update product status");
             }
-         }
+         };
 
          return (
             <>
@@ -168,7 +168,7 @@ export const columns: ColumnDef<Product>[] = [
                   </DropdownMenuContent>
                </DropdownMenu>
             </>
-         )
+         );
       },
    },
-]
+];

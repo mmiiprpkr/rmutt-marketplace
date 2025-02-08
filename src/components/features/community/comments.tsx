@@ -170,7 +170,7 @@ export const Comments = () => {
             onError(error, variables, context) {
                console.log("error", error);
             },
-         }
+         },
       );
    };
 
@@ -199,7 +199,7 @@ export const Comments = () => {
             className: `min-h-[85vh] ${isKeyboardOpen && "top-3"}`,
          }}
          sheet={{
-            className: "p-0 w-full md:min-w-[600px]"
+            className: "p-0 w-full md:min-w-[600px]",
          }}
       >
          <div className="overflow-y-auto h-full space-y-4 p-4 flex flex-col">

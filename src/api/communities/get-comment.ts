@@ -11,7 +11,7 @@ export const useGetComments = (args: GetCommentArgs) => {
    const getComments = useQuery(
       convexQuery(api.comment.getComments, {
          postId: args.postId,
-      })
+      }),
    );
 
    return getComments;

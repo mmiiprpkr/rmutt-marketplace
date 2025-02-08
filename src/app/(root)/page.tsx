@@ -29,11 +29,15 @@ const RootPage = () => {
                </div>
                {isLoading || userLoading
                   ? Array.from({ length: 5 }).map((_, index) => (
-                     <PostFeedSkeleton key={index} />
-                  ))
+                       <PostFeedSkeleton key={index} />
+                    ))
                   : data?.map((post) => (
-                     <PostFeed key={post._id} post={post} userId={userData?._id} />
-                  ))}
+                       <PostFeed
+                          key={post._id}
+                          post={post}
+                          userId={userData?._id}
+                       />
+                    ))}
             </div>
 
             <div className="lg:block hidden">

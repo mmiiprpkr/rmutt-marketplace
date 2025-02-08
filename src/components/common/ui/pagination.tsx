@@ -15,8 +15,8 @@ const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
 Pagination.displayName = "Pagination";
 
 const PaginationContent = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<"ul">
+   HTMLUListElement,
+   React.ComponentProps<"ul">
 >(({ className, ...props }, ref) => (
    <ul
       ref={ref}
@@ -27,17 +27,17 @@ const PaginationContent = React.forwardRef<
 PaginationContent.displayName = "PaginationContent";
 
 const PaginationItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentProps<"li">
+   HTMLLIElement,
+   React.ComponentProps<"li">
 >(({ className, ...props }, ref) => (
    <li ref={ref} className={cn("", className)} {...props} />
 ));
 PaginationItem.displayName = "PaginationItem";
 
 type PaginationLinkProps = {
-  isActive?: boolean
+   isActive?: boolean;
 } & Pick<ButtonProps, "size"> &
-  React.ComponentProps<"a">
+   React.ComponentProps<"a">;
 
 const PaginationLink = ({
    className,
@@ -52,7 +52,7 @@ const PaginationLink = ({
             variant: isActive ? "outline" : "ghost",
             size,
          }),
-         className
+         className,
       )}
       {...props}
    />

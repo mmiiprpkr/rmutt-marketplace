@@ -20,15 +20,15 @@ interface ResponsiveDynamicProps {
    dialog?: {
       className?: string;
       triggerClassName?: string;
-    };
-    drawer?: {
+   };
+   drawer?: {
       className?: string;
       triggerClassName?: string;
-    };
-    sheet?: {
+   };
+   sheet?: {
       className?: string;
       triggerClassName?: string;
-    }
+   };
 }
 
 export const ResponsiveDynamic = ({
@@ -48,17 +48,13 @@ export const ResponsiveDynamic = ({
       (!isMobile && type?.desktop === "drawer")
    ) {
       return (
-         <Drawer
-            open={open}
-            onOpenChange={onOpenChange}
-         >
+         <Drawer open={open} onOpenChange={onOpenChange}>
             {trigger && (
                <DrawerTrigger className={cn(drawer?.triggerClassName)}>
                   {trigger}
                </DrawerTrigger>
             )}
-            <DrawerContent
-               className={cn(drawer?.className)}>
+            <DrawerContent className={cn(drawer?.className)}>
                {children}
             </DrawerContent>
          </Drawer>
@@ -70,16 +66,13 @@ export const ResponsiveDynamic = ({
       (!isMobile && type?.desktop === "sheet")
    ) {
       return (
-         <Sheet
-            open={open}
-            onOpenChange={onOpenChange}
-         >
+         <Sheet open={open} onOpenChange={onOpenChange}>
             {trigger && (
                <DialogTrigger className={cn(dialog?.triggerClassName)}>
                   {trigger}
                </DialogTrigger>
             )}
-            <SheetContent className={cn(sheet?.className,)}>
+            <SheetContent className={cn(sheet?.className)}>
                {children}
             </SheetContent>
          </Sheet>
@@ -87,17 +80,13 @@ export const ResponsiveDynamic = ({
    }
 
    return (
-      <Dialog
-         open={open}
-         onOpenChange={onOpenChange}
-      >
+      <Dialog open={open} onOpenChange={onOpenChange}>
          {trigger && (
             <DialogTrigger className={cn(dialog?.triggerClassName)}>
                {trigger}
             </DialogTrigger>
          )}
-         <DialogContent
-            className={cn(dialog?.className)}>
+         <DialogContent className={cn(dialog?.className)}>
             {children}
          </DialogContent>
       </Dialog>

@@ -9,5 +9,5 @@ export const useCreateCommunityStore = create<CreateCommunityStore>()(
    (set) => ({
       isOpen: false,
       setIsOpen: (isOpen) => set({ isOpen }),
-   })
+   }),
 );

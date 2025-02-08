@@ -21,29 +21,28 @@ const ProfilePage = () => {
 
    return (
       <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center space-y-6">
-
          {isLoading ? (
             <ProfileSkeleton />
-         ): (
+         ) : (
             <>
-
-               <h3 className="text-lg font-semibold">
-               Profile
-               </h3>
+               <h3 className="text-lg font-semibold">Profile</h3>
 
                <div className="mt-4 flex flex-col items-center">
                   <img
-                     src={"https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Aidan"}
+                     src={
+                        "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Aidan"
+                     }
                      className="size-20 rounded-lg"
                      alt="avatar"
                   />
 
                   <h3 className="text-lg font-semibold mt-4">
-                  Email: {data?.email}
+                     Email: {data?.email}
                   </h3>
 
                   <h3 className="text-base font-semibold">
-                  Joined when: {dayjs(data?._creationTime).format("DD MMM YYYY HH:mm")}
+                     Joined when:{" "}
+                     {dayjs(data?._creationTime).format("DD MMM YYYY HH:mm")}
                   </h3>
                </div>
             </>
@@ -54,7 +53,9 @@ const ProfilePage = () => {
                <TabsTrigger value="posts">Posts</TabsTrigger>
                <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
             </TabsList>
-            <TabsContent value="posts">Make changes to your posts here.</TabsContent>
+            <TabsContent value="posts">
+               Make changes to your posts here.
+            </TabsContent>
             <TabsContent value="marketplace">Your Products.</TabsContent>
          </Tabs>
       </div>

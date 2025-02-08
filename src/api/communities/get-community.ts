@@ -7,7 +7,7 @@ export const useGetCommunity = (communityId: Id<"communities">) => {
    const getCommunity = useQuery(
       convexQuery(api.communities.getCommunity, {
          communityId,
-      })
+      }),
    );
 
    return getCommunity;

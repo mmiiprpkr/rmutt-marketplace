@@ -41,9 +41,7 @@ const TestPage = () => {
             Upload Files
          </button>
 
-         <div className="mt-4">
-            Selected files: {files.length}
-         </div>
+         <div className="mt-4">Selected files: {files.length}</div>
       </div>
    );
 };

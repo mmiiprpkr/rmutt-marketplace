@@ -18,13 +18,13 @@ type UserButtonProps = {
    type: "profile" | "settings";
    userId1?: Id<"users">;
    userId2?: Id<"users">;
-}
+};
 
 export const UserButton = ({
    imageUrl,
    type,
    userId1,
-   userId2
+   userId2,
 }: UserButtonProps) => {
    const router = useRouter();
    const [isPending, startTransition] = useTransition();

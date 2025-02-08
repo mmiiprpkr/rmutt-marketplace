@@ -9,11 +9,7 @@ const PostIdPage = () => {
       return null;
    }
 
-   return (
-      <div>
-
-      </div>
-   );
+   return <div></div>;
 };
 
 export default PostIdPage;

@@ -46,7 +46,7 @@ export const CreatePost = () => {
    const [gifOpen, setGifOpen] = useState(false);
    const [image, setImage] = useState<File | null>(null);
    const [optionalFields, setOptionalFields] = useState<OptionalFields>(
-      OptionalFields.NONE
+      OptionalFields.NONE,
    );
 
    const form = useForm<CreatePostValidation>({
@@ -157,7 +157,7 @@ export const CreatePost = () => {
                      className={cn(
                         "resize-none outline-none right-0 border-none shadow-none focus:outline-primary rounded-md focus:outline-1",
                         errors?.title &&
-                           "border-destructive focus:outline-destructive"
+                           "border-destructive focus:outline-destructive",
                      )}
                      onChange={(e) => {
                         form.setValue("title", e.target.value, {
@@ -260,10 +260,7 @@ export const CreatePost = () => {
                      >
                         <GiftIcon className="w-4 h-4" />
                      </Button>
-                     <Button
-                        type="submit"
-                        disabled={isCreatingPost}
-                     >
+                     <Button type="submit" disabled={isCreatingPost}>
                         Create
                      </Button>
                   </div>

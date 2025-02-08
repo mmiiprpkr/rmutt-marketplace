@@ -15,10 +15,8 @@ import { Id } from "../../../../../convex/_generated/dataModel";
 const MyCommunitiesPage = () => {
    const { setIsOpen } = useCreateCommunityStore();
 
-   const {
-      data: communities,
-      isLoading: isLoadingCommunities
-   } = useGetMyCommunities();
+   const { data: communities, isLoading: isLoadingCommunities } =
+      useGetMyCommunities();
 
    return (
       <div className="min-h-screen p-4 space-y-4 max-w-7xl mx-auto w-full">
@@ -29,47 +27,54 @@ const MyCommunitiesPage = () => {
                Create New Community <PlusCircleIcon className="size-4 ml-2" />
             </Button>
          </div>
-         {Array.isArray(communities) && communities.length === 0 && !isLoadingCommunities && (
-            <div className="w-full h-[40vh] flex flex-col items-center justify-center">
-               <div className="mb-4">
-                  <CircleHelpIcon className="size-10 text-primary" />
+         {Array.isArray(communities) &&
+            communities.length === 0 &&
+            !isLoadingCommunities && (
+               <div className="w-full h-[40vh] flex flex-col items-center justify-center">
+                  <div className="mb-4">
+                     <CircleHelpIcon className="size-10 text-primary" />
+                  </div>
+                  <p className="text-primary text-xl font-semibold">
+                     No Communities Found
+                  </p>
+                  <p className="text-muted-foreground text-sm text-center mt-2">
+                     It seems like there are no communities available at the
+                     moment. <br />
+                     Please check back later or create a new community!
+                  </p>
                </div>
-               <p className="text-primary text-xl font-semibold">
-                  No Communities Found
-               </p>
-               <p className="text-muted-foreground text-sm text-center mt-2">
-                  It seems like there are no communities available at the moment. <br />
-                  Please check back later or create a new community!
-               </p>
-            </div>
-         )}
+            )}
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.isArray(communities) &&
                communities.length > 0 &&
-                  communities.map((community) => (
-                     <CommunityCard
-                        // @ts-ignore
-                        // TODO: remove hard code ts-ignore
-                        community={{
-                           ...community?.community,
-                           _id: community.community._id as Id<"communities"> | undefined,
-                           userCount: community?.userCount,
-                           _creationTime: community?.community._creationTime ?? 0,
-                           description: community?.community.description || "No description available",
-                           name: community?.community.name || "Unnamed Community",
-                           createdAt: community?.community.createdAt || new Date().toISOString(),
-                           userId: community?.community.userId as Id<"users">,
-                        }}
-                        key={community?._id ?? "default"}
-                        type="my-community"
-                     />
-                  ))
-            }
+               communities.map((community) => (
+                  <CommunityCard
+                     // @ts-ignore
+                     // TODO: remove hard code ts-ignore
+                     community={{
+                        ...community?.community,
+                        _id: community.community._id as
+                           | Id<"communities">
+                           | undefined,
+                        userCount: community?.userCount,
+                        _creationTime: community?.community._creationTime ?? 0,
+                        description:
+                           community?.community.description ||
+                           "No description available",
+                        name: community?.community.name || "Unnamed Community",
+                        createdAt:
+                           community?.community.createdAt ||
+                           new Date().toISOString(),
+                        userId: community?.community.userId as Id<"users">,
+                     }}
+                     key={community?._id ?? "default"}
+                     type="my-community"
+                  />
+               ))}
             {isLoadingCommunities &&
                Array.from({ length: 8 }).map((_, index) => (
                   <CommunityCardSkeleton key={index} />
-               ))
-            }
+               ))}
          </div>
       </div>
    );

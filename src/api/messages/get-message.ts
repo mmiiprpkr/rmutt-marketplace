@@ -5,15 +5,13 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 export type getMessageArgs = {
    conversationId: Id<"conversations">;
-}
+};
 
-export const useGetMessage = ({
-   conversationId,
-}: getMessageArgs) => {
+export const useGetMessage = ({ conversationId }: getMessageArgs) => {
    const getCurrentUser = useQuery(
       convexQuery(api.messages.getMessage, {
          conversationId: conversationId,
-      })
+      }),
    );
 
    return getCurrentUser;

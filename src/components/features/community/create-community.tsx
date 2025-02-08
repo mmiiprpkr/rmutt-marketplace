@@ -39,8 +39,7 @@ export const CreateCommunity = () => {
       resolver: zodResolver(createCommunitySchema),
    });
 
-   const { mutateAsync: createCommunity, isPending } =
-      useCreateCommunity();
+   const { mutateAsync: createCommunity, isPending } = useCreateCommunity();
 
    const isCreatingCommunity = isPending || isSubmitting;
 
@@ -89,7 +88,7 @@ export const CreateCommunity = () => {
                onError(error, variables, context) {
                   toast.error("Failed to create community");
                },
-            }
+            },
          );
       } catch (error) {
          console.log("[CreateCommunity] Error creating community", error);
@@ -124,7 +123,7 @@ export const CreateCommunity = () => {
                <TextareaAutosize
                   className={cn(
                      "w-full focus:outline-primary resize-none border border-input rounded-md p-2",
-                     errors.description && "border-destructive"
+                     errors.description && "border-destructive",
                   )}
                   minRows={3}
                   placeholder="Description"
@@ -148,7 +147,7 @@ export const CreateCommunity = () => {
                         isDragActive
                            ? "border-primary bg-primary/10 dark:border-primary dark:bg-primary/30"
                            : "border-border bg-secondary/20 dark:border-border dark:bg-secondary/30",
-                        errors.image && !image && "border-destructive"
+                        errors.image && !image && "border-destructive",
                      )}
                   >
                      <input {...getInputProps()} />
@@ -191,10 +190,7 @@ export const CreateCommunity = () => {
                   </div>
                )}
                <div className="flex justify-end">
-                  <Button
-                     type="submit"
-                     disabled={isCreatingCommunity}
-                  >
+                  <Button type="submit" disabled={isCreatingCommunity}>
                      Create Community
                   </Button>
                </div>

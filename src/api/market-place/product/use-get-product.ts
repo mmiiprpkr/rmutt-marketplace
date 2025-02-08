@@ -12,7 +12,7 @@ export const useGetProducts = ({ page, limit }: useGetProductsProps) => {
       convexQuery(api.products.get, {
          page,
          limit,
-      })
+      }),
    );
 
    return getProducts;

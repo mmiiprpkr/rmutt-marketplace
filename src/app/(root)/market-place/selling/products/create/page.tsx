@@ -37,12 +37,12 @@ const CreateProductPage = () => {
                price: undefined,
                quantity: undefined,
                productType: "goods",
-               status: "available"
+               status: "available",
             }}
             onSubmit={handleSubmit}
          />
       </div>
-    );
-}
+   );
+};
 
 export default CreateProductPage;

@@ -60,7 +60,7 @@ const CreateProductPage = () => {
             />
          )}
       </div>
-    );
-}
+   );
+};
 
 export default CreateProductPage;

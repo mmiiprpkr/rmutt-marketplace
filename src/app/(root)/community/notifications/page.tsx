@@ -14,11 +14,9 @@ const NotificationPage = () => {
             <div className="w-full col-span-2 space-y-4 border-r">
                {isLoading ? (
                   Array.from({ length: 10 }).map((_, index) => {
-                     return (
-                        <NotificationSkeleton key={index} />
-                     );
+                     return <NotificationSkeleton key={index} />;
                   })
-               ): (
+               ) : (
                   <div className="flex items-start flex-col border-b py-2">
                      <div className="flex items-center gap-x-2">
                         <UserButton
@@ -31,12 +29,12 @@ const NotificationPage = () => {
                         </span>
                      </div>
                      <div className="flex flex-col gap-0.5 pl-12">
-                        <div>
-                           CreatePosts
-                        </div>
+                        <div>CreatePosts</div>
 
                         <span>
-                           {dayjs(data?._creationTime).format("DD MMM YYYY HH:mm")}
+                           {dayjs(data?._creationTime).format(
+                              "DD MMM YYYY HH:mm",
+                           )}
                         </span>
                      </div>
                   </div>

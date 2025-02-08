@@ -4,7 +4,7 @@ import "./globals.css";
 
 import { Toaster } from "sonner";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
-import { ConvexAuthNextjsServerProvider} from "@convex-dev/auth/nextjs/server";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
    children,
 }: Readonly<{
-  children: React.ReactNode;
+   children: React.ReactNode;
 }>) {
    return (
       <ConvexAuthNextjsServerProvider>

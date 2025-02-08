@@ -16,3 +16,5 @@ pm2:
 build-pm2:
 	bun run build && pm2 start ecosystem.config.js
 
+prettier:
+	bunx prettier ./src --write

@@ -34,7 +34,7 @@ export const Navbar = () => {
             </Button>
             {isLoading ? (
                <Skeleton className="size-6" />
-            ): (
+            ) : (
                <UserButton imageUrl={data?.image ?? ""} type="settings" />
             )}
          </div>
