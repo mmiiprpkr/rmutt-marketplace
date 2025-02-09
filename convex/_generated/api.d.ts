@@ -22,6 +22,7 @@ import type * as communities from "../communities.js";
 import type * as helper from "../helper.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
+import type * as order from "../order.js";
 import type * as post from "../post.js";
 import type * as products from "../products.js";
 import type * as upload from "../upload.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   helper: typeof helper;
   http: typeof http;
   messages: typeof messages;
+  order: typeof order;
   post: typeof post;
   products: typeof products;
   upload: typeof upload;
