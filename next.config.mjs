@@ -51,6 +51,19 @@ const nextConfig = {
          }
       ],
    },
+   async headers() {
+      return [
+         {
+            source: "/api/uploadthing",
+            headers: [
+               { key: "Access-Control-Allow-Origin", value: "*" },
+               { key: "Access-Control-Allow-Methods", value: "GET,POST,PUT,DELETE,OPTIONS" },
+               { key: "Access-Control-Allow-Headers", value: "x-uploadthing-version,x-uploadthing-package,Content-Type" },
+               { key: "Access-Control-Allow-Credentials", value: "true" }
+            ]
+         }
+      ]
+   }
 };
 
 export default nextConfig;
