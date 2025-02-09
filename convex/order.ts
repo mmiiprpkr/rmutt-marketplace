@@ -4,17 +4,24 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { populateUser } from "./helper";
 
 export const get = query({
-   args: {},
-   handler: async (ctx) => {
+   args: {
+      types: v.union(
+         v.literal("seller"),
+         v.literal("buyer"),
+      )
+   },
+   handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
 
       if (!userId) {
          throw new Error("Unauthorized");
       }
 
+      const fieldname = args.types === "seller" ? "sellerId" : "buyerId";
+
       const order = await ctx.db
          .query("orders")
-         .filter((q) => q.eq(q.field("sellerId"), userId))
+         .filter((q) => q.eq(q.field(fieldname), userId))
          .collect();
 
       const orderWithProductWithUser = await Promise.all(

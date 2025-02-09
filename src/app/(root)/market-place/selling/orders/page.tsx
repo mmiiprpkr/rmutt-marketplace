@@ -9,7 +9,7 @@ const MyOrderPage = () => {
       data: orderData,
       isLoading: orderLoading,
       error: orderError,
-   } = useGetOrder();
+   } = useGetOrder({ types: "seller" });
 
    if (orderError) {
       throw new Error(orderError?.message)

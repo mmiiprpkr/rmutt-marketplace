@@ -21,7 +21,7 @@ import { useCancelOrder as CancelOrder } from "@/api/market-place/order/use-canc
 import { toast } from "sonner";
 import { Doc } from "../../../../../../convex/_generated/dataModel";
 import { UpdateOrderStatusDialog } from "./update-order-status-dialog";
-import { useState } from "react";
+import { useState as State } from "react";
 
 export type Order = Doc<"orders"> & {
    seller: Doc<"users"> | null;
@@ -119,7 +119,7 @@ export const columns: ColumnDef<Order>[] = [
             "Cancel Order",
             "destructive",
          );
-         const [open, setOpen] = useState(false);
+         const [open, setOpen] = State(false);
 
          const handleCancelOrder = async () => {
             const ok = await confirmCancel();
@@ -156,11 +156,6 @@ export const columns: ColumnDef<Order>[] = [
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                     {row.original.status === "pending" && (
-                        <DropdownMenuItem onClick={handleCancelOrder}>
-                           Cancel
-                        </DropdownMenuItem>
-                     )}
                      <DropdownMenuItem>
                         <Link
                            href={`/market-place/browse/${row.original?.product?._id}`}

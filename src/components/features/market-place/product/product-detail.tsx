@@ -58,6 +58,7 @@ export const ProductDetail = ({ productDetail }: ProductDetailProps) => {
          {
             onSuccess: () => {
                console.log("Order created")
+               setQuantity(1);
                toast.success("Order created successfully");
             },
          },
