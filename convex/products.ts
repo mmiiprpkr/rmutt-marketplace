@@ -90,6 +90,36 @@ export const brows = query({
       };
    },
 });
+
+export const recommend = query({
+   args: {
+      productType: v.union(v.literal("food"), v.literal("goods")),
+      productId: v.id("products")
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      // Get all available products of the specified type
+      const allProducts = await ctx.db
+         .query("products")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("status"), "available"),
+               q.eq(q.field("productType"), args.productType),
+               q.neq(q.field("_id"), args.productId),
+            ),
+         )
+         .collect();
+
+      // Randomly shuffle the array and take first 3 items
+      const shuffled = allProducts.sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 10);
+   },
+});
+
 export const get = query({
    args: {
       page: v.number(),
