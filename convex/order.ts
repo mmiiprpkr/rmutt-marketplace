@@ -23,6 +23,7 @@ export const get = query({
             return {
                ...order,
                seller: await populateUser(ctx, order.sellerId),
+               buyer: await populateUser(ctx, order.buyerId),
                product,
             };
          }),

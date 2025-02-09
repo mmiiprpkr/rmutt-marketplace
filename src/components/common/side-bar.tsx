@@ -63,6 +63,11 @@ const menuItemsDefault: MenuItem[] = [
             href: "/market-place/selling",
             submenu: [
                {
+                  title: "Order",
+                  icon: ShoppingBag,
+                  href: "/market-place/selling/orders",
+               },
+               {
                   title: "My Products",
                   icon: Package,
                   href: "/market-place/selling/products",
