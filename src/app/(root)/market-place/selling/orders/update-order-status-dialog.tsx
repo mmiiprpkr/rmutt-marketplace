@@ -63,7 +63,7 @@ export const UpdateOrderStatusDialog = ({
       },
    });
 
-   const { message } = form.watch();
+   const { message, status: updateStatus } = form.watch();
    const isSubmitting = form.formState.isSubmitting;
 
    const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
@@ -110,7 +110,7 @@ export const UpdateOrderStatusDialog = ({
          >
             <h2 className="text-lg font-semibold">Update Order Status</h2>
             <Select
-               value={status}
+               value={updateStatus}
                onValueChange={(
                   value:
                      | "pending"

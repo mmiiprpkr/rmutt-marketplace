@@ -15,6 +15,10 @@ const nextConfig = {
          },
          {
             protocol: "https",
+            hostname: "5vbk7oi3dm.ufs.sh",
+         },
+         {
+            protocol: "https",
             hostname: "media4.giphy.com",
          },
          {
