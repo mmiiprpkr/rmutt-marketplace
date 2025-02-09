@@ -24,8 +24,8 @@ import Image from "next/image";
 import { Loader, UploadCloudIcon } from "lucide-react";
 import { uploadFiles } from "@/lib/uploadthing";
 import { toast } from "sonner";
-import { useGetCategory } from "@/api/market-place/use-get-category";
-import { useCreateCategory } from "@/api/market-place/use-create-category";
+import { useGetCategory } from "@/api/market-place/category/use-get-category";
+import { useCreateCategory } from "@/api/market-place/category/use-create-category";
 import { Button } from "@/components/common/ui/button";
 
 interface ProductFormProps {
