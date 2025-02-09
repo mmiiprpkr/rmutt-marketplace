@@ -56,6 +56,7 @@ export const UpdateOrderStatusDialog = ({
    return (
       <ResponsiveModal onOpenChange={onClose} open={open}>
          <form className="flex flex-col gap-y-3 min-h-[200px] p-4">
+            <h2 className="text-lg font-semibold">Update Order Status</h2>
             <Select value={status}>
                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Order Status" />
@@ -82,20 +83,19 @@ export const UpdateOrderStatusDialog = ({
                }}
                className={cn(
                   "resize-none outline-none border border-input rounded-md",
-                  false &&
-                     "border-destructive focus:outline-destructive",
+                  false && "border-destructive focus:outline-destructive",
                )}
             />
 
-            <div className="flex flex-col md:flex-row gap-2 md:justify-end">
-               <Button variant="outline" onClick={() => onClose(false)} type="button">
+            <div className="flex flex-col-reverse md:flex-row gap-2 md:justify-end">
+               <Button
+                  variant="outline"
+                  onClick={() => onClose(false)}
+                  type="button"
+               >
                   Cancel
                </Button>
-               <Button
-                  onClick={handleUpdateOrderStatus}
-               >
-                  Update
-               </Button>
+               <Button onClick={handleUpdateOrderStatus}>Update</Button>
             </div>
          </form>
       </ResponsiveModal>
