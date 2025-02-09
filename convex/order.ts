@@ -1,8 +1,9 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { populateUser } from "./helper";
 
-export const get = mutation({
+export const get = query({
    args: {},
    handler: async (ctx) => {
       const userId = await getAuthUserId(ctx);
@@ -16,7 +17,18 @@ export const get = mutation({
          .filter((q) => q.eq(q.field("sellerId"), userId))
          .collect();
 
-      return order;
+      const orderWithProductWithUser = await Promise.all(
+        order.map(async (order) => {
+          const product = await ctx.db.get(order.productId);
+          return {
+            ...order,
+            seller: await populateUser(ctx, order.sellerId),
+            product,
+          };
+        })
+      );
+
+      return orderWithProductWithUser;
    },
 });
 
@@ -54,6 +66,15 @@ export const create = mutation({
          if (product.quantity! < args.quantity) {
             throw new Error("Not enough quantity");
          }
+
+         if (product.quantity! === args.quantity) {
+            await ctx.db.patch(args.productId, {
+               status: "unavailable",
+               quantity: 0,
+            });
+            return;
+         }
+
          await ctx.db.patch(args.productId, {
             quantity: product.quantity! - args.quantity,
          });
@@ -87,3 +108,48 @@ export const update = mutation({
       return order;
    },
 });
+
+export const cancel = mutation({
+   args: {
+      orderId: v.id("orders")
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const order = await ctx.db.get(args.orderId);
+
+      if (!order) {
+         throw new Error("Order not found");
+      }
+
+      if (order.status !== "pending") {
+         throw new Error("Order is not pending");
+      }
+
+      const product = await ctx.db.get(order.productId);
+
+      if (!product) {
+         throw new Error("Product not found");
+      }
+
+      if (product.productType === "goods") {
+         if (product.quantity === 0) {
+            await ctx.db.patch(product._id, {
+               status: "available",
+            });
+         }
+         await ctx.db.patch(product._id, {
+            quantity: product.quantity! + order.quantity,
+         });
+      }
+      await ctx.db.patch(args.orderId, {
+         status: "cancelled",
+      });
+
+      return order;
+   }
+})
