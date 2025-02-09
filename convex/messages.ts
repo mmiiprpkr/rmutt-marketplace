@@ -40,7 +40,7 @@ export const conversations = mutation({
          return conversations;
       }
 
-      return conversations[0]._id;
+      return conversations[0]._id as Id<"conversations">;
    }
 });
 

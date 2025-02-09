@@ -91,7 +91,6 @@ export const update = mutation({
       status: v.union(
          v.literal("pending"), // รอยืนยัน (ลด quantity แล้ว)
          v.literal("accepted"), // ยืนยันแล้ว สร้าง conversation
-         v.literal("rejected"), // ปฏิเสธ (เพิ่ม quantity กลับ)
          v.literal("completed"), // ส่งของแล้ว
          v.literal("cancelled"), // ยกเลิก (เพิ่ม quantity กลับ)
       ),
