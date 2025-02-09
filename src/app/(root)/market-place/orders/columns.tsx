@@ -15,11 +15,13 @@ import {
    DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu";
 import { Ellipsis } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 
 import { useConfirm as Confirm } from "@/hooks/use-confirm";
 import { useCancelOrder as CancelOrder } from "@/api/market-place/order/use-cancel-order";
 import { toast } from "sonner";
+import { colorMapper } from "@/lib/mapper/color.mapper";
+import { Badge } from "@/components/common/ui/badge";
 
 export type Order = Doc<"orders"> & {
    seller: Doc<"users"> | null;
@@ -84,7 +86,11 @@ export const columns: ColumnDef<Order>[] = [
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-         return row.original.status;
+         const status = row.original.status;
+
+         return (
+            <Badge variant={status}>{status.toUpperCase()}</Badge>
+         );
       },
    },
    {

@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { Doc } from "../../../../../../convex/_generated/dataModel";
 import { UpdateOrderStatusDialog } from "./update-order-status-dialog";
 import { useState as State } from "react";
+import { Badge } from "@/components/common/ui/badge";
 
 export type Order = Doc<"orders"> & {
    seller: Doc<"users"> | null;
@@ -87,7 +88,8 @@ export const columns: ColumnDef<Order>[] = [
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-         return row.original.status;
+         const status = row.original.status;
+         return <Badge variant={status}>{status.toUpperCase()}</Badge>;
       },
    },
    {
