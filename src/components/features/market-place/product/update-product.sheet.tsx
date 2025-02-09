@@ -54,10 +54,9 @@ export const UpdateProductSheet = () => {
       <Sheet open={isSheetOpen} onOpenChange={handleClose}>
          <SheetContent>
             <SheetHeader>
-               <SheetTitle>Are you absolutely sure?</SheetTitle>
+               <SheetTitle>Update Product</SheetTitle>
                <SheetDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  Modify your product details below. All changes will be saved immediately.
                </SheetDescription>
 
                {productLoading ? (

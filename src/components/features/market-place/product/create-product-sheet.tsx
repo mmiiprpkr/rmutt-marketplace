@@ -46,10 +46,9 @@ export const CreateProductSheet = () => {
       <Sheet open={isSheetOpen} onOpenChange={handleClose}>
          <SheetContent>
             <SheetHeader>
-               <SheetTitle>Are you absolutely sure?</SheetTitle>
+               <SheetTitle>Create New Product</SheetTitle>
                <SheetDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  Fill in the product details below. All fields marked with * are required.
                </SheetDescription>
 
                <ProductForm

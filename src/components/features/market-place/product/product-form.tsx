@@ -83,6 +83,7 @@ export const ProductForm = ({
    const errors = form.formState.errors;
 
    console.log(errors);
+   console.log(form.watch("quantity"))
 
    return (
       <form
@@ -197,6 +198,7 @@ export const ProductForm = ({
                key={productType}
                control={form.control}
                name="quantity"
+               defaultValue={0}
                render={({ field }) => {
                   return (
                      <Input
@@ -222,8 +224,13 @@ export const ProductForm = ({
                      value={field.value}
                      onValueChange={(value) => {
                         field.onChange(value);
+                        if (value === "goods") {
+                           form.setValue("quantity", 0, { shouldValidate: true })
+                           return;
+                        }
                         form.setValue("quantity", undefined);
                      }}
+                     disabled={isSubmitting}
                   >
                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="ProductType" />
@@ -239,30 +246,34 @@ export const ProductForm = ({
          <Controller
             control={form.control}
             name="category"
-            render={({ field }) => {
+            render={({ field: { onChange, value, ...field } }) => {
                const options =
                   categoryDate?.map((category) => ({
                      label: category.name,
                      value: category.name,
                   })) || [];
 
+               const selectedOption = value
+                  ? { label: value, value: value }
+                  : null;
+
                return (
                   <CreatableSelect
+                     {...field}
+                     isDisabled={isSubmitting}
                      isLoading={categoryLoading}
                      options={options}
-                     value={
-                        field.value
-                           ? { label: field.value, value: field.value }
-                           : null
-                     }
-                     onChange={(newValue) => field.onChange(newValue?.value)}
+                     value={selectedOption}
+                     onChange={(newValue) => {
+                        onChange(newValue?.value || "");
+                     }}
                      isClearable
                      onCreateOption={(inputValue) => {
                         createCategory(
                            { category: inputValue },
                            {
                               onSuccess: () => {
-                                 field.onChange(inputValue);
+                                 onChange(inputValue);
                                  toast.success("Category created successfully");
                               },
                               onError: () => {
@@ -278,28 +289,64 @@ export const ProductForm = ({
                      styles={{
                         control: (baseStyles, state) => ({
                            ...baseStyles,
+                           backgroundColor: "hsl(var(--background))",
                            borderColor: errors?.category
                               ? "hsl(var(--destructive))"
-                              : state.isFocused
-                                ? "hsl(var(--input))"
-                                : "hsl(var(--input))",
+                              : "hsl(var(--input))",
                            "&:hover": {
                               borderColor: errors?.category
                                  ? "hsl(var(--destructive))"
                                  : "hsl(var(--input))",
                            },
                         }),
+                        menu: (baseStyles) => ({
+                           ...baseStyles,
+                           backgroundColor: "hsl(var(--background))",
+                           border: "1px solid hsl(var(--border))",
+                        }),
+                        option: (baseStyles, state) => ({
+                           ...baseStyles,
+                           backgroundColor: state.isFocused
+                              ? "hsl(var(--accent))"
+                              : "hsl(var(--background))",
+                           color: state.isFocused
+                              ? "hsl(var(--accent-foreground))"
+                              : "hsl(var(--foreground))",
+                           "&:active": {
+                              backgroundColor: "hsl(var(--accent))",
+                           },
+                        }),
+                        input: (baseStyles) => ({
+                           ...baseStyles,
+                           color: "hsl(var(--foreground))",
+                        }),
+                        singleValue: (baseStyles) => ({
+                           ...baseStyles,
+                           color: "hsl(var(--foreground))",
+                        }),
                      }}
                      classNames={{
                         control: () => "border rounded-md",
                         placeholder: () => "text-muted-foreground",
                      }}
+                     theme={(theme) => ({
+                        ...theme,
+                        colors: {
+                           ...theme.colors,
+                           neutral20: "hsl(var(--input))", // border color
+                           neutral30: "hsl(var(--input))", // hover border color
+                           primary: "hsl(var(--primary))", // selected option & active state
+                           primary25: "hsl(var(--accent))", // option hover
+                           danger: "hsl(var(--destructive))",
+                           dangerLight: "hsl(var(--destructive))",
+                        },
+                     })}
                   />
                );
             }}
          />
 
-         <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
+         <Button disabled={isSubmitting} type="submit">{isUpdate ? "Update" : "Create"}</Button>
       </form>
    );
 };
