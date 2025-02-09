@@ -18,14 +18,14 @@ export const get = query({
          .collect();
 
       const orderWithProductWithUser = await Promise.all(
-        order.map(async (order) => {
-          const product = await ctx.db.get(order.productId);
-          return {
-            ...order,
-            seller: await populateUser(ctx, order.sellerId),
-            product,
-          };
-        })
+         order.map(async (order) => {
+            const product = await ctx.db.get(order.productId);
+            return {
+               ...order,
+               seller: await populateUser(ctx, order.sellerId),
+               product,
+            };
+         }),
       );
 
       return orderWithProductWithUser;
@@ -109,9 +109,40 @@ export const update = mutation({
    },
 });
 
+export const deleteOrder = mutation({
+   args: {
+      orderId: v.id("orders"),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      const existingOrder = await ctx.db.get(args.orderId);
+      if (!existingOrder) {
+         throw new Error("Order not found");
+      }
+
+      if (existingOrder.status !== "cancelled") {
+         throw new Error("Order is not cancelled");
+      }
+
+      const product = await ctx.db
+         .query("products")
+         .filter((q) => q.eq(q.field("sellerId"), userId))
+         .collect();
+
+      if (!product) {
+         throw new Error("Product not found");
+      }
+
+      await ctx.db.delete(args.orderId);
+
+      return;
+   },
+});
+
 export const cancel = mutation({
    args: {
-      orderId: v.id("orders")
+      orderId: v.id("orders"),
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
@@ -151,5 +182,5 @@ export const cancel = mutation({
       });
 
       return order;
-   }
-})
+   },
+});
