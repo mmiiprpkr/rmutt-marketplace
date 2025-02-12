@@ -8,7 +8,7 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 export const { uploadFiles } = genUploader<OurFileRouter>({
    package: "uploadthing",
-   url: `${process.env.SITE_URL!}/api/uploadthing`,
+   url: `/api/uploadthing`,
 });
 export const UploadButton = generateUploadButton<OurFileRouter>();
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
