@@ -2,7 +2,11 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { populateProductCounts } from "./helper";
+import {
+   populateProduct,
+   populateProductCounts,
+   populateProductWithOrder,
+} from "./helper";
 
 const populateUser = async (ctx: QueryCtx, userId: Id<"users">) => {
    const user = await ctx.db.get(userId);
@@ -12,22 +16,22 @@ const populateUser = async (ctx: QueryCtx, userId: Id<"users">) => {
 export const conversations = mutation({
    args: {
       userId1: v.id("users"),
-      userId2: v.id("users")
+      userId2: v.id("users"),
    },
    handler: async (ctx, args) => {
       const conversations = await ctx.db
          .query("conversations")
-         .filter(q =>
+         .filter((q) =>
             q.or(
                q.and(
                   q.eq(q.field("userId1"), args.userId1),
-                  q.eq(q.field("userId2"), args.userId2)
+                  q.eq(q.field("userId2"), args.userId2),
                ),
                q.and(
                   q.eq(q.field("userId1"), args.userId2),
-                  q.eq(q.field("userId2"), args.userId1)
-               )
-            )
+                  q.eq(q.field("userId2"), args.userId1),
+               ),
+            ),
          )
          .collect();
 
@@ -35,14 +39,14 @@ export const conversations = mutation({
          const conversations = await ctx.db.insert("conversations", {
             userId1: args.userId1,
             userId2: args.userId2,
-            createdAt: Date.now().toLocaleString()
+            createdAt: Date.now().toLocaleString(),
          });
 
          return conversations;
       }
 
       return conversations[0]._id as Id<"conversations">;
-   }
+   },
 });
 
 export const getConversations = query({
@@ -59,8 +63,8 @@ export const getConversations = query({
          .filter((q) =>
             q.or(
                q.eq(q.field("userId1"), userId),
-               q.eq(q.field("userId2"), userId)
-            )
+               q.eq(q.field("userId2"), userId),
+            ),
          )
          .collect();
 
@@ -68,7 +72,11 @@ export const getConversations = query({
          conversations.map(async (conversation) => {
             const user1 = await populateUser(ctx, conversation.userId1);
             const user2 = await populateUser(ctx, conversation.userId2);
-            const countOrder = await populateProductCounts(ctx, conversation.userId1, conversation.userId2);
+            const countOrder = await populateProductCounts(
+               ctx,
+               conversation.userId1,
+               conversation.userId2,
+            );
 
             const currentUser = user1?._id === userId;
 
@@ -78,7 +86,7 @@ export const getConversations = query({
                otherUser: currentUser ? user2 : user1,
                countOrder,
             };
-         })
+         }),
       );
 
       return conversationsWithUsers;
@@ -90,6 +98,7 @@ export const createMessage = mutation({
       conversationId: v.id("conversations"),
       senderId: v.id("users"),
       content: v.string(),
+      productId: v.optional(v.id("products")),
    },
    handler: async (ctx, args) => {
       const userId = getAuthUserId(ctx);
@@ -102,11 +111,12 @@ export const createMessage = mutation({
          conversationId: args.conversationId,
          senderId: args.senderId,
          content: args.content,
-         createdAt: Date.now().toLocaleString()
+         productId: args.productId,
+         createdAt: Date.now().toLocaleString(),
       });
 
       return message;
-   }
+   },
 });
 
 export const getMessage = query({
@@ -120,6 +130,12 @@ export const getMessage = query({
          throw new Error("Unauthorized");
       }
 
+      const conversation = await ctx.db.get(args.conversationId);
+
+      if (!conversation) {
+         throw new Error("Conversation not found");
+      }
+
       const messages = await ctx.db
          .query("messages")
          .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
@@ -128,11 +144,22 @@ export const getMessage = query({
       const messagesWithUsers = await Promise.all(
          messages.map(async (message) => {
             const user = await populateUser(ctx, message.senderId);
+            const product = message?.productId
+               ? await populateProductWithOrder(
+                    ctx,
+                    message.productId,
+                    conversation.userId1,
+                    conversation.userId2,
+                 )
+               : undefined;
+
             return {
                ...message,
                sender: user,
+               product: product?.product,
+               order: product?.orders,
             };
-         })
+         }),
       );
 
       return messagesWithUsers;
@@ -142,7 +169,7 @@ export const getMessage = query({
 export const deleteMessage = mutation({
    args: {
       conversationId: v.id("conversations"),
-      messageId: v.id("messages")
+      messageId: v.id("messages"),
    },
    handler: async (ctx, args) => {
       if (!getAuthUserId(ctx)) {
@@ -152,14 +179,14 @@ export const deleteMessage = mutation({
       const message = await ctx.db.delete(args.messageId);
 
       return message;
-   }
+   },
 });
 
 export const updateMessage = mutation({
    args: {
       conversationId: v.id("conversations"),
       messageId: v.id("messages"),
-      content: v.string()
+      content: v.string(),
    },
    handler: async (ctx, args) => {
       if (!getAuthUserId(ctx)) {
@@ -167,9 +194,9 @@ export const updateMessage = mutation({
       }
 
       const message = await ctx.db.patch(args.messageId, {
-         content: args.content
+         content: args.content,
       });
 
       return message;
-   }
+   },
 });

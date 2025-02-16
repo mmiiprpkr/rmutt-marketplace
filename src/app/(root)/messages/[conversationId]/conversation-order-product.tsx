@@ -17,8 +17,6 @@ export const ConversationOrderProductDialog = ({
    order,
 }: ConversationOrderProductDialogProps) => {
    const [isOpen, setIsOpen] = useQueryState("order");
-   const [updateStatusOpen, setUpdateStatusOpen] =
-      useQueryState("updateStatus");
 
    if (!Array.isArray(order)) return null;
 
@@ -26,9 +24,7 @@ export const ConversationOrderProductDialog = ({
       <ResponsiveSheet open={!!isOpen} onOpenChange={() => setIsOpen(null)}>
          <div className="p-6 space-y-6 h-[70vh] md:h-full overflow-y-auto bg-background">
             <div className="flex items-center justify-between">
-               <h2 className="text-2xl font-semibold">
-                  Order Details
-               </h2>
+               <h2 className="text-2xl font-semibold">Order Details</h2>
                <Badge className="bg-gray-100 text-gray-600 border-0">
                   {order.length} items
                </Badge>
@@ -36,18 +32,7 @@ export const ConversationOrderProductDialog = ({
 
             <div className="space-y-4">
                {order.map((od, index) => (
-                  <>
-                     <UpdateOrderStatusDialog
-                        open={!!updateStatusOpen}
-                        onClose={() => setUpdateStatusOpen(null)}
-                        orderId={od._id}
-                        status={od.status}
-                        userId1={od.sellerId}
-                        userId2={od.buyerId}
-                        key={index}
-                     />
-                     <OrderConversationCard key={index} order={od} />
-                  </>
+                  <OrderConversationCard key={index} order={od} />
                ))}
             </div>
          </div>

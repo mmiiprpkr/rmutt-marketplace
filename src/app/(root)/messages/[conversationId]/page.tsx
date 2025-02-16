@@ -12,7 +12,8 @@ import { UserButton } from "@/components/common/user-button";
 import { useGetOrderByConversations } from "@/api/market-place/order/use-get-order-by-conversations";
 import { ConversationOrderProductDialog } from "./conversation-order-product";
 import { useQueryState } from "nuqs";
-import { ImageUpIcon, Package2Icon } from "lucide-react";
+import { ImageUpIcon, MessageSquareDiff, Package2Icon } from "lucide-react";
+import { MessageCard } from "@/components/features/community/message-card";
 
 type ConversationsIdPageProps = {
    params: {
@@ -52,7 +53,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    };
 
    console.log({
-      orderData,
+      messages,
    });
 
    return (
@@ -78,16 +79,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                            type="profile"
                         />
                      )}
-                     <div
-                        className={cn(
-                           "rounded-lg p-2 max-w-xs",
-                           isCurrentUser
-                              ? "bg-foreground text-white dark:text-black"
-                              : "bg-primary-foreground text-foreground",
-                        )}
-                     >
-                        {message?.content}
-                     </div>
+                     <MessageCard isCurrentUser={isCurrentUser} message={message} />
                   </div>
                );
             })}

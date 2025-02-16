@@ -87,3 +87,27 @@ export const populateProduct = async (
    const product = await ctx.db.get(productId);
    return product;
 }
+
+export const populateProductWithOrder = async (
+   ctx: QueryCtx,
+   productId: Id<"products">,
+   userId1: Id<"users">,
+   userId2: Id<"users">
+) => {
+   const product = await ctx.db.get(productId);
+   const [orders] = await ctx.db.query("orders")
+      .filter((q) => q.eq(q.field("productId"), productId))
+      .filter((q) => q.or(
+         q.and(
+            q.eq(q.field("buyerId"), userId1),
+            q.eq(q.field("sellerId"), userId2),
+         ),
+         q.and(
+            q.eq(q.field("buyerId"), userId2),
+            q.eq(q.field("sellerId"), userId1),
+         )
+      ))
+      .collect();
+
+   return { product, orders };
+}

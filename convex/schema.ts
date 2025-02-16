@@ -77,6 +77,8 @@ const schema = defineSchema({
       conversationId: v.id("conversations"),
       senderId: v.id("users"),
       content: v.string(),
+      productId: v.optional(v.id("products")),
+      image: v.optional(v.string()),
       createdAt: v.string(),
    }),
    categories: defineTable({

@@ -27,24 +27,15 @@ interface UpdateOrderStatusDialogProps {
    orderId: Id<"orders">;
    userId1: Id<"users">;
    userId2: Id<"users">;
+   productId: Id<"products">;
    status: "pending" | "accepted" | "completed" | "cancelled";
 }
 
-const statusOptions = [
-   "pending",
-   "accepted",
-   "completed",
-   "cancelled",
-];
+const statusOptions = ["pending", "accepted", "completed", "cancelled"];
 
 const formSchema = z.object({
    message: z.string().optional(),
-   status: z.enum([
-      "pending",
-      "accepted",
-      "completed",
-      "cancelled",
-   ]),
+   status: z.enum(["pending", "accepted", "completed", "cancelled"]),
 });
 
 export const UpdateOrderStatusDialog = ({
@@ -54,6 +45,7 @@ export const UpdateOrderStatusDialog = ({
    userId1,
    userId2,
    status,
+   productId,
 }: UpdateOrderStatusDialogProps) => {
    const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -77,18 +69,17 @@ export const UpdateOrderStatusDialog = ({
 
    const handleUpdateOrderStatus = async (data: z.infer<typeof formSchema>) => {
       try {
-         if (message) {
-            const conversation = await conversationMutate({
-               userId1: userId1,
-               userId2: userId2,
-            });
+         const conversation = await conversationMutate({
+            userId1: userId1,
+            userId2: userId2,
+         });
 
-            await messageMutate({
-               conversationId: conversation,
-               senderId: userId1,
-               content: message,
-            });
-         }
+         await messageMutate({
+            conversationId: conversation,
+            senderId: userId1,
+            content: message || "",
+            productId: productId,
+         });
 
          await updateOrderStatus({
             orderId: orderId,
@@ -112,11 +103,7 @@ export const UpdateOrderStatusDialog = ({
             <Select
                value={updateStatus}
                onValueChange={(
-                  value:
-                     | "pending"
-                     | "accepted"
-                     | "completed"
-                     | "cancelled",
+                  value: "pending" | "accepted" | "completed" | "cancelled",
                ) => {
                   form.setValue("status", value);
                }}

@@ -150,6 +150,7 @@ export const columns: ColumnDef<Order>[] = [
                   status={row.original.status}
                   userId1={row.original?.sellerId}
                   userId2={row.original?.buyerId}
+                  productId={row.original?.productId}
                />
 
                <DropdownMenu>
