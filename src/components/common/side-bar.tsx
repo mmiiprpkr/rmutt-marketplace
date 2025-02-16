@@ -79,11 +79,6 @@ const menuItemsDefault: MenuItem[] = [
                },
             ],
          },
-         {
-            title: "Analytics",
-            icon: TrendingUp,
-            href: "/market-place/analytics",
-         },
       ],
    },
    {
@@ -91,11 +86,6 @@ const menuItemsDefault: MenuItem[] = [
       icon: Users,
       href: "/community",
       submenu: [
-         {
-            title: "My Posts",
-            icon: MessageSquare,
-            href: "/community/posts",
-         },
          {
             title: "My Communities",
             icon: Users2,
