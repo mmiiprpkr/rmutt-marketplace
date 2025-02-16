@@ -17,13 +17,12 @@ export const OrderConversationCard = ({
 }: {
    order: OrderConversationCardProps;
 }) => {
-   const [updateStatusOpen, setUpdateStatusOpen] =
-      useQueryState("updateStatus");
+   const [updateStatusOpen, setUpdateStatusOpen] = useQueryState("updateStatus");
 
    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+      <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow duration-200">
          <div className="p-6 space-y-4">
-            <h3 className="text-lg font-semibold truncate">
+            <h3 className="text-lg font-semibold truncate text-foreground">
                {order?.product?.name}
             </h3>
             <div className="relative aspect-video max-h-[100px]">
@@ -34,19 +33,19 @@ export const OrderConversationCard = ({
                   alt="Product"
                />
             </div>
-            <Separator className="my-4" />
+            <Separator />
 
             <div className="flex justify-between items-start">
                <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                     <PackageIcon className="w-4 h-4 text-gray-400" />
-                     <p className="text-sm font-medium text-gray-600">
+                     <PackageIcon className="w-4 h-4 text-muted-foreground" />
+                     <p className="text-sm font-medium text-foreground">
                         Order: {order._id.slice(0, 8)}...
                      </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                     <Calendar className="w-4 h-4 text-gray-400" />
-                     <p className="text-sm text-gray-500">
+                     <Calendar className="w-4 h-4 text-muted-foreground" />
+                     <p className="text-sm text-muted-foreground">
                         Created{" "}
                         {formatDistance(order._creationTime, new Date(), {
                            addSuffix: true,
@@ -57,46 +56,52 @@ export const OrderConversationCard = ({
                <OrderStatusBadge status={order.status} />
             </div>
 
-            <Separator className="my-4" />
+            <Separator />
 
             <div className="grid grid-cols-2 gap-6">
                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Quantity</p>
-                  <p className="text-lg font-semibold">
+                  <p className="text-sm font-medium text-muted-foreground">
+                     Quantity
+                  </p>
+                  <p className="text-lg font-semibold text-foreground">
                      {order.quantity} items
                   </p>
                </div>
                <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                      Total Price
                   </p>
                   <div className="flex items-center space-x-1">
-                     <CreditCard className="w-4 h-4 text-gray-400" />
-                     <p className="text-lg font-semibold text-green-600">
+                     <CreditCard className="w-4 h-4 text-muted-foreground" />
+                     <p className="text-lg font-semibold text-primary">
                         {formatPrice(order.totalPrice)}
                      </p>
                   </div>
                </div>
             </div>
 
-            <Separator className="my-4" />
+            <Separator />
 
             <div className="space-y-2">
                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Seller</span>
-                  <span className="text-sm font-mono bg-gray-50 px-2 py-1 rounded">
+                  <span className="text-sm text-muted-foreground">
+                     Seller
+                  </span>
+                  <span className="text-sm font-mono bg-muted text-muted-foreground px-2 py-1 rounded">
                      {order.sellerId.slice(0, 12)}...
                   </span>
                </div>
                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Buyer</span>
-                  <span className="text-sm font-mono bg-gray-50 px-2 py-1 rounded">
+                  <span className="text-sm text-muted-foreground">
+                     Buyer
+                  </span>
+                  <span className="text-sm font-mono bg-muted text-muted-foreground px-2 py-1 rounded">
                      {order.buyerId.slice(0, 12)}...
                   </span>
                </div>
             </div>
 
-            <Separator className="my-4" />
+            <Separator />
 
             <div className="space-y-2">
                <Button
@@ -104,9 +109,7 @@ export const OrderConversationCard = ({
                   className="w-full"
                   onClick={() => setUpdateStatusOpen("open")}
                >
-                  {order.status === "pending"
-                     ? "Accept Order"
-                     : "Update Status"}
+                  {order.status === "pending" ? "Accept Order" : "Update Status"}
                </Button>
             </div>
          </div>

@@ -25,7 +25,7 @@ export const ResponsiveSheet = ({
    } else {
       return (
          <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent className="p-0 min-w-[500px]">{children}</SheetContent>
+            <SheetContent className="p-0 min-w-[500px] dark:bg-primary-foreground">{children}</SheetContent>
          </Sheet>
       );
    }

@@ -98,15 +98,17 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                {orderLoading ? (
                   <Package2Icon className="w-6 h-6" />
                ) : (
-                  <div
-                     className="relative p-2 cursor-pointer hover:opacity-75 w-fit"
-                     onClick={() => setIsOpen("true")}
-                  >
-                     <Package2Icon className="w-6 h-6" />
-                     <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1">
-                        {orderData?.length}
-                     </span>
-                  </div>
+                  orderData?.[0]?.sellerId === userData?._id && (
+                     <div
+                        className="relative p-2 cursor-pointer hover:opacity-75 w-fit"
+                        onClick={() => setIsOpen("true")}
+                     >
+                        <Package2Icon className="w-6 h-6" />
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1">
+                           {orderData?.length}
+                        </span>
+                     </div>
+                  )
                )}
 
                <ImageUpIcon className="w-6 h-6" />

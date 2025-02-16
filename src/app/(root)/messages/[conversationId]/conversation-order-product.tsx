@@ -24,9 +24,9 @@ export const ConversationOrderProductDialog = ({
 
    return (
       <ResponsiveSheet open={!!isOpen} onOpenChange={() => setIsOpen(null)}>
-         <div className="p-6 space-y-6 h-[70vh] md:h-full overflow-y-auto">
+         <div className="p-6 space-y-6 h-[70vh] md:h-full overflow-y-auto bg-background">
             <div className="flex items-center justify-between">
-               <h2 className="text-2xl font-semibold text-gray-800">
+               <h2 className="text-2xl font-semibold">
                   Order Details
                </h2>
                <Badge className="bg-gray-100 text-gray-600 border-0">
