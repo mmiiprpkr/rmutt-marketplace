@@ -4,6 +4,7 @@ import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/common/ui/badge";
 import { Card } from "@/components/common/ui/card";
+import { OrderStatusBadge } from "../market-place/orders/order-status-badge";
 
 type Message = Doc<"messages"> & {
   sender: Doc<"users"> | undefined | null;
@@ -99,15 +100,9 @@ export const MessageCard = ({ isCurrentUser, message }: MessageCardProps) => {
                 <p className="text-sm text-muted-foreground">
                   Order #{isOrder._id.slice(0, 8)}
                 </p>
-                <Badge
-                  variant={
-                    isOrder.status === "completed" ? "default" :
-                    isOrder.status === "pending" ? "secondary" :
-                    isOrder.status === "accepted" ? "outline" : "destructive"
-                  }
-                >
-                  {isOrder.status}
-                </Badge>
+
+                <OrderStatusBadge status={isOrder.status} />
+
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
