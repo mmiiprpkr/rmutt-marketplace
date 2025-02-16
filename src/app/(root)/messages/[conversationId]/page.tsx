@@ -9,6 +9,10 @@ import { useState } from "react";
 import { useGetMessage } from "@/api/messages/get-message";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/components/common/user-button";
+import { useGetOrderByConversations } from "@/api/market-place/order/use-get-order-by-conversations";
+import { ConversationOrderProductDialog } from "./conversation-order-product";
+import { useQueryState } from "nuqs";
+import { ImageUpIcon, Package2Icon } from "lucide-react";
 
 type ConversationsIdPageProps = {
    params: {
@@ -18,6 +22,7 @@ type ConversationsIdPageProps = {
 
 const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    const [message, setMessage] = useState("");
+   const [, setIsOpen] = useQueryState("order");
 
    const { data: userData, isLoading: dataLoading } = useGetCurrentUser();
    const { data: messages, isLoading: messageLoading } = useGetMessage({
@@ -25,6 +30,10 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    });
    const { mutateAsync: createMessageAsync, isPending: createMessagePending } =
       useCreateMessage();
+   const { data: orderData, isLoading: orderLoading } =
+      useGetOrderByConversations({
+         conversationId: params.conversationId as Id<"conversations">,
+      });
 
    if (dataLoading || messageLoading) {
       return <div>Loading...</div>;
@@ -42,8 +51,14 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
       setMessage(""); // Clear input after sending message
    };
 
+   console.log({
+      orderData,
+   });
+
    return (
-      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto p-4 flex flex-col">
+      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto p-4 flex flex-col relative">
+         <ConversationOrderProductDialog order={orderData} />
+
          <div className="flex-grow overflow-y-auto flex flex-col w-full space-y-3">
             {messages?.map((message, i) => {
                const isCurrentUser = userData?._id === message?.senderId;
@@ -78,23 +93,45 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
             })}
          </div>
 
-         <div className="flex space-x-4 py-2 bg-background border-t border-secondary">
-            <Input
-               type="text"
-               placeholder="Type a message"
-               disabled={createMessagePending}
-               value={message}
-               onChange={(e) => setMessage(e.target.value)}
-               onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                     handleSendMessage();
-                  }
-               }}
-            />
+         <div className="flex flex-col w-full border-t border-secondary">
+            <div className="flex items-center space-x-5">
+               {orderLoading ? (
+                  <Package2Icon className="w-6 h-6" />
+               ) : (
+                  <div
+                     className="relative p-2 cursor-pointer hover:opacity-75 w-fit"
+                     onClick={() => setIsOpen("true")}
+                  >
+                     <Package2Icon className="w-6 h-6" />
+                     <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1">
+                        {orderData?.length}
+                     </span>
+                  </div>
+               )}
 
-            <Button disabled={createMessagePending} onClick={handleSendMessage}>
-               Send
-            </Button>
+               <ImageUpIcon className="w-6 h-6" />
+            </div>
+            <div className="flex space-x-4 py-2 bg-background">
+               <Input
+                  type="text"
+                  placeholder="Type a message"
+                  disabled={createMessagePending}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                     if (e.key === "Enter") {
+                        handleSendMessage();
+                     }
+                  }}
+               />
+
+               <Button
+                  disabled={createMessagePending}
+                  onClick={handleSendMessage}
+               >
+                  Send
+               </Button>
+            </div>
          </div>
       </div>
    );

@@ -1,7 +1,59 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { populateUser } from "./helper";
+import { populateProduct, populateProductCounts, populateUser } from "./helper";
+
+export const getOrderByConversation = query({
+   args: {
+      conversationId: v.id("conversations"),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const conversation = await ctx.db.get(args.conversationId);
+
+      if (!conversation) {
+         throw new Error("Conversation not found");
+      }
+
+      const order = await ctx.db.query("orders")
+         .filter((q) =>
+            q.or(
+               q.and(
+                  q.eq(q.field("sellerId"), conversation.userId1),
+                  q.eq(q.field("buyerId"), conversation.userId2),
+                  q.or(
+                     q.eq(q.field("status"), "accepted"),
+                     q.eq(q.field("status"), "pending")
+                  )
+               ),
+               q.and(
+                  q.eq(q.field("sellerId"), conversation.userId2),
+                  q.eq(q.field("buyerId"), conversation.userId1),
+                  q.or(
+                     q.eq(q.field("status"), "accepted"),
+                     q.eq(q.field("status"), "pending")
+                  )
+               )
+            )
+         ).collect();
+
+      const orderWithProduct = await Promise.all(
+         order.map(async (od) => {
+            return {
+               ...od,
+               product: await populateProduct(ctx, od.productId),
+            };
+         })
+      );
+
+      return orderWithProduct;
+   }
+})
 
 export const get = query({
    args: {

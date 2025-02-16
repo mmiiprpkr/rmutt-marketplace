@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { populateProductCounts } from "./helper";
 
 const populateUser = async (ctx: QueryCtx, userId: Id<"users">) => {
    const user = await ctx.db.get(userId);
@@ -67,6 +68,7 @@ export const getConversations = query({
          conversations.map(async (conversation) => {
             const user1 = await populateUser(ctx, conversation.userId1);
             const user2 = await populateUser(ctx, conversation.userId2);
+            const countOrder = await populateProductCounts(ctx, conversation.userId1, conversation.userId2);
 
             const currentUser = user1?._id === userId;
 
@@ -74,6 +76,7 @@ export const getConversations = query({
                ...conversation,
                user: currentUser ? user1 : user2,
                otherUser: currentUser ? user2 : user1,
+               countOrder,
             };
          })
       );

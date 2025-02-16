@@ -48,3 +48,42 @@ export const populateInteractions = async (
 
    return { isLiked, likeCount: likeCount.length, isSaved };
 };
+
+export const populateProductCounts = async (
+   ctx: QueryCtx,
+   userId1: Id<"users">,
+   userId2: Id<"users">
+) => {
+   const orders = await ctx.db.query("orders")
+      .filter((q) => q.or(
+         q.and(
+            q.eq(q.field("buyerId"), userId1),
+            q.eq(q.field("sellerId"), userId2),
+            q.or(
+               q.eq(q.field("status"), "accepted"),
+               q.eq(q.field("status"), "pending")
+            )
+         ),
+         q.and(
+            q.eq(q.field("buyerId"), userId2),
+            q.eq(q.field("sellerId"), userId1),
+            q.or(
+               q.eq(q.field("status"), "accepted"),
+               q.eq(q.field("status"), "pending")
+            )
+         )
+      ))
+      .collect();
+
+   console.log("orders", orders);
+
+   return orders.length;
+}
+
+export const populateProduct = async (
+   ctx: QueryCtx,
+   productId: Id<"products">
+) => {
+   const product = await ctx.db.get(productId);
+   return product;
+}

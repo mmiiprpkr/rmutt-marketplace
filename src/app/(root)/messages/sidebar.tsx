@@ -28,7 +28,7 @@ export const Sidebar = () => {
                      <div
                         key={conversation._id}
                         className={cn(
-                           "flex items-center p-2 cursor-pointer hover:opacity-75",
+                           "flex items-center p-2 cursor-pointer hover:opacity-75 relative",
                            conversation._id === conversationId
                               ? "bg-secondary"
                               : "",
@@ -49,6 +49,14 @@ export const Sidebar = () => {
                            </p>
                            <p className="text-xs text-gray-500">Last message</p>
                         </div>
+
+                        {conversation.countOrder > 0 && (
+                           <div className="absolute right-2 top-2">
+                              <span className="bg-black text-white text-xs px-2 py-1 rounded-full">
+                                 {conversation.countOrder}
+                              </span>
+                           </div>
+                        )}
                      </div>
                   );
                })}
