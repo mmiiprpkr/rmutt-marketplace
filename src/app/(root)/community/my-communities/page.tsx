@@ -24,7 +24,7 @@ const MyCommunitiesPage = () => {
          <div className="w-full bg-background flex items-center justify-between sticky py-2 top-[60px] z-10">
             <h1 className="text-2xl font-bold">Communities</h1>
             <Button onClick={() => setIsOpen(true)}>
-               Create New Community <PlusCircleIcon className="size-4 ml-2" />
+               New Community <PlusCircleIcon className="size-4 ml-2" />
             </Button>
          </div>
          {Array.isArray(communities) &&
