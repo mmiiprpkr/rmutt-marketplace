@@ -7,9 +7,9 @@ import { useSideBarStore } from "@/stores/use-side-bar";
 import { ModeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { UserButton } from "./user-button";
-import { useConvexAuth } from "convex/react";
 import { useGetCurrentUser } from "@/api/get-current-user";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
 
 export const Navbar = () => {
    const { onOpen } = useSideBarStore((state) => state);
@@ -24,13 +24,19 @@ export const Navbar = () => {
          <div className="w-full flex items-center space-x-4 justify-end">
             <ModeToggle />
             <Button variant="ghost">
-               <Bell className="w-5 h-5" />
+               <Link href="/community/notifications">
+                  <Bell className="w-5 h-5" />
+               </Link>
             </Button>
             <Button variant="ghost">
-               <MessageSquare className="w-5 h-5" />
+               <Link href="/messages">
+                  <MessageSquare className="w-5 h-5" />
+               </Link>
             </Button>
             <Button variant="ghost">
-               <Store className="w-5 h-5" />
+               <Link href="/market-place/selling/orders">
+                  <Store className="w-5 h-5" />
+               </Link>
             </Button>
             {isLoading ? (
                <Skeleton className="size-6" />

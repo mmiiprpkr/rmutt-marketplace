@@ -28,6 +28,8 @@ import {
 
 import { SideBarMenuItem } from "./side-bar-menu-item";
 import { useSideBarStore } from "@/stores/use-side-bar";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 interface MenuItem {
    title: string;
@@ -122,14 +124,8 @@ const menuItemsDefault: MenuItem[] = [
 
 const footerItems = [
    {
-      title: "Settings",
-      icon: Settings,
-      href: "/settings",
-   },
-   {
       title: "Logout",
       icon: LogOut,
-      href: "/auth",
    },
 ];
 
@@ -148,6 +144,14 @@ export const SideBar = ({
       "Community",
    ]);
 
+   const { signOut } = useAuthActions();
+
+   const [ConfirmationDialog, confirm] = useConfirm(
+      "Are you sure you want to logout?",
+      "Logout",
+      "destructive",
+   );
+
    const toggleSubmenu = (title: string) => {
       setExpandedMenus((current) =>
          current.includes(title)
@@ -156,57 +160,72 @@ export const SideBar = ({
       );
    };
 
+   const handleLogoutConfirm = async () => {
+      try {
+         const ok = await confirm();
+
+         if (!ok) return;
+
+         await signOut();
+      } catch (error) {
+         console.log("[ConfirmationDialog]", error);
+      }
+   }
+
    return (
-      <div
-         className={cn(
-            "h-screen overflow-y-auto flex flex-col w-full bg-background",
-            "transition-width duration-200 ease-in-out",
-         )}
-      >
-         <Link
-            onClick={() => onClose(false)}
-            href="/"
-            className="flex flex-col gap-1 p-2 hover:opacity-80"
+      <>
+         <ConfirmationDialog />
+
+         <div
+            className={cn(
+               "h-screen overflow-y-auto flex flex-col w-full bg-background",
+               "transition-width duration-200 ease-in-out",
+            )}
          >
-            <div className="flex items-center gap-1">
-               <Image
-                  src="/logo.svg"
-                  alt="RMUTT Marketplace"
-                  width={24}
-                  height={24}
-               />
-               <h1 className="text-base font-semibold">RMUTT Marketplace</h1>
-            </div>
-         </Link>
-         <div className="flex-1 overflow-auto">
-            <nav className="flex flex-col gap-2 p-2">
-               {menuItems?.map((item) => (
-                  <SideBarMenuItem
-                     key={item.title}
-                     item={item}
-                     expandedMenus={expandedMenus}
-                     toggleSubmenu={toggleSubmenu}
+            <Link
+               onClick={() => onClose(false)}
+               href="/"
+               className="flex flex-col gap-1 p-2 hover:opacity-80"
+            >
+               <div className="flex items-center gap-1">
+                  <Image
+                     src="/logo.svg"
+                     alt="RMUTT Marketplace"
+                     width={24}
+                     height={24}
                   />
-               ))}
-            </nav>
+                  <h1 className="text-base font-semibold">RMUTT Marketplace</h1>
+               </div>
+            </Link>
+            <div className="flex-1 overflow-auto">
+               <nav className="flex flex-col gap-2 p-2">
+                  {menuItems?.map((item) => (
+                     <SideBarMenuItem
+                        key={item.title}
+                        item={item}
+                        expandedMenus={expandedMenus}
+                        toggleSubmenu={toggleSubmenu}
+                     />
+                  ))}
+               </nav>
+            </div>
+            <div className="border-t p-2">
+               <nav className="flex flex-col gap-2">
+                  {footerItems.map((item) => (
+                     <div
+                        key={item.title}
+                        className={cn(
+                           "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground hover:cursor-pointer",
+                        )}
+                        onClick={handleLogoutConfirm}
+                     >
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                     </div>
+                  ))}
+               </nav>
+            </div>
          </div>
-         <div className="border-t p-2">
-            <nav className="flex flex-col gap-2">
-               {footerItems.map((item) => (
-                  <Link
-                     key={item.title}
-                     href={item.href}
-                     className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-                     )}
-                     onClick={() => onClose(false)}
-                  >
-                     <item.icon className="h-4 w-4" />
-                     <span>{item.title}</span>
-                  </Link>
-               ))}
-            </nav>
-         </div>
-      </div>
+      </>
    );
 };
