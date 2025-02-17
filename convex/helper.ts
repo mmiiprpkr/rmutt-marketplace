@@ -155,3 +155,53 @@ export const populateOrderWithProduct = async (
 
    return { order, product };
 };
+
+// Helper function to get top selling products
+export async function getTopProducts(
+   ctx: QueryCtx,
+   userId: string,
+   start: string,
+   end: string,
+   limit: number = 5
+) {
+   const orders = await ctx.db
+      .query("orders")
+      .filter((q) =>
+         q.and(
+            q.eq(q.field("sellerId"), userId),
+            q.eq(q.field("status"), "completed"),
+         )
+      )
+      .collect();
+
+   // Group orders by product
+   const productStats = new Map();
+
+   for (const order of orders) {
+      const stats = productStats.get(order.productId) || {
+         totalOrders: 0,
+         totalRevenue: 0,
+         totalQuantity: 0
+      };
+
+      stats.totalOrders++;
+      stats.totalRevenue += order.totalPrice;
+      stats.totalQuantity += order.quantity;
+      productStats.set(order.productId, stats);
+   }
+
+   // Get product details and sort by revenue
+   const topProducts = await Promise.all(
+      Array.from(productStats.entries()).map(async ([productId, stats]) => {
+         const product = await ctx.db.get(productId);
+         return {
+            ...product,
+            ...stats
+         };
+      })
+   );
+
+   return topProducts
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, limit);
+}

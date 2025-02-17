@@ -69,7 +69,9 @@ const schema = defineSchema({
          v.literal("cancelled"), // ยกเลิก (เพิ่ม quantity กลับ)
       ),
       createdAt: v.string(),
-   }),
+   })
+      .index("by_seller", ["sellerId"])
+      .index("by_product", ["productId"]),
    conversations: defineTable({
       userId1: v.id("users"),
       userId2: v.id("users"),

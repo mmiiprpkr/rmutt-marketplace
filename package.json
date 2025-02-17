@@ -45,6 +45,7 @@
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@tanstack/react-table": "^8.20.6",
+    "@tremor/react": "^3.18.7",
     "@types/nodemailer": "^6.4.17",
     "@types/react-lines-ellipsis": "^0.15.6",
     "@uploadthing/react": "^7.1.5",

@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
-import { populateLikeProduct } from "./helper";
+import { getTopProducts, populateLikeProduct } from "./helper";
 import {
    getAll,
    getOneFrom,
@@ -446,3 +446,112 @@ export const deleteProduct = mutation({
       return deletedProduct;
    },
 });
+
+export const stats = query({
+   args: {
+      start: v.optional(v.string()),
+      end: v.optional(v.string()),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+      if (!userId) throw new Error("Unauthorized");
+
+      // Set default date range to current month if not provided
+      const now = new Date();
+      const start = args.start
+         ? new Date(args.start)
+         : new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = args.end
+         ? new Date(args.end)
+         : new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      // Convert to ISO string for comparison
+      const startISO = start.toISOString();
+      const endISO = end.toISOString();
+
+      // Get all orders
+      const orders = await ctx.db
+         .query("orders")
+         .filter((q) =>
+            q.eq(q.field("sellerId"), userId)
+         )
+         .collect();
+
+      // แยกออเดอร์ตามช่วงเวลา
+      const ordersInRange = orders.filter(order => {
+         const orderDate = new Date(order.createdAt);
+         return orderDate >= start && orderDate <= end;
+      });
+
+      // Calculate statistics
+      const stats = {
+         totalOrders: orders.length, // รวมทั้งหมด
+         ordersInRange: ordersInRange.length, // เฉพาะช่วงเวลา
+         totalRevenue: 0,
+         ordersByStatus: {
+            pending: 0,
+            accepted: 0,
+            completed: 0,
+            cancelled: 0
+         },
+         revenueByStatus: {
+            pending: 0,
+            accepted: 0,
+            completed: 0,
+            cancelled: 0
+         }
+      };
+
+      // Calculate totals จากทุกออเดอร์
+      orders.forEach(order => {
+         const status = order.status;
+         stats.ordersByStatus[status]++;
+         stats.revenueByStatus[status] += order.totalPrice;
+
+         if (status === "completed") {
+            stats.totalRevenue += order.totalPrice;
+         }
+      });
+
+      // Get all products
+      const products = await ctx.db
+         .query("products")
+         .filter((q) =>
+            q.eq(q.field("sellerId"), userId)
+         )
+         .collect();
+
+      // แยกสินค้าตามช่วงเวลา
+      const productsInRange = products.filter(product => {
+         const productDate = new Date(product.createdAt);
+         return productDate >= start && productDate <= end;
+      });
+
+      const productStats = {
+         total: products.length, // รวมทั้งหมด
+         productsInRange: productsInRange.length, // เฉพาะช่วงเวลา
+         byType: {
+            food: products.filter(p => p.productType === "food").length,
+            goods: products.filter(p => p.productType === "goods").length
+         },
+         byStatus: {
+            available: products.filter(p => p.status === "available").length,
+            unavailable: products.filter(p => p.status === "unavailable").length
+         }
+      };
+
+      // Get top products based on completed orders
+      const topProducts = await getTopProducts(ctx, userId, startISO, endISO);
+
+      return {
+         dateRange: {
+            start: startISO,
+            end: endISO
+         },
+         orders: stats,
+         products: productStats,
+         topProducts
+      };
+   }
+});
+
