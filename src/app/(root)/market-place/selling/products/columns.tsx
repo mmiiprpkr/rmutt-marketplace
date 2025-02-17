@@ -67,16 +67,14 @@ export const columns: ColumnDef<Product>[] = [
          const isChecked = status === "available";
 
          const {
-            mutate: updateProductStatus,
+            mutateAsync: updateProductStatus,
             isPending: updateProductStatusPending,
          } = UpdateProductStatus();
 
          const [ConfirmationUpdateStatus, confirmUpdateStatus] = Confirm(
             "Update Status",
             `Are you sure you want to update this product's to ${
-               isChecked
-                  ? "unavailable"
-                  : "available"
+               isChecked ? "unavailable" : "available"
             }`,
             "destructive",
          );
@@ -86,16 +84,17 @@ export const columns: ColumnDef<Product>[] = [
                const ok = await confirmUpdateStatus();
                if (!ok) return;
 
-               updateProductStatus({
+               await updateProductStatus({
                   id: productId,
-                  status:
-                     isChecked
-                        ? "unavailable"
-                        : "available",
+                  status: isChecked ? "unavailable" : "available",
                });
                toast.success("Product status updated successfully");
-            } catch (error) {
-               toast.error("Failed to update product status");
+            } catch (error: any) {
+               if (error?.message?.includes("pending or accepted orders")) {
+                  toast.error("Cannot update product with active orders");
+               } else {
+                  toast.error("Failed to update product");
+               }
             }
          };
 
@@ -124,7 +123,7 @@ export const columns: ColumnDef<Product>[] = [
       header: "Actions",
       cell: ({ row }) => {
          const productId = row.original._id;
-         const { mutate: deleteProduct, isPending: deleteProductPending } =
+         const { mutateAsync: deleteProduct, isPending: deleteProductPending } =
             DeleteProduct();
          const { onOpen } = ProductController();
          const [Confirmation, confirm] = Confirm(
@@ -139,11 +138,15 @@ export const columns: ColumnDef<Product>[] = [
 
                if (!ok) return;
 
-               deleteProduct({ id: productId });
+               await deleteProduct({ id: productId });
 
                toast.success("Product deleted successfully");
-            } catch (error) {
-               toast.error("Failed to delete product");
+            } catch (error: any) {
+               if (error?.message?.includes("pending or accepted orders")) {
+                  toast.error("Cannot delete product with active orders");
+               } else {
+                  toast.error("Failed to delete product");
+               }
             }
          };
 
@@ -162,7 +165,9 @@ export const columns: ColumnDef<Product>[] = [
                         href={`/market-place/selling/products/update/${productId}`}
                         className="md:hidden"
                      >
-                        <DropdownMenuItem><Edit className="size-4" /> Update</DropdownMenuItem>
+                        <DropdownMenuItem>
+                           <Edit className="size-4" /> Update
+                        </DropdownMenuItem>
                      </Link>
                      <DropdownMenuItem
                         onClick={() => onOpen(productId, "update")}

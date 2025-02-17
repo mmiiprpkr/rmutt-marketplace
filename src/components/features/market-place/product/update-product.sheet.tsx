@@ -45,8 +45,12 @@ export const UpdateProductSheet = () => {
 
          handleClose(false);
          toast.success("Product update successfully");
-      } catch (error) {
-         toast.error("Something went wrong");
+      } catch (error: any) {
+         if (error?.message?.includes("pending or accepted orders")) {
+            toast.error("Cannot update product with active orders");
+         } else {
+            toast.error("Failed to update product");
+         }
       }
    };
 

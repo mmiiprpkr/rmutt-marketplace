@@ -8,8 +8,8 @@ import {
    getOneFrom,
    getManyFrom,
    getManyVia,
- } from "convex-helpers/server/relationships";
- import { asyncMap } from "convex-helpers";
+} from "convex-helpers/server/relationships";
+import { asyncMap } from "convex-helpers";
 
 export const brows = query({
    args: {
@@ -62,17 +62,17 @@ export const brows = query({
          .order("desc")
          .paginate(args.paginationOpts);
 
-         const productsWithLikes = await Promise.all(
-            products.page?.map(async (product) => ({
-               ...product,
-               isLiked: await populateLikeProduct(ctx, product._id, userId),
-            })) || []
-         );
+      const productsWithLikes = await Promise.all(
+         products.page?.map(async (product) => ({
+            ...product,
+            isLiked: await populateLikeProduct(ctx, product._id, userId),
+         })) || [],
+      );
 
-         return {
-            ...products,
-            page: productsWithLikes,
-         };
+      return {
+         ...products,
+         page: productsWithLikes,
+      };
    },
 });
 
@@ -103,10 +103,10 @@ export const recommend = query({
          allProducts.map(async (p) => {
             return {
                ...p,
-               isLiked: await populateLikeProduct(ctx, p._id, userId)
-            }
-         })
-      )
+               isLiked: await populateLikeProduct(ctx, p._id, userId),
+            };
+         }),
+      );
 
       // Randomly shuffle the array and take first 3 items
       const shuffled = productWithLikes.sort(() => 0.5 - Math.random());
@@ -168,18 +168,20 @@ export const getFavorites = query({
       if (!likedProduct.length) return [];
 
       // Get all products that the user liked
-      const products = await Promise.all(likedProduct.map(async (productId) => {
-         if (!productId) return;
+      const products = await Promise.all(
+         likedProduct.map(async (productId) => {
+            if (!productId) return;
 
-         const product = await ctx.db.get(productId);
-         return {
-            ...product,
-            isLiked: true,
-         };
-      }));
+            const product = await ctx.db.get(productId);
+            return {
+               ...product,
+               isLiked: true,
+            };
+         }),
+      );
 
       return products;
-   }
+   },
 });
 
 export const getById = query({
@@ -202,7 +204,7 @@ export const getById = query({
 export const like = mutation({
    args: {
       productId: v.id("products"),
-      action: v.union(v.literal("like"), v.literal("unlike"))
+      action: v.union(v.literal("like"), v.literal("unlike")),
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
@@ -210,11 +212,11 @@ export const like = mutation({
 
       const existingLike = await ctx.db
          .query("likes")
-         .filter(q =>
+         .filter((q) =>
             q.and(
                q.eq(q.field("userId"), userId),
-               q.eq(q.field("productId"), args.productId)
-            )
+               q.eq(q.field("productId"), args.productId),
+            ),
          )
          .first();
 
@@ -223,7 +225,7 @@ export const like = mutation({
          await ctx.db.insert("likes", {
             userId,
             productId: args.productId,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
          });
       } else if (args.action === "unlike" && existingLike) {
          // Remove like
@@ -231,7 +233,7 @@ export const like = mutation({
       }
 
       return true;
-   }
+   },
 });
 
 export const create = mutation({
@@ -279,22 +281,38 @@ export const updateStatus = mutation({
          throw new Error("Unauthorized");
       }
 
-      const isProductOwner = await ctx.db
-         .query("products")
-         .filter((q) => q.eq(q.field("sellerId"), userId))
-         .filter((q) => q.eq(q.field("_id"), args.id))
-         .collect()
-         .then((results) => results.length > 0);
-
-      if (!isProductOwner) {
-         throw new Error("Unauthorized");
+      // Check if the product exists and user is the owner
+      const product = await ctx.db.get(args.id);
+      if (!product || product.sellerId !== userId) {
+         throw new Error("Product not found or unauthorized");
       }
 
-      const products = await ctx.db.patch(args.id, {
+      // Check for active orders if trying to make product unavailable
+      const activeOrders = await ctx.db
+         .query("orders")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("productId"), args.id),
+               q.or(
+                  q.eq(q.field("status"), "pending"),
+                  q.eq(q.field("status"), "accepted"),
+               ),
+            ),
+         )
+         .collect();
+
+      if (activeOrders.length > 0) {
+         throw new Error(
+            "Cannot make product unavailable while it has pending or accepted orders",
+         );
+      }
+
+      // If checks pass, update the status
+      const updatedProduct = await ctx.db.patch(args.id, {
          status: args.status,
       });
 
-      return products;
+      return updatedProduct;
    },
 });
 
@@ -314,7 +332,35 @@ export const update = mutation({
       if (!userId) {
          throw new Error("Unauthorized");
       }
-      const products = await ctx.db.patch(args.id, {
+
+      // Check if the product exists and user is the owner
+      const product = await ctx.db.get(args.id);
+      if (!product || product.sellerId !== userId) {
+         throw new Error("Product not found or unauthorized");
+      }
+
+      // Check for active orders
+      const activeOrders = await ctx.db
+         .query("orders")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("productId"), args.id),
+               q.or(
+                  q.eq(q.field("status"), "pending"),
+                  q.eq(q.field("status"), "accepted"),
+               ),
+            ),
+         )
+         .collect();
+
+      if (activeOrders.length > 0) {
+         throw new Error(
+            "Cannot update product with pending or accepted orders",
+         );
+      }
+
+      // If no active orders, proceed with update
+      const updatedProduct = await ctx.db.patch(args.id, {
          name: args.name,
          description: args.description,
          image: args.image,
@@ -322,10 +368,9 @@ export const update = mutation({
          category: args.category,
          quantity: args.quantity,
          productType: args.productType,
-         createdAt: new Date().toISOString(),
-         sellerId: userId,
       });
-      return products;
+
+      return updatedProduct;
    },
 });
 
@@ -338,7 +383,66 @@ export const deleteProduct = mutation({
       if (!userId) {
          throw new Error("Unauthorized");
       }
-      const products = await ctx.db.delete(args.id);
-      return products;
+
+      // Check if the product exists and user is the owner
+      const product = await ctx.db.get(args.id);
+      if (!product || product.sellerId !== userId) {
+         throw new Error("Product not found or unauthorized");
+      }
+
+      // Check for active orders
+      const activeOrders = await ctx.db
+         .query("orders")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("productId"), args.id),
+               q.or(
+                  q.eq(q.field("status"), "pending"),
+                  q.eq(q.field("status"), "accepted"),
+               ),
+            ),
+         )
+         .collect();
+
+      if (activeOrders.length > 0) {
+         throw new Error(
+            "Cannot delete product with pending or accepted orders",
+         );
+      }
+
+      // Get all related data
+      const [likes, completedOrders] = await Promise.all([
+         // Get all likes
+         ctx.db
+            .query("likes")
+            .filter((q) => q.eq(q.field("productId"), args.id))
+            .collect(),
+
+         // Get completed/cancelled orders
+         ctx.db
+            .query("orders")
+            .filter((q) =>
+               q.and(
+                  q.eq(q.field("productId"), args.id),
+                  q.or(
+                     q.eq(q.field("status"), "completed"),
+                     q.eq(q.field("status"), "cancelled"),
+                  ),
+               ),
+            )
+            .collect(),
+      ]);
+
+      // Delete all related data
+      await Promise.all([
+         // Delete likes
+         ...likes.map((like) => ctx.db.delete(like._id)),
+         // Delete completed/cancelled orders
+         ...completedOrders.map((order) => ctx.db.delete(order._id)),
+      ]);
+
+      // Finally delete the product
+      const deletedProduct = await ctx.db.delete(args.id);
+      return deletedProduct;
    },
 });
