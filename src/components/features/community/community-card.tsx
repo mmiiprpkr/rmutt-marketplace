@@ -13,11 +13,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 interface Community {
-   image: string | null;
    userCount: number;
-   _id: Id<"communities"> | undefined;
+   _id?: Id<"communities">;
    _creationTime: number;
-   description?: string;
+   description?: string | undefined;
+   image?: string | undefined;
    name: string;
    createdAt: string;
    userId: Id<"users">;

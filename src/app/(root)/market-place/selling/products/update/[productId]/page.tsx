@@ -32,8 +32,12 @@ const CreateProductPage = () => {
 
          toast.success("Product update successfully");
          router.back();
-      } catch (error) {
-         toast.error("Something went wrong");
+      } catch (error: any) {
+         if (error?.message?.includes("pending or accepted orders")) {
+            toast.error("Cannot update product with active orders");
+         } else {
+            toast.error("Failed to update product");
+         }
       }
    };
    return (
@@ -46,14 +50,14 @@ const CreateProductPage = () => {
          ) : (
             <ProductForm
                initialValues={{
-                  name: productData?.name,
-                  description: productData?.description,
-                  image: productData?.image,
-                  category: productData?.category,
-                  price: productData?.price,
-                  quantity: productData?.quantity,
-                  productType: productData?.productType,
-                  status: productData?.status,
+                  name: productData?.products?.name,
+                  description: productData?.products?.description,
+                  image: productData?.products?.image,
+                  category: productData?.products?.category,
+                  price: productData?.products?.price,
+                  quantity: productData?.products?.quantity,
+                  productType: productData?.products?.productType,
+                  status: productData?.products?.status,
                }}
                onSubmit={handleSubmit}
                isUpdate
