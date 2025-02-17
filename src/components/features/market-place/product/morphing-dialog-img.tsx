@@ -13,6 +13,8 @@ interface MorphingDialogImgProps {
 }
 
 export const MorphingDialogImg = ({ image }: MorphingDialogImgProps) => {
+   if (!image) return null;
+
    return (
       <MorphingDialog
          transition={{

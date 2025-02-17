@@ -130,6 +130,7 @@ export const UpdateOrderStatusDialog = ({
          await updateOrderStatus({
             orderId: orderId,
             status: data.status,
+            paymentImg: data.paymentUrl,
          });
 
          onClose(false);

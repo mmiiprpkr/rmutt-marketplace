@@ -113,6 +113,16 @@ export const columns: ColumnDef<Order>[] = [
       },
    },
    {
+      header: "Payment",
+      cell: ({ row }) => {
+         return (
+            <div className="size-20 aspect-video relative">
+               <MorphingDialogImg image={row.original?.paymentImg || ""} />
+            </div>
+         )
+      }
+   },
+   {
       header: "Actions",
       cell: ({ row }) => {
          const { mutateAsync } = CancelOrder();
