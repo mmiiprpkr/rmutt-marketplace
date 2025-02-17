@@ -3,6 +3,7 @@ import { mutation, query, QueryCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import {
+   populateOrderWithProduct,
    populateProduct,
    populateProductCounts,
    populateProductWithOrder,
@@ -99,7 +100,7 @@ export const createMessage = mutation({
       senderId: v.id("users"),
       content: v.string(),
       image: v.optional(v.string()),
-      productId: v.optional(v.id("products")),
+      orderId: v.optional(v.id("orders")),
    },
    handler: async (ctx, args) => {
       const userId = getAuthUserId(ctx);
@@ -113,7 +114,7 @@ export const createMessage = mutation({
          senderId: args.senderId,
          content: args.content,
          image: args.image,
-         productId: args.productId,
+         orderId: args.orderId,
          createdAt: Date.now().toLocaleString(),
       });
 
@@ -146,12 +147,10 @@ export const getMessage = query({
       const messagesWithUsers = await Promise.all(
          messages.map(async (message) => {
             const user = await populateUser(ctx, message.senderId);
-            const product = message?.productId
-               ? await populateProductWithOrder(
+            const product = message?.orderId
+               ? await populateOrderWithProduct(
                     ctx,
-                    message.productId,
-                    conversation.userId1,
-                    conversation.userId2,
+                    message.orderId,
                  )
                : undefined;
 
@@ -159,7 +158,7 @@ export const getMessage = query({
                ...message,
                sender: user,
                product: product?.product,
-               order: product?.orders,
+               order: product?.order,
             };
          }),
       );

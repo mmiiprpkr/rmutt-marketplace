@@ -78,7 +78,7 @@ export const UpdateOrderStatusDialog = ({
             conversationId: conversation,
             senderId: userId1,
             content: message || "",
-            productId: productId,
+            orderId: orderId,
          });
 
          await updateOrderStatus({

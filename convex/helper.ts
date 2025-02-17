@@ -111,3 +111,16 @@ export const populateProductWithOrder = async (
 
    return { product, orders };
 }
+
+export const populateOrderWithProduct = async (
+   ctx: QueryCtx,
+   orderId: Id<"orders">
+) => {
+   const order = await ctx.db.get(orderId);
+
+   if (!order) return null;
+
+   const product = await ctx.db.get(order.productId);
+
+   return { order, product };
+}
