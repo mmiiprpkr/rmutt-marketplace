@@ -24,6 +24,7 @@ import { MessageCard } from "@/components/features/community/message-card";
 import { uploadFiles } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { EmojiPopover } from "@/components/common/emoji-popover";
 
 type ConversationsIdPageProps = {
    params: {
@@ -37,6 +38,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    const [, setIsOpen] = useQueryState("order");
    const [isLoading, setIsLoading] = useState(false);
    const messagesEndRef = useRef<HTMLDivElement>(null);
+   const inputRef = useRef<HTMLInputElement>(null);
 
    const { data: userData, isLoading: dataLoading } = useGetCurrentUser();
    const { data: messages, isLoading: messageLoading } = useGetMessage({
@@ -109,6 +111,9 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
          }
 
          setMessage("");
+         setTimeout(() => {
+            inputRef.current?.focus();
+         }, 100);
       } catch (error) {
          setIsLoading(false);
          console.error("Error sending message:", error);
@@ -145,6 +150,11 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
 
       fileInput.click();
    };
+
+   const handleOnEmojiSelect = (emoji: any) => {
+      setMessage((prev) => prev + ` ${emoji.native} `);
+      inputRef.current?.focus();
+   }
 
    return (
       <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto flex flex-col relative bg-gradient-to-br from-background via-background/95 to-background/90">
@@ -203,8 +213,12 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
          </div>
 
          {/* Input Container */}
-         <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-lg">
-            <div className="max-w-4xl mx-auto w-full p-4">
+         <div className="relative border-t border-border">
+            {/* Backdrop blur container */}
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-md" />
+
+            {/* Content container */}
+            <div className="relative max-w-4xl mx-auto w-full p-4">
                <div className="flex items-center gap-4 mb-4">
                   {orderLoading ? (
                      <Package2Icon className="w-6 h-6 text-muted-foreground animate-pulse" />
@@ -233,13 +247,15 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                      <ImageUpIcon className="w-6 h-6 text-primary" />
                   </motion.button>
 
-                  <motion.button
-                     whileHover={{ scale: 1.1 }}
-                     whileTap={{ scale: 0.9 }}
-                     className="p-2 hover:bg-accent rounded-full transition-colors duration-300 ease-in-out"
-                  >
-                     <Smile className="w-6 h-6 text-primary" />
-                  </motion.button>
+                  <EmojiPopover onEmojiSelect={handleOnEmojiSelect}>
+                     <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-2 hover:bg-accent rounded-full transition-colors duration-300 ease-in-out"
+                     >
+                        <Smile className="w-6 h-6 text-primary" />
+                     </motion.button>
+                  </EmojiPopover>
 
                   {file && (
                      <motion.div
@@ -257,7 +273,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center hover:opacity-90 transition-opacity duration-300 ease-in-out"
                            onClick={() => setFile(null)}
                         >
-                           ×
+                           X
                         </button>
                      </motion.div>
                   )}
@@ -265,6 +281,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
 
                <div className="flex gap-2 items-center">
                   <Input
+                     ref={inputRef}
                      type="text"
                      placeholder="Type a message..."
                      disabled={createMessagePending}
@@ -276,7 +293,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                            handleSendMessage();
                         }
                      }}
-                     className="flex-1 bg-background/50 backdrop-blur-sm rounded-full py-6 pl-6 pr-12 focus:ring-2 focus:ring-primary/50 transition-all duration-300"
+                     className="flex-1 bg-background/60 rounded-full py-6 px-6 focus:ring-2 focus:ring-primary/50 transition-all duration-300 text-lg"
                   />
                   <motion.div
                      whileHover={{ scale: 1.05 }}
@@ -286,7 +303,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
                         disabled={createMessagePending || isLoading}
                         onClick={handleSendMessage}
                         size="icon"
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
                      >
                         <MessageSquareDiff className="h-6 w-6" />
                      </Button>

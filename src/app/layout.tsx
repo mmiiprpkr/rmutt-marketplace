@@ -34,7 +34,7 @@ export default function RootLayout({
          <html lang="en">
             <body className={inter.className}>
                <ConvexClientProvider>
-                  <Toaster />
+                  <Toaster position="top-right" />
                   <NuqsAdapter>
                      <ThemeProvider
                         attribute="class"
