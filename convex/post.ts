@@ -27,10 +27,6 @@ export const getFeed = query({
       let posts;
 
       if (args.communityId) {
-         if (!userCommunityIds.includes(args.communityId)) {
-            throw new Error("Not a member of this community");
-         }
-
          posts = await ctx.db
             .query("posts")
             .filter((q) => q.eq(q.field("communityId"), args.communityId))

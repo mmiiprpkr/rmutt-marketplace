@@ -4,6 +4,7 @@ import { useGetSavePost } from "@/api/communities/get-savePost";
 import { useGetCurrentUser } from "@/api/get-current-user";
 import { Comments } from "@/components/features/community/comments";
 import { PostFeed } from "@/components/features/community/post-feed";
+import { ProfileStats } from "@/components/features/community/profile-stats";
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 import { SavePostSkeleton } from "@/components/features/community/skeleton/save-post-skeletion";
 
@@ -40,8 +41,8 @@ const SavedPostPage = () => {
             </div>
 
             <div className="lg:block hidden">
-               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border">
-                  Stats
+               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border overflow-y-auto">
+                  <ProfileStats />
                </div>
             </div>
          </div>

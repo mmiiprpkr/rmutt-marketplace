@@ -2,6 +2,7 @@
 
 import { useGetCurrentUser } from "@/api/get-current-user";
 import { UserButton } from "@/components/common/user-button";
+import { ProfileStats } from "@/components/features/community/profile-stats";
 import { NotificationSkeleton } from "@/components/features/community/skeleton/notification-skeletio";
 import dayjs from "dayjs";
 
@@ -42,8 +43,8 @@ const NotificationPage = () => {
             </div>
 
             <div className="lg:block hidden">
-               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border">
-                  Stats
+               <div className="sticky top-[65px] max-h-[700px] bg-background p-4 rounded-lg border overflow-y-auto">
+                  <ProfileStats />
                </div>
             </div>
          </div>
