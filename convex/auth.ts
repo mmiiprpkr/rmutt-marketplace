@@ -5,9 +5,9 @@ export const { auth, signIn, signOut, store } = convexAuth({
    providers: [ResendOTP],
    callbacks: {
       async afterUserCreatedOrUpdated(ctx, args) {
-         // if (args.existingUserId) {
-         //    return;
-         // }
+         if (args.existingUserId) {
+            return;
+         }
 
          let profile_imgs_name_list = [
             "George",
@@ -39,5 +39,6 @@ export const { auth, signIn, signOut, store } = convexAuth({
             image: generateImageURL,
          });
       },
+
    }
 });
