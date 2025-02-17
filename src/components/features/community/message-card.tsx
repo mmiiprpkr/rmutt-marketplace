@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/utils"
 import { Badge } from "@/components/common/ui/badge"
 import { Card } from "@/components/common/ui/card"
 import { OrderStatusBadge } from "../market-place/orders/order-status-badge"
+import { Download } from "lucide-react"; // Add this import
 
 type Message = Doc<"messages"> & {
   sender: Doc<"users"> | undefined | null
@@ -22,6 +23,23 @@ export const MessageCard = ({ isCurrentUser, message }: MessageCardProps) => {
   const isProduct = message?.product
   const isOrder = message?.order
   const isImage = message?.image
+
+  const handleDownload = async (imageUrl: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `image-${Date.now()}.${blob.type.split('/')[1]}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  };
 
   return (
     <div className={cn("flex gap-2 w-fit max-w-full", isCurrentUser ? "ml-auto" : "mr-auto")}>
@@ -48,10 +66,23 @@ export const MessageCard = ({ isCurrentUser, message }: MessageCardProps) => {
           </div>
         )}
 
-        {/* Image Message */}
+        {/* Updated Image Message */}
         {isImage && (
-          <div className="relative w-[200px] md:w-[300px] aspect-video rounded-lg overflow-hidden flex-shrink-0 shadow-md">
-            <Image src={isImage || "/placeholder.svg"} alt="Message attachment" fill className="object-cover" />
+          <div className="relative w-[200px] md:w-[300px] aspect-video rounded-lg overflow-hidden flex-shrink-0 shadow-md group">
+            <Image
+              src={isImage || "/placeholder.svg"}
+              alt="Message attachment"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+              <button
+                onClick={() => handleDownload(isImage)}
+                className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors duration-200"
+              >
+                <Download className="w-6 h-6 text-white" />
+              </button>
+            </div>
           </div>
         )}
 
