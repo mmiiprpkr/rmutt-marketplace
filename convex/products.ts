@@ -230,7 +230,7 @@ export const getFavorites = query({
          .filter((q) => q.eq(q.field("userId"), userId))
          .collect();
 
-      const likedProduct = likes.map((like) => like.productId);
+      const likedProduct = likes.map((like) => like.productId)?.filter(Boolean);
 
       if (!likedProduct.length) return [];
 
