@@ -20,12 +20,6 @@ export const MyPosts = () => {
          <Comments />
          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
             <div className="w-full col-span-2 space-y-4">
-               <div className="sticky top-[60px] backdrop-blur-sm bg-background/80 px-6 py-4 z-10 flex items-center justify-between border-b shadow-sm transition-all duration-200">
-                  <h2 className="text-xl font-semibold text-foreground/80">
-                     Feed
-                  </h2>
-                  <CreatePostButton redirect="/create-post" />
-               </div>
                {isLoading || userLoading
                   ? Array.from({ length: 5 }).map((_, index) => (
                        <PostFeedSkeleton key={index} />

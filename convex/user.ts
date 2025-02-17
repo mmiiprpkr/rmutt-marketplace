@@ -1,4 +1,5 @@
-import { query } from "./_generated/server";
+import { v } from "convex/values";
+import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const currentUser = query({
@@ -11,6 +12,21 @@ export const currentUser = query({
       }
 
       return await ctx.db.get(userId);
+   }
+});
+
+export const updateProfileImage = mutation({
+   args: {
+      image: v.string(),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      return await ctx.db.patch(userId, { image: args.image });
    }
 });
 
