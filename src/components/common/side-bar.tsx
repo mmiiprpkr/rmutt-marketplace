@@ -134,15 +134,22 @@ type SideBarProps = {
    menuItems?: MenuItem[];
 };
 
+const getAllMenuTitles = (items: MenuItem[]): string[] => {
+  return items.reduce((titles: string[], item) => {
+    titles.push(item.title);
+    if (item.submenu) {
+      titles.push(...getAllMenuTitles(item.submenu));
+    }
+    return titles;
+  }, []);
+};
+
 export const SideBar = ({
-   defaultExpandedMenus = [],
+   defaultExpandedMenus = getAllMenuTitles(menuItemsDefault),
    menuItems = menuItemsDefault,
 }: SideBarProps) => {
    const { onClose } = useSideBarStore();
-   const [expandedMenus, setExpandedMenus] = useState<string[]>([
-      "Marketplace",
-      "Community",
-   ]);
+   const [expandedMenus, setExpandedMenus] = useState<string[]>(defaultExpandedMenus);
 
    const { signOut } = useAuthActions();
 
