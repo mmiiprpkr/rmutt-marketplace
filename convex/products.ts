@@ -1,21 +1,22 @@
 import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 
 export const brows = query({
    args: {
-      page: v.number(),
-      limit: v.number(),
       name: v.optional(v.string()),
       category: v.optional(v.string()),
       minPrice: v.optional(v.number()),
       maxPrice: v.optional(v.number()),
+      type: v.optional(v.union(v.literal("food"), v.literal("goods"))),
+      paginationOpts: paginationOptsValidator,
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
 
       if (!userId) {
-         throw new Error("Unauthorized")
+         throw new Error("Unauthorized");
       }
 
       const products = ctx.db
@@ -44,57 +45,25 @@ export const brows = query({
                args.maxPrice !== undefined
                   ? q.lte(q.field("price"), args.maxPrice)
                   : q.eq(q.field("status"), "available"),
+
+               args.type !== undefined
+                  ? q.eq(q.field("productType"), args.type)
+                  : q.eq(q.field("status"), "available"),
             ),
          )
          .order("desc")
-         .collect()
-         .then((results) => {
-            const startIndex = (args.page - 1) * args.limit;
-            const endIndex = startIndex + args.limit;
-            return results.slice(startIndex, endIndex);
-         });
+         .paginate(args.paginationOpts);
 
-      // นับจำนวนทั้งหมด
-      const total = ctx.db
-         .query("products")
-         .filter((q) =>
-            q.and(
-               q.eq(q.field("status"), "available"),
-               args.name !== undefined
-                  ? q.eq(q.field("name"), args.name)
-                  : q.eq(q.field("status"), "available"),
-               args.category !== undefined
-                  ? q.eq(q.field("category"), args.category)
-                  : q.eq(q.field("status"), "available"),
-               args.minPrice !== undefined
-                  ? q.gte(q.field("price"), args.minPrice)
-                  : q.eq(q.field("status"), "available"),
-               args.maxPrice !== undefined
-                  ? q.lte(q.field("price"), args.maxPrice)
-                  : q.eq(q.field("status"), "available"),
-            ),
-         )
-         .collect()
-         .then((result) => result.length);
+      const [productData] = await Promise.all([products]);
 
-      const [productData, totalData] = await Promise.all([products, total]);
-
-      return {
-         productData,
-         pagination: {
-            page: args.page,
-            limit: args.limit,
-            total: totalData,
-            totalPages: Math.ceil(totalData / args.limit),
-         },
-      };
+      return productData;
    },
 });
 
 export const recommend = query({
    args: {
       productType: v.union(v.literal("food"), v.literal("goods")),
-      productId: v.id("products")
+      productId: v.id("products"),
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
