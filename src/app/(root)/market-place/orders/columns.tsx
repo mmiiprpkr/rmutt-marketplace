@@ -44,14 +44,7 @@ export const columns: ColumnDef<Order>[] = [
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-         return (
-            <Link
-               href={`/market-place/selling/products/${row.original?.product?._id}`}
-               className="hidden md:flex"
-            >
-               {row.original?.product?.name}
-            </Link>
-         );
+         return <div>{row.original?.product?.name}</div>;
       },
    },
    {
@@ -88,9 +81,7 @@ export const columns: ColumnDef<Order>[] = [
       cell: ({ row }) => {
          const status = row.original.status;
 
-         return (
-            <Badge variant={status}>{status.toUpperCase()}</Badge>
-         );
+         return <Badge variant={status}>{status.toUpperCase()}</Badge>;
       },
    },
    {

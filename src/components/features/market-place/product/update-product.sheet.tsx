@@ -66,14 +66,14 @@ export const UpdateProductSheet = () => {
                ) : (
                   <ProductForm
                      initialValues={{
-                        name: productData?.name,
-                        description: productData?.description,
-                        image: productData?.image,
-                        category: productData?.category,
-                        price: productData?.price,
-                        quantity: productData?.quantity,
-                        productType: productData?.productType,
-                        status: productData?.status,
+                        name: productData?.products?.name,
+                        description: productData?.products?.description,
+                        image: productData?.products?.image,
+                        category: productData?.products?.category,
+                        price: productData?.products?.price,
+                        quantity: productData?.products?.quantity,
+                        productType: productData?.products?.productType,
+                        status: productData?.products?.status,
                      }}
                      onSubmit={handleSubmit}
                      isUpdate
