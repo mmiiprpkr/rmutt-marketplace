@@ -4,19 +4,26 @@
 import { useCreateMessage } from "@/api/messages/create-message";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
-import { Id } from "../../../../../convex/_generated/dataModel";
+import type { Id } from "../../../../../convex/_generated/dataModel";
 import { useGetCurrentUser } from "@/api/get-current-user";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useGetMessage } from "@/api/messages/get-message";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/components/common/user-button";
 import { useGetOrderByConversations } from "@/api/market-place/order/use-get-order-by-conversations";
 import { ConversationOrderProductDialog } from "./conversation-order-product";
 import { useQueryState } from "nuqs";
-import { ImageUpIcon, MessageSquareDiff, Package2Icon } from "lucide-react";
+import {
+   ImageUpIcon,
+   MessageSquareDiff,
+   Package2Icon,
+   Paperclip,
+   Smile,
+} from "lucide-react";
 import { MessageCard } from "@/components/features/community/message-card";
 import { uploadFiles } from "@/lib/uploadthing";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 type ConversationsIdPageProps = {
    params: {
@@ -29,6 +36,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    const [file, setFile] = useState<File | null>(null);
    const [, setIsOpen] = useQueryState("order");
    const [isLoading, setIsLoading] = useState(false);
+   const messagesEndRef = useRef<HTMLDivElement>(null);
 
    const { data: userData, isLoading: dataLoading } = useGetCurrentUser();
    const { data: messages, isLoading: messageLoading } = useGetMessage({
@@ -41,8 +49,16 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
          conversationId: params.conversationId as Id<"conversations">,
       });
 
+   useEffect(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+   }, [messages]);
+
    if (dataLoading || messageLoading) {
-      return <div>Loading...</div>;
+      return (
+         <div className="flex items-center justify-center h-screen">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+         </div>
+      );
    }
 
    const handleFileUpload = async (file: File) => {
@@ -98,7 +114,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
          console.error("Error sending message:", error);
          toast.error("Failed to send message. Please try again.");
       } finally {
-         setIsLoading(false)
+         setIsLoading(false);
       }
    };
 
@@ -131,93 +147,151 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    };
 
    return (
-      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto p-4 flex flex-col relative">
+      <div className="h-[calc(100vh-60px)] max-w-7xl w-full mx-auto flex flex-col relative bg-gradient-to-br from-background via-background/95 to-background/90">
          <ConversationOrderProductDialog order={orderData} />
 
-         <div className="flex-grow overflow-y-auto flex flex-col w-full space-y-3">
-            {messages?.map((message, i) => {
-               const isCurrentUser = userData?._id === message?.senderId;
-               return (
-                  <div
-                     className={cn(
-                        "flex gap-2 items-start",
-                        isCurrentUser ? "justify-end" : "justify-start",
-                     )}
-                     key={i}
-                  >
-                     {userData?._id !== message?.senderId && (
-                        <UserButton
-                           imageUrl={message?.sender?.image ?? ""}
-                           userId1={userData?._id}
-                           userId2={message?.sender?._id}
-                           type="profile"
-                        />
-                     )}
-                     <MessageCard
-                        isCurrentUser={isCurrentUser}
-                        message={message}
-                     />
-                  </div>
-               );
-            })}
+         {/* Messages Container */}
+         <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 transition-colors duration-200">
+            <div className="max-w-4xl mx-auto w-full space-y-6">
+               <AnimatePresence initial={false}>
+                  {messages?.map((message, i) => {
+                     const isCurrentUser = userData?._id === message?.senderId;
+                     const isFirstMessage =
+                        i === 0 ||
+                        messages[i - 1]?.senderId !== message.senderId;
+
+                     return (
+                        <motion.div
+                           key={i}
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           exit={{ opacity: 0, y: -20 }}
+                           transition={{ duration: 0.3 }}
+                           className={cn(
+                              "flex gap-3 items-start group",
+                              isCurrentUser ? "justify-end" : "justify-start",
+                              "px-2 md:px-0",
+                           )}
+                        >
+                           {!isCurrentUser && isFirstMessage && (
+                              <div className="flex-shrink-0">
+                                 <UserButton
+                                    imageUrl={message?.sender?.image ?? ""}
+                                    userId1={userData?._id}
+                                    userId2={message?.sender?._id}
+                                    type="profile"
+                                 />
+                              </div>
+                           )}
+                           <div
+                              className={cn(
+                                 "max-w-[85%] md:max-w-[70%]",
+                                 !isCurrentUser && !isFirstMessage && "ml-10",
+                              )}
+                           >
+                              <MessageCard
+                                 isCurrentUser={isCurrentUser}
+                                 message={message}
+                              />
+                           </div>
+                        </motion.div>
+                     );
+                  })}
+               </AnimatePresence>
+               <div ref={messagesEndRef} />
+            </div>
          </div>
 
-         <div className="flex flex-col w-full border-t border-secondary py-2">
-            <div className="flex items-center space-x-5">
-               {orderLoading ? (
-                  <Package2Icon className="w-6 h-6" />
-               ) : (
-                  orderData?.[0]?.sellerId === userData?._id && (
-                     <div
-                        className="relative p-2 cursor-pointer hover:opacity-75 w-fit"
-                        onClick={() => setIsOpen("true")}
+         {/* Input Container */}
+         <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-lg">
+            <div className="max-w-4xl mx-auto w-full p-4">
+               <div className="flex items-center gap-4 mb-4">
+                  {orderLoading ? (
+                     <Package2Icon className="w-6 h-6 text-muted-foreground animate-pulse" />
+                  ) : (
+                     orderData?.[0]?.sellerId === userData?._id && (
+                        <motion.div
+                           whileHover={{ scale: 1.1 }}
+                           whileTap={{ scale: 0.9 }}
+                           className="relative p-2 cursor-pointer w-fit"
+                           onClick={() => setIsOpen("true")}
+                        >
+                           <Package2Icon className="w-6 h-6 text-primary" />
+                           <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              {orderData?.length}
+                           </span>
+                        </motion.div>
+                     )
+                  )}
+
+                  <motion.button
+                     whileHover={{ scale: 1.1 }}
+                     whileTap={{ scale: 0.9 }}
+                     className="p-2 hover:bg-accent rounded-full transition-colors duration-300 ease-in-out"
+                     onClick={handleClickImage}
+                  >
+                     <ImageUpIcon className="w-6 h-6 text-primary" />
+                  </motion.button>
+
+                  <motion.button
+                     whileHover={{ scale: 1.1 }}
+                     whileTap={{ scale: 0.9 }}
+                     className="p-2 hover:bg-accent rounded-full transition-colors duration-300 ease-in-out"
+                  >
+                     <Smile className="w-6 h-6 text-primary" />
+                  </motion.button>
+
+                  {file && (
+                     <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="relative"
                      >
-                        <Package2Icon className="w-6 h-6" />
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full px-1">
-                           {orderData?.length}
-                        </span>
-                     </div>
-                  )
-               )}
+                        <img
+                           src={URL.createObjectURL(file) || "/placeholder.svg"}
+                           alt="Preview"
+                           className="h-20 w-20 object-cover rounded-md shadow-md"
+                        />
+                        <button
+                           className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-5 h-5 flex items-center justify-center hover:opacity-90 transition-opacity duration-300 ease-in-out"
+                           onClick={() => setFile(null)}
+                        >
+                           ×
+                        </button>
+                     </motion.div>
+                  )}
+               </div>
 
-               <ImageUpIcon className="w-6 h-6" onClick={handleClickImage} />
-
-               {file && (
-                  <div className="flex items-center space-x-2 relative">
-                     <img
-                        src={URL.createObjectURL(file)}
-                        alt="Uploaded file preview"
-                        className="size-36 object-cover"
-                     />
-                     <button
-                        className="absolute top-2 right-2"
-                        onClick={() => setFile(null)}
+               <div className="flex gap-2 items-center">
+                  <Input
+                     type="text"
+                     placeholder="Type a message..."
+                     disabled={createMessagePending}
+                     value={message}
+                     onChange={(e) => setMessage(e.target.value)}
+                     onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                           e.preventDefault();
+                           handleSendMessage();
+                        }
+                     }}
+                     className="flex-1 bg-background/50 backdrop-blur-sm rounded-full py-6 pl-6 pr-12 focus:ring-2 focus:ring-primary/50 transition-all duration-300"
+                  />
+                  <motion.div
+                     whileHover={{ scale: 1.05 }}
+                     whileTap={{ scale: 0.95 }}
+                  >
+                     <Button
+                        disabled={createMessagePending || isLoading}
+                        onClick={handleSendMessage}
+                        size="icon"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center"
                      >
-                        X
-                     </button>
-                  </div>
-               )}
-            </div>
-            <div className="flex space-x-4 py-2 bg-background">
-               <Input
-                  type="text"
-                  placeholder="Type a message"
-                  disabled={createMessagePending}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                     if (e.key === "Enter") {
-                        handleSendMessage();
-                     }
-                  }}
-               />
-
-               <Button
-                  disabled={createMessagePending || isLoading}
-                  onClick={handleSendMessage}
-               >
-                  Send
-               </Button>
+                        <MessageSquareDiff className="h-6 w-6" />
+                     </Button>
+                  </motion.div>
+               </div>
             </div>
          </div>
       </div>
