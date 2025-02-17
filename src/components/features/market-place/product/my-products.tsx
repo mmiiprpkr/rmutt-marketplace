@@ -13,9 +13,14 @@ import { Search } from "lucide-react";
 import { MobileFilter } from "@/components/features/market-place/browse-products/mobile-filter";
 import { useEffect, useState } from "react";
 import { useUserId } from "@/hooks/use-user-id";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
-export const BrowsMyProduct = () => {
-   const userId = useUserId();
+interface BrowsMyProductProps {
+   userAccountId?: Id<"users">;
+}
+
+export const BrowsMyProduct = ({ userAccountId }: BrowsMyProductProps) => {
+   const userId = userAccountId || useUserId();
    if (!userId) return null;
 
    const [filter, setFilter] = useQueryStates({

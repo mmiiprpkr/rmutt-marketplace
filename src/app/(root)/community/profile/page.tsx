@@ -162,10 +162,10 @@ const ProfilePage = () => {
                      </TabsTrigger>
                   </TabsList>
                   <TabsContent value="posts" className="mt-6">
-                     <MyPosts />
+                     <MyPosts userAccountId={data?._id!}/>
                   </TabsContent>
                   <TabsContent value="marketplace" className="mt-6">
-                     <BrowsMyProduct />
+                     <BrowsMyProduct userAccountId={data?._id!} />
                   </TabsContent>
                </Tabs>
             </>

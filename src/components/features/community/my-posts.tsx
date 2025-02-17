@@ -11,9 +11,14 @@ import { ProfileStats } from "@/components/features/community/profile-stats";
 import { useGetMyPosts } from "@/api/communities/get-my-post";
 import { useUserId } from "@/hooks/use-user-id";
 import { useGetUserById } from "@/api/get-user-by-id";
+import { Id } from "../../../../convex/_generated/dataModel";
 
-export const MyPosts = () => {
-   const userId = useUserId();
+interface MyPostsProps {
+   userAccountId?: Id<"users">;
+}
+
+export const MyPosts = ({ userAccountId }: MyPostsProps) => {
+   const userId = userAccountId || useUserId();
 
    if (!userId) return null;
 
