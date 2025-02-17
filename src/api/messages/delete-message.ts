@@ -5,7 +5,7 @@ import { useConvexMutation } from "@convex-dev/react-query";
 
 export const useDeleteMessage = () => {
    const message = useMutation({
-      mutationFn: useConvexMutation(api.messages.updateMessage),
+      mutationFn: useConvexMutation(api.messages.deleteMessage),
    });
 
    return message;
