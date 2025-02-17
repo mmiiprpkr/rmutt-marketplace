@@ -151,6 +151,37 @@ export const get = query({
    },
 });
 
+export const getFavorites = query({
+   args: {},
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+      if (!userId) throw new Error("Unauthorized");
+
+      // Get all likes for the user
+      const likes = await ctx.db
+         .query("likes")
+         .filter((q) => q.eq(q.field("userId"), userId))
+         .collect();
+
+      const likedProduct = likes.map((like) => like.productId);
+
+      if (!likedProduct.length) return [];
+
+      // Get all products that the user liked
+      const products = await Promise.all(likedProduct.map(async (productId) => {
+         if (!productId) return;
+
+         const product = await ctx.db.get(productId);
+         return {
+            ...product,
+            isLiked: true,
+         };
+      }));
+
+      return products;
+   }
+});
+
 export const getById = query({
    args: {
       id: v.id("products"),
