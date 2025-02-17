@@ -95,7 +95,7 @@ export const getMyPosts = query({
    }
 });
 
-export const getPost = query({
+export const getPostById = query({
    args: {
       postId: v.id("posts"),
    },
@@ -112,15 +112,68 @@ export const getPost = query({
          throw new Error("Post not found");
       }
 
-      const interactions = await populateInteractions(ctx, post._id, userId);
-      return {
-         ...post,
-         user: await populateUser(ctx, post.userId),
-         commentCount: await populateCommentCounts(ctx, post._id),
-         ...interactions,
-      };
+      return post;
    },
 });
+
+export const updatePost = mutation({
+   args: {
+      postId: v.id("posts"),
+      content: v.string(),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const post = await ctx.db.query("posts")
+         .filter(q =>
+            q.and(
+               q.eq(q.field("userId"), userId),
+               q.eq(q.field("_id"), args.postId)
+            )
+         )
+         .first();
+
+      if (!post) {
+         throw new Error("Post not found");
+      }
+
+      return await ctx.db.patch(post._id, {
+         title: args.content,
+      });
+   }
+})
+
+export const deletePost = mutation({
+   args: {
+      postId: v.id("posts"),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const post = await ctx.db.query("posts")
+         .filter(q =>
+            q.and(
+               q.eq(q.field("userId"), userId),
+               q.eq(q.field("_id"), args.postId)
+            )
+         )
+         .first();
+
+      if (!post) {
+         throw new Error("Post not found");
+      }
+
+      await ctx.db.delete(post._id);
+   }
+})
 
 export const getSavedPosts = query({
    args: {},

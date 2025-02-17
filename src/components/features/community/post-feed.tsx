@@ -14,15 +14,28 @@ import { Button } from "@/components/common/ui/button";
 import {
    BookmarkCheckIcon,
    BookmarkIcon,
+   EditIcon,
+   Ellipsis,
    HeartIcon,
    MessageSquareIcon,
    Share2Icon,
+   Trash,
 } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useSavePost } from "@/api/communities/save-post";
 import { useLikePost } from "@/api/communities/like-post";
 import { cn, formatDate } from "@/lib/utils";
 import { UserButton } from "@/components/common/user-button";
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuTrigger,
+} from "@/components/common/ui/dropdown-menu";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useDeletePost } from "@/api/communities/use-delete-post";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type PostFeedProps = {
    post: {
@@ -46,10 +59,19 @@ type PostFeedProps = {
 };
 
 export const PostFeed = ({ post, userId }: PostFeedProps) => {
+   const router = useRouter();
    const [postId, setPostId] = useQueryState("communityPostId");
 
    const { mutate: savePost, isPending: savePostPending } = useSavePost();
    const { mutate: likePost, isPending: likePostPending } = useLikePost();
+   const { mutateAsync: deletePost, isPending: deletePostPending } =
+      useDeletePost();
+
+   const [Confirmation, confirm] = useConfirm(
+      "Are you sure you want to delete this post?",
+      "Delete",
+      "destructive",
+   );
 
    const handleLikeReactionsPost = (
       type: "like" | "save",
@@ -69,8 +91,54 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
 
    const [showFullText, setShowFullText] = useState(false);
 
+   const handleDeletePost = async () => {
+      try {
+         const ok = await confirm();
+
+         if (!ok) return;
+
+         await deletePost({
+            postId: post._id as Id<"posts">,
+         });
+      } catch (error) {
+         toast.error("Failed to delete post");
+         console.log("Failed to delete post:", error);
+      }
+   };
+
    return (
-      <Card key={post._id} className="shadow-none">
+      <Card key={post._id} className="shadow-none relative">
+         <Confirmation />
+
+         {post?.userId === userId && (
+            <div className="absolute top-2 right-2">
+               <DropdownMenu>
+                  <DropdownMenuTrigger>
+                     <Ellipsis className="size-4" />
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent>
+                     <DropdownMenuItem
+                        onClick={() =>
+                           router.push(`/community/post/${post._id}`)
+                        }
+                     >
+                        <div className="flex items-center space-x-2">
+                           <EditIcon className="size-4" />
+                           <span>Edit</span>
+                        </div>
+                     </DropdownMenuItem>
+                     <DropdownMenuItem onClick={handleDeletePost}>
+                        <div className="flex items-center space-x-2">
+                           <Trash className="size-4" />
+                           <span>Delete</span>
+                        </div>
+                     </DropdownMenuItem>
+                  </DropdownMenuContent>
+               </DropdownMenu>
+            </div>
+         )}
+
          <CardContent className="p-4">
             {/* User Info Section */}
             <CardHeader className="p-0 mb-4">
