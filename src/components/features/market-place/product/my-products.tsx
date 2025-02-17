@@ -20,8 +20,8 @@ interface BrowsMyProductProps {
 }
 
 export const BrowsMyProduct = ({ userAccountId }: BrowsMyProductProps) => {
-   const userId = userAccountId || useUserId();
-   if (!userId) return null;
+   const currentUserId = useUserId();
+   const userId = userAccountId || currentUserId;
 
    const [filter, setFilter] = useQueryStates({
       name: parseAsString,
@@ -43,7 +43,7 @@ export const BrowsMyProduct = ({ userAccountId }: BrowsMyProductProps) => {
          maxPrice: maxPrice || undefined,
          minPrice: minPrice || undefined,
          category: category || undefined,
-         userId,
+         userId: userId!,
       },
       {
          initialNumItems: 25,

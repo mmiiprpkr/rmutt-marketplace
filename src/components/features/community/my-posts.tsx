@@ -18,15 +18,14 @@ interface MyPostsProps {
 }
 
 export const MyPosts = ({ userAccountId }: MyPostsProps) => {
-   const userId = userAccountId || useUserId();
-
-   if (!userId) return null;
+   const currentUserId = useUserId();
+   const userId = userAccountId || currentUserId;
 
    const { data, isLoading } = useGetMyPosts({
       userId,
    });
 
-   const { data: userData, isLoading: userLoading } = useGetUserById(userId);
+   const { data: userData, isLoading: userLoading } = useGetUserById(userId!);
 
    return (
       <div className="px-4 min-h-screen max-w-7xl w-full mx-auto">

@@ -23,44 +23,7 @@ import { useGetUserById } from "@/api/get-user-by-id";
 const ProfilePage = () => {
    const userId = useUserId();
 
-   if (!userId) return null;
-
-   const { data, isLoading, isError } = useGetUserById(userId);
-
-   const { mutateAsync, isPending } = useUpdateProfileImg();
-
-   const onDrop = async (acceptedFiles: File[]) => {
-      try {
-         const files = acceptedFiles[0];
-
-         const res = await uploadFiles("imageUploader", {
-            files: [files],
-         });
-
-         const imageUrl = res[0].url;
-         await handleProfileImageChange(imageUrl);
-         toast.success("Image uploaded successfully");
-      } catch (error) {
-         toast.error("Failed to upload image");
-         console.error("Error uploading files:", error);
-      }
-   };
-
-   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-      onDrop,
-      accept: { "image/*": [] },
-      multiple: false,
-   });
-
-   const handleProfileImageChange = async (newImage: string) => {
-      try {
-         await mutateAsync({
-            image: newImage,
-         });
-      } catch (error) {
-         console.error("Error updating profile image:", error);
-      }
-   };
+   const { data, isLoading, isError } = useGetUserById(userId!);
 
    if (isError) {
       return <div>Error</div>;
@@ -83,19 +46,6 @@ const ProfilePage = () => {
                         <div className="flex flex-col md:flex-row items-center gap-6">
                            {/* Avatar */}
                            <div className="relative">
-                              <div
-                                 {...getRootProps()}
-                                 className="cursor-pointer opacity-0"
-                              >
-                                 <input {...getInputProps()} />
-                                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center">
-                                    <div className="text-white text-sm">
-                                       {isDragActive
-                                          ? "Drop the files here"
-                                          : "Drag and drop your profile image here"}
-                                    </div>
-                                 </div>
-                              </div>
                               <img
                                  src={data?.image}
                                  className="size-32 rounded-xl ring-4 ring-background"
