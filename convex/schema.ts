@@ -60,6 +60,7 @@ const schema = defineSchema({
       sellerId: v.id("users"),
       quantity: v.number(),
       totalPrice: v.number(),
+      paymentImg: v.optional(v.string()),
       status: v.union(
          v.literal("pending"), // รอยืนยัน (ลด quantity แล้ว)
          v.literal("accepted"), // ยืนยันแล้ว สร้าง conversation

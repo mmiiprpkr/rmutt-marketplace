@@ -153,6 +153,7 @@ export const update = mutation({
          v.literal("completed"), // ส่งของแล้ว
          v.literal("cancelled"), // ยกเลิก (เพิ่ม quantity กลับ)
       ),
+      paymentImg: v.optional(v.string())
    },
    handler: async (ctx, args) => {
       const userId = getAuthUserId(ctx);
@@ -163,10 +164,31 @@ export const update = mutation({
 
       const order = await ctx.db.patch(args.orderId, {
          status: args.status,
+         paymentImg: args.paymentImg,
       });
       return order;
    },
 });
+
+export const updateOrderPayment = mutation({
+   args: {
+      orderId: v.id("orders"),
+      paymentImg: v.string(),
+   },
+   handler: async (ctx, args) => {
+      const userId = getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const order = await ctx.db.patch(args.orderId, {
+         paymentImg: args.paymentImg,
+      });
+
+      return order;
+   }
+})
 
 export const deleteOrder = mutation({
    args: {

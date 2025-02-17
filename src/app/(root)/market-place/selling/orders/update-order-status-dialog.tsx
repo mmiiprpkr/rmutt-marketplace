@@ -20,6 +20,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateProductStatus } from "@/api/market-place/product/use-update-status";
 import { useUpdateOrderStatus } from "@/api/market-place/order/use-update-order-status";
 import { toast } from "sonner";
+import Image from "next/image";
+import { useDropzone } from "react-dropzone";
+import { ImageIcon, Loader, X } from "lucide-react";
+import { useUploadPayment } from "@/api/market-place/order/use-upload-payment";
+import { uploadFiles } from "@/lib/uploadthing";
 
 interface UpdateOrderStatusDialogProps {
    open: boolean;
@@ -36,6 +41,7 @@ const statusOptions = ["pending", "accepted", "completed", "cancelled"];
 const formSchema = z.object({
    message: z.string().optional(),
    status: z.enum(["pending", "accepted", "completed", "cancelled"]),
+   paymentUrl: z.string().optional(),
 });
 
 export const UpdateOrderStatusDialog = ({
@@ -47,15 +53,55 @@ export const UpdateOrderStatusDialog = ({
    status,
    productId,
 }: UpdateOrderStatusDialogProps) => {
+   const [imageUploading, setImageUploading] = useState(false);
    const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
          status,
          message: "",
+         paymentUrl: undefined,
       },
    });
 
-   const { message, status: updateStatus } = form.watch();
+   const handleFileUpload = async (file: File) => {
+      try {
+         const res = await uploadFiles("imageUploader", {
+            files: [file],
+         });
+
+         if (!res?.[0]?.url) {
+            toast.error("Failed to upload image");
+            throw new Error("Failed to upload image");
+         }
+
+         return res[0].url;
+      } catch (error) {
+         console.error("Error uploading file:", error);
+         toast.error("Failed to upload image. Please try again.");
+         throw error;
+      }
+   };
+
+   const onDrop = async (acceptedFiles: File[]) => {
+      try {
+         setImageUploading(true);
+         const paymentImg = await handleFileUpload(acceptedFiles[0]);
+         form.setValue("paymentUrl", paymentImg);
+      } catch (error) {
+         setImageUploading(false);
+         toast.error("Fail to upload payment image");
+      } finally {
+         setImageUploading(false);
+      }
+   };
+
+   const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      onDrop,
+      accept: { "image/*": [] },
+      multiple: false,
+   });
+
+   const { message, status: updateStatus, paymentUrl } = form.watch();
    const isSubmitting = form.formState.isSubmitting;
 
    const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
@@ -140,6 +186,63 @@ export const UpdateOrderStatusDialog = ({
                )}
                disabled={isSubmitting}
             />
+
+            {updateStatus === "completed" && (
+               <>
+                  {!paymentUrl && (
+                     <div
+                        {...getRootProps()}
+                        className={cn(
+                           "border-2 border-dashed p-6 text-center rounded-lg transition-colors duration-300",
+                           isDragActive
+                              ? "border-primary bg-primary/10 dark:border-primary dark:bg-primary/30"
+                              : "border-border bg-secondary/20 dark:border-border dark:bg-secondary/30",
+                        )}
+                     >
+                        <input {...getInputProps()} />
+                        {isDragActive ? (
+                           <p className="text-primary dark:text-primary-foreground">
+                              Drop the payment here ...
+                           </p>
+                        ) : (
+                           <div className="flex flex-col items-center justify-center gap-2">
+                              <p className="text-muted-foreground">
+                                 Drag n drop an image here, or click to select
+                                 one
+                              </p>
+                              <Button type="button" variant="outline">
+                                 Select Image <ImageIcon className="w-4 h-4" />
+                              </Button>
+
+                              {imageUploading && (
+                                 <Loader className="animate-spin size-5" />
+                              )}
+                           </div>
+                        )}
+                     </div>
+                  )}
+                  {!!paymentUrl && (
+                     <div className="relative inline-block w-[300px] h-[200px]">
+                        <Image
+                           src={paymentUrl}
+                           alt="Preview"
+                           fill
+                           className="rounded-lg object-cover"
+                        />
+                        <Button
+                           size="icon"
+                           variant="secondary"
+                           className="absolute top-2 right-2"
+                           onClick={() => {
+                              form.setValue("paymentUrl", undefined);
+                           }}
+                        >
+                           <X className="h-4 w-4" />
+                        </Button>
+                     </div>
+                  )}
+               </>
+            )}
 
             <div className="flex flex-col-reverse md:flex-row gap-2 md:justify-end">
                <Button
