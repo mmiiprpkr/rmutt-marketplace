@@ -99,7 +99,7 @@ export const UserButton = ({
                         Chat
                      </DropdownMenuItem>
                      <DropdownMenuItem
-                        onClick={() => handleRedirect("/profile")}
+                        onClick={() => handleRedirect(`/community/profile/${userId2}`)}
                      >
                         Profile
                      </DropdownMenuItem>

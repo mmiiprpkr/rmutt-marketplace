@@ -9,10 +9,19 @@ import { useGetCurrentUser } from "@/api/get-current-user";
 import { CreatePostButton } from "@/components/features/community/create-post-button";
 import { ProfileStats } from "@/components/features/community/profile-stats";
 import { useGetMyPosts } from "@/api/communities/get-my-post";
+import { useUserId } from "@/hooks/use-user-id";
+import { useGetUserById } from "@/api/get-user-by-id";
 
 export const MyPosts = () => {
-   const { data, isLoading } = useGetMyPosts();
-   const { data: userData, isLoading: userLoading } = useGetCurrentUser();
+   const userId = useUserId();
+
+   if (!userId) return null;
+
+   const { data, isLoading } = useGetMyPosts({
+      userId,
+   });
+
+   const { data: userData, isLoading: userLoading } = useGetUserById(userId);
 
    return (
       <div className="px-4 min-h-screen max-w-7xl w-full mx-auto">

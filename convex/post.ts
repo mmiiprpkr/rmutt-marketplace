@@ -64,9 +64,11 @@ export const getFeed = query({
 });
 
 export const getMyPosts = query({
-   args: {},
-   handler: async (ctx) => {
-      const userId = await getAuthUserId(ctx);
+   args: {
+      userId: v.optional(v.id("users")),
+   },
+   handler: async (ctx, args) => {
+      const userId = args.userId || await getAuthUserId(ctx);
 
       if (!userId) {
          throw new Error("Unauthorized");

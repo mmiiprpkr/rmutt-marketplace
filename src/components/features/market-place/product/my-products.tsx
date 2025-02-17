@@ -12,8 +12,12 @@ import { useDebounceValue } from "usehooks-ts";
 import { Search } from "lucide-react";
 import { MobileFilter } from "@/components/features/market-place/browse-products/mobile-filter";
 import { useEffect, useState } from "react";
+import { useUserId } from "@/hooks/use-user-id";
 
 export const BrowsMyProduct = () => {
+   const userId = useUserId();
+   if (!userId) return null;
+
    const [filter, setFilter] = useQueryStates({
       name: parseAsString,
       type: parseAsString,
@@ -34,6 +38,7 @@ export const BrowsMyProduct = () => {
          maxPrice: maxPrice || undefined,
          minPrice: minPrice || undefined,
          category: category || undefined,
+         userId,
       },
       {
          initialNumItems: 25,

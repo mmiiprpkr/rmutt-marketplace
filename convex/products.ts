@@ -83,10 +83,11 @@ export const myProduct = query({
       minPrice: v.optional(v.number()),
       maxPrice: v.optional(v.number()),
       type: v.optional(v.union(v.literal("food"), v.literal("goods"))),
+      userId: v.id("users"),
       paginationOpts: paginationOptsValidator,
    },
    handler: async (ctx, args) => {
-      const userId = await getAuthUserId(ctx);
+      const userId = args.userId;
 
       if (!userId) {
          throw new Error("Unauthorized");
