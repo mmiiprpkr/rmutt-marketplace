@@ -8,6 +8,7 @@ import {
    populateProductCounts,
    populateProductWithOrder,
 } from "./helper";
+import { paginationOptsValidator } from "convex/server";
 
 const populateUser = async (ctx: QueryCtx, userId: Id<"users">) => {
    const user = await ctx.db.get(userId);
@@ -124,48 +125,41 @@ export const createMessage = mutation({
 
 export const getMessage = query({
    args: {
-      conversationId: v.id("conversations"),
+     conversationId: v.id("conversations"),
+     paginationOpts: paginationOptsValidator
    },
    handler: async (ctx, args) => {
-      const userId = getAuthUserId(ctx);
+     const userId = getAuthUserId(ctx);
+     if (!userId) throw new Error("Unauthorized");
 
-      if (!userId) {
-         throw new Error("Unauthorized");
-      }
+     const messages = await ctx.db
+       .query("messages")
+       .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
+       .order("desc")
+       .paginate(args.paginationOpts);
 
-      const conversation = await ctx.db.get(args.conversationId);
+     const messagesWithUsers = await Promise.all(
+       messages.page.map(async (message) => {
+         const user = await populateUser(ctx, message.senderId);
+         const product = message?.orderId
+           ? await populateOrderWithProduct(ctx, message.orderId)
+           : undefined;
 
-      if (!conversation) {
-         throw new Error("Conversation not found");
-      }
+         return {
+           ...message,
+           sender: user,
+           product: product?.product,
+           order: product?.order,
+         };
+       })
+     );
 
-      const messages = await ctx.db
-         .query("messages")
-         .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
-         .collect();
-
-      const messagesWithUsers = await Promise.all(
-         messages.map(async (message) => {
-            const user = await populateUser(ctx, message.senderId);
-            const product = message?.orderId
-               ? await populateOrderWithProduct(
-                    ctx,
-                    message.orderId,
-                 )
-               : undefined;
-
-            return {
-               ...message,
-               sender: user,
-               product: product?.product,
-               order: product?.order,
-            };
-         }),
-      );
-
-      return messagesWithUsers;
+     return {
+       ...messages,
+       page: messagesWithUsers,
+     };
    },
-});
+ });
 
 export const deleteMessage = mutation({
    args: {
