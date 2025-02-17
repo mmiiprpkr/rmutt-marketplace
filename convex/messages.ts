@@ -98,6 +98,7 @@ export const createMessage = mutation({
       conversationId: v.id("conversations"),
       senderId: v.id("users"),
       content: v.string(),
+      image: v.optional(v.string()),
       productId: v.optional(v.id("products")),
    },
    handler: async (ctx, args) => {
@@ -111,6 +112,7 @@ export const createMessage = mutation({
          conversationId: args.conversationId,
          senderId: args.senderId,
          content: args.content,
+         image: args.image,
          productId: args.productId,
          createdAt: Date.now().toLocaleString(),
       });
