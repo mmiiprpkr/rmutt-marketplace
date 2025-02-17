@@ -2,6 +2,14 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
+import { populateLikeProduct } from "./helper";
+import {
+   getAll,
+   getOneFrom,
+   getManyFrom,
+   getManyVia,
+ } from "convex-helpers/server/relationships";
+ import { asyncMap } from "convex-helpers";
 
 export const brows = query({
    args: {
@@ -19,7 +27,7 @@ export const brows = query({
          throw new Error("Unauthorized");
       }
 
-      const products = ctx.db
+      const products = await ctx.db
          .query("products")
          .filter((q) =>
             q.and(
@@ -54,9 +62,17 @@ export const brows = query({
          .order("desc")
          .paginate(args.paginationOpts);
 
-      const [productData] = await Promise.all([products]);
+         const productsWithLikes = await Promise.all(
+            products.page?.map(async (product) => ({
+               ...product,
+               isLiked: await populateLikeProduct(ctx, product._id, userId),
+            })) || []
+         );
 
-      return productData;
+         return {
+            ...products,
+            page: productsWithLikes,
+         };
    },
 });
 
@@ -83,8 +99,17 @@ export const recommend = query({
          )
          .collect();
 
+      const productWithLikes = await Promise.all(
+         allProducts.map(async (p) => {
+            return {
+               ...p,
+               isLiked: await populateLikeProduct(ctx, p._id, userId)
+            }
+         })
+      )
+
       // Randomly shuffle the array and take first 3 items
-      const shuffled = allProducts.sort(() => 0.5 - Math.random());
+      const shuffled = productWithLikes.sort(() => 0.5 - Math.random());
       return shuffled.slice(0, 10);
    },
 });
@@ -136,8 +161,46 @@ export const getById = query({
          throw new Error("Unauthorized");
       }
       const products = await ctx.db.get(args.id);
-      return products;
+
+      const isLiked = await populateLikeProduct(ctx, args.id, userId);
+
+      return { products, isLiked };
    },
+});
+
+export const like = mutation({
+   args: {
+      productId: v.id("products"),
+      action: v.union(v.literal("like"), v.literal("unlike"))
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+      if (!userId) throw new Error("Unauthorized");
+
+      const existingLike = await ctx.db
+         .query("likes")
+         .filter(q =>
+            q.and(
+               q.eq(q.field("userId"), userId),
+               q.eq(q.field("productId"), args.productId)
+            )
+         )
+         .first();
+
+      if (args.action === "like" && !existingLike) {
+         // Add like
+         await ctx.db.insert("likes", {
+            userId,
+            productId: args.productId,
+            createdAt: new Date().toISOString()
+         });
+      } else if (args.action === "unlike" && existingLike) {
+         // Remove like
+         await ctx.db.delete(existingLike._id);
+      }
+
+      return true;
+   }
 });
 
 export const create = mutation({

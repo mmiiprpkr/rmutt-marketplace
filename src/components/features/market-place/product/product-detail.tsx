@@ -10,6 +10,7 @@ import { useCreateOrder } from "@/api/market-place/order/use-create-order";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useLikeProduct } from "@/api/market-place/product/use-like-product";
 
 interface ProductDetailProps {
    productDetail:
@@ -29,9 +30,10 @@ interface ProductDetailProps {
         }
       | null
       | undefined;
+   isLiked: boolean | undefined;
 }
 
-export const ProductDetail = ({ productDetail }: ProductDetailProps) => {
+export const ProductDetail = ({ productDetail, isLiked }: ProductDetailProps) => {
    const [quantity, setQuantity] = useState(1);
    const { mutate: createOrder, isPending: createOrderPending } =
       useCreateOrder();
@@ -40,6 +42,31 @@ export const ProductDetail = ({ productDetail }: ProductDetailProps) => {
       "Create order",
       "outline",
    );
+
+      const { mutate: likeProduct, isPending: likeProductPending } = useLikeProduct();
+      const handleLikeProduct = async (e: React.MouseEvent) => {
+         e.preventDefault();
+         e.stopPropagation();
+
+         if (!productDetail?._id) return;
+
+         likeProduct(
+            {
+               productId: productDetail._id,
+               action: isLiked ? "unlike" : "like", // Specify the action
+            },
+            {
+               onError: () => {
+                  toast.error("Failed to update like status");
+               },
+               onSuccess: () => {
+                  toast.success(
+                     `Product has been ${isLiked ? "unliked" : "liked"}`
+                  );
+               }
+            },
+         );
+      };
 
    const handleCreateOrder = () => {
       if (!quantity) return toast.error("Quantity is required");
@@ -153,10 +180,11 @@ export const ProductDetail = ({ productDetail }: ProductDetailProps) => {
                <Button
                   variant="outline"
                   size="icon"
-                  // onClick={() => setIsLiked(!isLiked)}
-                  className={`${true ? "text-red-500 hover:text-red-600" : "text-gray-500 hover:text-gray-600"}`}
+                  onClick={(e) => handleLikeProduct(e)}
+                  disabled={likeProductPending}
+                  className={`${isLiked ? "text-red-500 hover:text-red-600" : "text-gray-500 hover:text-gray-600"}`}
                >
-                  <Heart className={`h-6 w-6 ${true ? "fill-current" : ""}`} />
+                  <Heart className={`h-6 w-6 ${isLiked ? "fill-current" : ""}`} />
                </Button>
             </div>
             <p className="text-sm text-gray-500">

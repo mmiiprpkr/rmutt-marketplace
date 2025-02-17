@@ -22,7 +22,7 @@ const ProductIdPage = () => {
 
    const { data: recommendProduct, isLoading: recommendProductLoading } =
       useRecommendProduct({
-         productType: productDetail?.productType || "food",
+         productType: productDetail?.products?.productType || "food",
          productId: productId,
       });
 
@@ -36,7 +36,7 @@ const ProductIdPage = () => {
          {productDetailLoading && <ProductDetailSkeleton />}
 
          {!productDetailLoading && (
-            <ProductDetail productDetail={productDetail} />
+            <ProductDetail productDetail={productDetail?.products} isLiked={productDetail?.isLiked} />
          )}
 
          <div className="mt-12">

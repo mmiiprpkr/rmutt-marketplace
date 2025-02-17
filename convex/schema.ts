@@ -34,7 +34,8 @@ const schema = defineSchema({
    }),
    likes: defineTable({
       userId: v.id("users"),
-      postId: v.id("posts"),
+      postId: v.optional(v.id("posts")),
+      productId: v.optional(v.id("products")),
       createdAt: v.string(),
    }),
    savedPosts: defineTable({
