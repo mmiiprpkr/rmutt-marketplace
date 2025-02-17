@@ -34,6 +34,7 @@ interface UpdateOrderStatusDialogProps {
    userId2: Id<"users">;
    productId: Id<"products">;
    status: "pending" | "accepted" | "completed" | "cancelled";
+   fixedStatus?: "pending" | "accepted" | "completed" | "cancelled";
 }
 
 const statusOptions = ["pending", "accepted", "completed", "cancelled"];
@@ -51,13 +52,13 @@ export const UpdateOrderStatusDialog = ({
    userId1,
    userId2,
    status,
-   productId,
+   fixedStatus,
 }: UpdateOrderStatusDialogProps) => {
    const [imageUploading, setImageUploading] = useState(false);
    const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
-         status,
+         status: fixedStatus ? fixedStatus : status,
          message: "",
          paymentUrl: undefined,
       },
@@ -160,13 +161,17 @@ export const UpdateOrderStatusDialog = ({
                   <SelectValue placeholder="Select Order Status" />
                </SelectTrigger>
                <SelectContent>
-                  {statusOptions.map((st) => {
-                     return (
-                        <SelectItem key={st} value={st}>
-                           {st}
-                        </SelectItem>
-                     );
-                  })}
+                  {statusOptions
+                     .filter((status) =>
+                        fixedStatus ? status === fixedStatus : true,
+                     )
+                     .map((st) => {
+                        return (
+                           <SelectItem key={st} value={st}>
+                              {st}
+                           </SelectItem>
+                        );
+                     })}
                </SelectContent>
             </Select>
 

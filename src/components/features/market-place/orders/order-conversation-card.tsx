@@ -23,6 +23,7 @@ export const OrderConversationCard = ({
    return (
       <>
          <UpdateOrderStatusDialog
+            key={updateStatusOpen}
             open={!!updateStatusOpen}
             onClose={() => setUpdateStatusOpen(null)}
             orderId={order._id}
@@ -30,6 +31,8 @@ export const OrderConversationCard = ({
             userId1={order.sellerId}
             userId2={order.buyerId}
             productId={order.productId}
+            // @ts-ignore
+            fixedStatus={updateStatusOpen || undefined}
          />
          <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow duration-200">
             <div className="p-6 space-y-4">
@@ -114,17 +117,31 @@ export const OrderConversationCard = ({
 
                <Separator />
 
-               <div className="space-y-2">
+               <div className="flex items-center gap-2">
                   <Button
                      variant={
                         order.status === "pending" ? "outline" : "secondary"
                      }
                      className="w-full"
-                     onClick={() => setUpdateStatusOpen("open")}
+                     onClick={() => {
+                        if (order.status === "pending") {
+                           setUpdateStatusOpen("accepted");
+                           return;
+                        }
+
+                        setUpdateStatusOpen("completed")
+                     }}
                   >
                      {order.status === "pending"
                         ? "Accept Order"
-                        : "Update Status"}
+                        : "Complete"}
+                  </Button>
+                  <Button
+                     variant="destructive"
+                     className="w-full"
+                     onClick={() => setUpdateStatusOpen("cancelled")}
+                  >
+                     Cancel Order
                   </Button>
                </div>
             </div>
