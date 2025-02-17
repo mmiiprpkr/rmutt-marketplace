@@ -76,6 +76,73 @@ export const brows = query({
    },
 });
 
+export const myProduct = query({
+   args: {
+      name: v.optional(v.string()),
+      category: v.optional(v.string()),
+      minPrice: v.optional(v.number()),
+      maxPrice: v.optional(v.number()),
+      type: v.optional(v.union(v.literal("food"), v.literal("goods"))),
+      paginationOpts: paginationOptsValidator,
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const products = await ctx.db
+         .query("products")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("sellerId"), userId),
+
+               // กรองสินค้าที่ available
+               q.eq(q.field("status"), "available"),
+
+               // กรองตามชื่อ
+               args.name !== undefined
+                  ? q.eq(q.field("name"), args.name)
+                  : q.eq(q.field("status"), "available"),
+
+               // กรองตาม category
+               args.category !== undefined
+                  ? q.eq(q.field("category"), args.category)
+                  : q.eq(q.field("status"), "available"),
+
+               // กรองตามราคาขั้นต่ำ
+               args.minPrice !== undefined
+                  ? q.gte(q.field("price"), args.minPrice)
+                  : q.eq(q.field("status"), "available"),
+
+               // กรองตามราคาสูงสุด
+               args.maxPrice !== undefined
+                  ? q.lte(q.field("price"), args.maxPrice)
+                  : q.eq(q.field("status"), "available"),
+
+               args.type !== undefined
+                  ? q.eq(q.field("productType"), args.type)
+                  : q.eq(q.field("status"), "available"),
+            ),
+         )
+         .order("desc")
+         .paginate(args.paginationOpts);
+
+      const productsWithLikes = await Promise.all(
+         products.page?.map(async (product) => ({
+            ...product,
+            isLiked: await populateLikeProduct(ctx, product._id, userId),
+         })) || [],
+      );
+
+      return {
+         ...products,
+         page: productsWithLikes,
+      };
+   },
+});
+
 export const recommend = query({
    args: {
       productType: v.union(v.literal("food"), v.literal("goods")),

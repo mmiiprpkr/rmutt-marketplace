@@ -1,9 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useGetCurrentUser } from "@/api/get-current-user";
-import dayjs from "dayjs";
-
+import { Card, CardContent } from "@/components/common/ui/card";
 import {
    Tabs,
    TabsContent,
@@ -11,6 +9,10 @@ import {
    TabsTrigger,
 } from "@/components/common/ui/tabs";
 import { ProfileSkeleton } from "@/components/features/community/skeleton/profile-skeleton";
+import { Calendar, Mail, ShoppingBag, MessageSquare } from "lucide-react";
+import dayjs from "dayjs";
+import BrowsProductPage from "../../market-place/browse/page";
+import RootPage from "../../page";
 
 const ProfilePage = () => {
    const { data, isLoading, isError } = useGetCurrentUser();
@@ -20,44 +22,89 @@ const ProfilePage = () => {
    }
 
    return (
-      <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center space-y-6">
+      <div className="max-w-7xl mx-auto p-4 space-y-8">
          {isLoading ? (
             <ProfileSkeleton />
          ) : (
             <>
-               <h3 className="text-lg font-semibold">Profile</h3>
+               {/* Profile Header */}
+               <div className="relative">
+                  {/* Cover Image */}
+                  <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg" />
 
-               <div className="mt-4 flex flex-col items-center">
-                  <img
-                     src={
-                        "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Aidan"
-                     }
-                     className="size-20 rounded-lg"
-                     alt="avatar"
-                  />
+                  {/* Profile Info Card */}
+                  <Card className="max-w-3xl mx-auto -mt-24 relative z-[4]">
+                     <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row items-center gap-6">
+                           {/* Avatar */}
+                           <div className="relative">
+                              <img
+                                 src={
+                                    "https://api.dicebear.com/9.x/adventurer-neutral/svg?seed=Aidan"
+                                 }
+                                 className="size-32 rounded-xl ring-4 ring-background"
+                                 alt="avatar"
+                              />
+                           </div>
 
-                  <h3 className="text-lg font-semibold mt-4">
-                     Email: {data?.email}
-                  </h3>
+                           {/* User Info */}
+                           <div className="flex-1 text-center md:text-left space-y-3">
+                              <h2 className="text-2xl font-bold">
+                                 {data?.email?.split('@')[0]}
+                              </h2>
+                              <div className="flex flex-col sm:flex-row gap-4 text-muted-foreground">
+                                 <div className="flex items-center gap-2">
+                                    <Mail className="size-4" />
+                                    <span className="text-sm">{data?.email}</span>
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                    <Calendar className="size-4" />
+                                    <span className="text-sm">
+                                       Joined {dayjs(data?._creationTime).format("MMM YYYY")}
+                                    </span>
+                                 </div>
+                              </div>
+                           </div>
 
-                  <h3 className="text-base font-semibold">
-                     Joined when:{" "}
-                     {dayjs(data?._creationTime).format("DD MMM YYYY HH:mm")}
-                  </h3>
+                           {/* Stats */}
+                           <div className="grid grid-cols-2 gap-4 text-center">
+                              <div className="p-3 rounded-lg bg-muted">
+                                 <MessageSquare className="size-5 mx-auto mb-1 text-muted-foreground" />
+                                 <div className="text-2xl font-bold">24</div>
+                                 <div className="text-xs text-muted-foreground">Posts</div>
+                              </div>
+                              <div className="p-3 rounded-lg bg-muted">
+                                 <ShoppingBag className="size-5 mx-auto mb-1 text-muted-foreground" />
+                                 <div className="text-2xl font-bold">12</div>
+                                 <div className="text-xs text-muted-foreground">Products</div>
+                              </div>
+                           </div>
+                        </div>
+                     </CardContent>
+                  </Card>
                </div>
+
+               {/* Tabs */}
+               <Tabs defaultValue="posts" className="w-full">
+                  <TabsList className="w-full justify-start">
+                     <TabsTrigger value="posts" className="flex items-center gap-2">
+                        <MessageSquare className="size-4" />
+                        Posts
+                     </TabsTrigger>
+                     <TabsTrigger value="marketplace" className="flex items-center gap-2">
+                        <ShoppingBag className="size-4" />
+                        Marketplace
+                     </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="posts" className="mt-6">
+                     <RootPage />
+                  </TabsContent>
+                  <TabsContent value="marketplace" className="mt-6">
+                     <BrowsProductPage />
+                  </TabsContent>
+               </Tabs>
             </>
          )}
-
-         <Tabs defaultValue="posts" className="w-full">
-            <TabsList>
-               <TabsTrigger value="posts">Posts</TabsTrigger>
-               <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
-            </TabsList>
-            <TabsContent value="posts">
-               Make changes to your posts here.
-            </TabsContent>
-            <TabsContent value="marketplace">Your Products.</TabsContent>
-         </Tabs>
       </div>
    );
 };
