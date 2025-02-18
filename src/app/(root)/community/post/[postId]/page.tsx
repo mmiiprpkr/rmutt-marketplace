@@ -13,11 +13,11 @@ import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 
-export const updatePostValidation = z.object({
+const updatePostValidation = z.object({
    title: z.string().min(1, "Title is required"),
 });
 
-export type UpdatePostValidation = z.infer<typeof updatePostValidation>;
+type UpdatePostValidation = z.infer<typeof updatePostValidation>;
 
 const PostIdPage = () => {
    const postId = usePostId();
