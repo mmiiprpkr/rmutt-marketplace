@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { paginationOptsValidator } from "convex/server";
-import { getTopProducts, populateLikeProduct } from "./helper";
+import { getTopProducts, populateLikeProduct, populateUser } from "./helper";
 import {
    getAll,
    getOneFrom,
@@ -263,9 +263,15 @@ export const getById = query({
       }
       const products = await ctx.db.get(args.id);
 
+      if (!products) {
+         throw new Error("Product not found");
+      }
+
       const isLiked = await populateLikeProduct(ctx, args.id, userId);
 
-      return { products, isLiked };
+      const seller = await populateUser(ctx, products.sellerId);
+
+      return { products, isLiked, seller };
    },
 });
 

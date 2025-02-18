@@ -16,7 +16,11 @@ const ProductIdPage = () => {
       notFound();
    }
 
-   const { data: productDetail, error: productDetailError, isLoading: productDetailLoading } = useGetProductById({
+   const {
+      data: productDetail,
+      error: productDetailError,
+      isLoading: productDetailLoading,
+   } = useGetProductById({
       id: productId,
    });
 
@@ -32,27 +36,32 @@ const ProductIdPage = () => {
 
    return (
       <div className="p-4 min-h-screen max-w-7xl w-full mx-auto space-y-8">
-
          {productDetailLoading && <ProductDetailSkeleton />}
 
          {!productDetailLoading && (
-            <ProductDetail productDetail={productDetail?.products} isLiked={productDetail?.isLiked} />
+            <ProductDetail
+               productDetail={productDetail?.products}
+               isLiked={productDetail?.isLiked}
+               seller={productDetail?.seller}
+            />
          )}
 
          <div className="mt-12">
             <h2 className="text-2xl font-bold mb-4">Recommended Products</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-               {recommendProductLoading && (
-                  Array.from({ length: 8 }).map((_,i) => {
-                     return (
-                        <ProductCardSkeleton key={i} />
-                     )
-                  })
-               )}
+               {recommendProductLoading &&
+                  Array.from({ length: 8 }).map((_, i) => {
+                     return <ProductCardSkeleton key={i} />;
+                  })}
 
                {!recommendProductLoading &&
                   recommendProduct?.map((p) => {
-                     return <ProductCard product={p} key={p._id} />;
+                     return (
+                        <ProductCard
+                           product={{ ...p, seller: productDetail?.seller }}
+                           key={p._id}
+                        />
+                     );
                   })}
             </div>
          </div>

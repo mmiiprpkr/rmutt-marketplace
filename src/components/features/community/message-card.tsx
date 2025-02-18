@@ -112,16 +112,6 @@ export const MessageCard = ({ isCurrentUser, message }: MessageCardProps) => {
          >
             <ConfirmationDialog />
 
-            {!isCurrentUser && message?.sender?.image && (
-               <Image
-                  src={message.sender.image || "/placeholder.svg"}
-                  alt={message.sender.name || "User"}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-               />
-            )}
-
             <div className="space-y-2">
                {/* Text Message */}
                {isMessage && (
@@ -217,7 +207,7 @@ export const MessageCard = ({ isCurrentUser, message }: MessageCardProps) => {
          </div>
 
          {/* Context Menu */}
-         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full pl-2">
+         <div style={{ display: !isCurrentUser ? "none" : "" }} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full pl-2">
             <DropdownMenu>
                <DropdownMenuTrigger asChild>
                   <Button

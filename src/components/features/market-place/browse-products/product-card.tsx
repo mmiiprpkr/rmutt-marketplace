@@ -11,7 +11,7 @@ import {
 } from "@/components/common/ui/card";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
-import type { Id } from "../../../../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../../../../convex/_generated/dataModel";
 import Link from "next/link";
 import { useLikeProduct } from "@/api/market-place/product/use-like-product";
 import { toast } from "sonner";
@@ -30,6 +30,8 @@ interface ProductData {
    productType: "food" | "goods";
    status: "available" | "unavailable";
    isLiked: boolean;
+
+   seller?: Doc<"users"> | null;
 }
 
 export function ProductCard({ product }: { product: ProductData }) {
