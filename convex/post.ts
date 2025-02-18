@@ -4,6 +4,7 @@ import {
    populateCommentCounts,
    populateUser,
    populateInteractions,
+   populateCommunity,
 } from "./helper";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
@@ -54,6 +55,9 @@ export const getFeed = query({
                ...post,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
+               community: post?.communityId
+                  ? await populateCommunity(ctx, post.communityId)
+                  : null,
                ...interactions,
             };
          })
@@ -86,6 +90,9 @@ export const getMyPosts = query({
                ...post,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
+               community: post?.communityId
+                  ? await populateCommunity(ctx, post.communityId)
+                  : null,
                ...interactions,
             };
          })
@@ -207,6 +214,7 @@ export const getSavedPosts = query({
                ...post,
                user: await populateUser(ctx, post.userId),
                commentCount: await populateCommentCounts(ctx, post._id),
+               community: post?.communityId ? await populateCommunity(ctx, post.communityId) : null,
                ...interactions,
             };
          })

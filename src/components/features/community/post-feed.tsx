@@ -1,42 +1,40 @@
 import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { useQueryState } from "nuqs";
+import { toast } from "sonner";
+import { useSavePost } from "@/api/communities/save-post";
+import { useLikePost } from "@/api/communities/like-post";
+import { useDeletePost } from "@/api/communities/use-delete-post";
+import { useConfirm } from "@/hooks/use-confirm";
+import { sendNotification } from "@/actions/send-notification";
+import { cn, formatDate } from "@/lib/utils";
 import {
    Card,
    CardContent,
-   CardDescription,
-   CardFooter,
    CardHeader,
    CardTitle,
+   CardDescription,
 } from "@/components/common/ui/card";
-import Image from "next/image";
-import { Separator } from "@/components/common/ui/separator";
 import { Button } from "@/components/common/ui/button";
-import {
-   BookmarkCheckIcon,
-   BookmarkIcon,
-   EditIcon,
-   Ellipsis,
-   HeartIcon,
-   MessageSquareIcon,
-   Share2Icon,
-   Trash,
-} from "lucide-react";
-import { useQueryState } from "nuqs";
-import { useSavePost } from "@/api/communities/save-post";
-import { useLikePost } from "@/api/communities/like-post";
-import { cn, formatDate } from "@/lib/utils";
-import { UserButton } from "@/components/common/user-button";
+import { Separator } from "@/components/common/ui/separator";
 import {
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu";
-import { useConfirm } from "@/hooks/use-confirm";
-import { useDeletePost } from "@/api/communities/use-delete-post";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { sendNotification } from "@/actions/send-notification";
+import { UserButton } from "@/components/common/user-button";
+import {
+   BookmarkCheckIcon,
+   BookmarkIcon,
+   EditIcon,
+   MoreVertical,
+   HeartIcon,
+   MessageSquareIcon,
+   Trash,
+} from "lucide-react";
 
 type PostFeedProps = {
    post: {
@@ -55,6 +53,7 @@ type PostFeedProps = {
       isLiked: boolean;
       isSaved: boolean;
       likeCount: number;
+      community: Doc<"communities"> | null;
    };
    userId: Id<"users"> | undefined;
 };
@@ -62,11 +61,11 @@ type PostFeedProps = {
 export const PostFeed = ({ post, userId }: PostFeedProps) => {
    const router = useRouter();
    const [postId, setPostId] = useQueryState("communityPostId");
+   const [showFullText, setShowFullText] = useState(false);
 
-   const { mutate: savePost, isPending: savePostPending } = useSavePost();
-   const { mutate: likePost, isPending: likePostPending } = useLikePost();
-   const { mutateAsync: deletePost, isPending: deletePostPending } =
-      useDeletePost();
+   const { mutate: savePost } = useSavePost();
+   const { mutate: likePost } = useLikePost();
+   const { mutateAsync: deletePost } = useDeletePost();
 
    const [Confirmation, confirm] = useConfirm(
       "Are you sure you want to delete this post?",
@@ -74,105 +73,120 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
       "destructive",
    );
 
-   const handleLikeReactionsPost = async (
-      type: "like" | "save",
-      postId: Id<"posts">,
-   ) => {
+   const handleLikeReactionsPost = async (type: "like" | "save") => {
       if (type === "save") {
-         savePost({
-            postId,
-         });
+         savePost({ postId: post._id });
          return;
       }
 
-      likePost({
-         postId,
-      });
+      likePost({ postId: post._id });
 
-      if (post?.userId === userId) return;
-      if (post?.isLiked) return;
-
-      await sendNotification({
-         message: "liked your post <3",
-         recieverId: post.userId,
-         senderId: userId!,
-         title: "New Like",
-         link: "",
-      });
+      if (post?.userId !== userId && !post?.isLiked) {
+         await sendNotification({
+            message: "liked your post <3",
+            recieverId: post.userId,
+            senderId: userId!,
+            title: "New Like",
+            link: "",
+         });
+      }
    };
-
-   const [showFullText, setShowFullText] = useState(false);
 
    const handleDeletePost = async () => {
       try {
          const ok = await confirm();
-
-         if (!ok) return;
-
-         await deletePost({
-            postId: post._id as Id<"posts">,
-         });
+         if (ok) {
+            await deletePost({ postId: post._id });
+         }
       } catch (error) {
          toast.error("Failed to delete post");
-         console.log("Failed to delete post:", error);
+         console.error("Failed to delete post:", error);
       }
    };
 
    return (
-      <Card key={post._id} className="shadow-none relative">
+      <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
          <Confirmation />
-
-         {post?.userId === userId && (
-            <div className="absolute top-2 right-2">
-               <DropdownMenu>
-                  <DropdownMenuTrigger>
-                     <Ellipsis className="size-4" />
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent>
-                     <DropdownMenuItem
-                        onClick={() =>
-                           router.push(`/community/post/${post._id}`)
-                        }
-                     >
-                        <div className="flex items-center space-x-2">
-                           <EditIcon className="size-4" />
-                           <span>Edit</span>
-                        </div>
-                     </DropdownMenuItem>
-                     <DropdownMenuItem onClick={handleDeletePost}>
-                        <div className="flex items-center space-x-2">
-                           <Trash className="size-4" />
-                           <span>Delete</span>
-                        </div>
-                     </DropdownMenuItem>
-                  </DropdownMenuContent>
-               </DropdownMenu>
-            </div>
-         )}
-
          <CardContent className="p-4">
-            {/* User Info Section */}
             <CardHeader className="p-0 mb-4">
-               <div className="flex items-center space-x-3">
-                  <UserButton
-                     imageUrl={post?.user?.image ?? ""}
-                     type={userId === post.userId ? "settings" : "profile"}
-                     userId1={userId}
-                     userId2={post.userId}
-                  />
-                  <div>
-                     <CardTitle className="text-sm font-medium">
-                        {post?.user?.email}
-                     </CardTitle>
-                     <CardDescription className="text-xs">
-                        {formatDate(post.createdAt)}
-                     </CardDescription>
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                     <UserButton
+                        imageUrl={post?.user?.image ?? ""}
+                        type={userId === post.userId ? "settings" : "profile"}
+                        userId1={userId}
+                        userId2={post.userId}
+                     />
+                     <div className="space-y-1">
+                        <CardTitle className="text-sm font-medium">
+                           {post?.user?.email}
+                        </CardTitle>
+                        <div className="flex items-center gap-2">
+                           <CardDescription className="text-xs">
+                              {formatDate(post.createdAt)}
+                           </CardDescription>
+                           {post.community && (
+                              <>
+                                 <span className="text-xs text-muted-foreground">
+                                    •
+                                 </span>
+                                 <Button
+                                    variant="link"
+                                    className="h-auto p-0 text-xs font-normal"
+                                    onClick={() =>
+                                       router.push(
+                                          `/community/${post.community?._id}`,
+                                       )
+                                    }
+                                 >
+                                    <div className="flex items-center gap-2">
+                                       {post.community.image && (
+                                          <div className="relative size-4">
+                                             <Image
+                                                src={
+                                                   post.community.image ||
+                                                   "/placeholder.svg"
+                                                }
+                                                alt={post.community.name}
+                                                fill
+                                                className="rounded-full object-cover"
+                                             />
+                                          </div>
+                                       )}
+                                       <span>{post.community.name}</span>
+                                    </div>
+                                 </Button>
+                              </>
+                           )}
+                        </div>
+                     </div>
                   </div>
+                  {post?.userId === userId && (
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="icon">
+                              <MoreVertical className="size-4" />
+                           </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                           <DropdownMenuItem
+                              onClick={() =>
+                                 router.push(`/community/post/${post._id}`)
+                              }
+                           >
+                              <EditIcon className="size-4 mr-2" />
+                              <span>Edit</span>
+                           </DropdownMenuItem>
+                           <DropdownMenuItem onClick={handleDeletePost}>
+                              <Trash className="size-4 mr-2" />
+                              <span>Delete</span>
+                           </DropdownMenuItem>
+                        </DropdownMenuContent>
+                     </DropdownMenu>
+                  )}
                </div>
             </CardHeader>
 
-            {/* Post Content Section */}
             <div className="space-y-4">
                <div>
                   <p
@@ -181,18 +195,15 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                      {post.title}
                   </p>
                   {post.title.length > 150 && (
-                     <button
+                     <Button
+                        variant="link"
+                        size="sm"
                         onClick={() => setShowFullText(!showFullText)}
-                        className="
-                        text-blue-500 hover:text-blue-700
-                        text-sm mt-1
-                        transition-colors duration-200
-                        flex items-center gap-1
-                     "
+                        className="mt-1 p-0 h-auto font-normal"
                      >
                         {showFullText ? "See less" : "See more"}
                         <svg
-                           className={`w-4 h-4 transform transition-transform duration-200 ${
+                           className={`w-4 h-4 ml-1 transform transition-transform duration-200 ${
                               showFullText ? "rotate-180" : ""
                            }`}
                            fill="none"
@@ -205,7 +216,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                               d="M19 9l-7 7-7-7"
                            />
                         </svg>
-                     </button>
+                     </Button>
                   )}
                </div>
                {(post.image || post.gift) && (
@@ -214,21 +225,20 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                         src={post.image ?? post.gift ?? ""}
                         alt={post.title}
                         fill
-                        className="object-center"
+                        className="object-cover"
                      />
                   </div>
                )}
             </div>
 
-            {/* Interaction Buttons */}
             <Separator className="my-4" />
-            <div className="p-0 flex justify-between">
+            <div className="flex justify-between items-center">
                <div className="flex items-center space-x-4">
                   <Button
                      variant="ghost"
                      size="sm"
                      className="flex items-center space-x-2 hover:text-red-500 transition-colors"
-                     onClick={() => handleLikeReactionsPost("like", post._id)}
+                     onClick={() => handleLikeReactionsPost("like")}
                   >
                      <HeartIcon
                         className={cn(
@@ -242,9 +252,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                      variant="ghost"
                      size="sm"
                      className="flex items-center space-x-2 hover:text-blue-500 transition-colors"
-                     onClick={() => {
-                        setPostId(post._id);
-                     }}
+                     onClick={() => setPostId(post._id)}
                   >
                      <MessageSquareIcon className="size-5" />
                      <span className="text-sm">{post.commentCount || 0}</span>
@@ -254,7 +262,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                   variant="ghost"
                   size="sm"
                   className="flex items-center space-x-2 hover:text-green-500 transition-colors"
-                  onClick={() => handleLikeReactionsPost("save", post._id)}
+                  onClick={() => handleLikeReactionsPost("save")}
                >
                   {post.isSaved ? (
                      <BookmarkCheckIcon className="size-5" />

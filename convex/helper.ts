@@ -17,6 +17,14 @@ export const populateCommentCounts = async (
    return comments.length;
 };
 
+export const populateCommunity = async (
+   ctx: QueryCtx,
+   communityId: Id<"communities">,
+) => {
+   const community = await ctx.db.get(communityId);
+   return community;
+}
+
 export const populateLikeProduct = async (
    ctx: QueryCtx,
    productId: Id<"products">,
