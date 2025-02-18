@@ -15,6 +15,34 @@ const populateUser = async (ctx: QueryCtx, userId: Id<"users">) => {
    return user;
 };
 
+export const getConversationById = query({
+   args: {
+      conversationId: v.id("conversations"),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const conversation = await ctx.db.get(args.conversationId);
+
+      if (!conversation) {
+         throw new Error("Conversation not found");
+      }
+
+      const compare = conversation.userId1 === userId;
+      const otherUser = compare ? conversation.userId2 : conversation.userId1;
+      const currentUser = compare ? conversation.userId1 : conversation.userId2;
+
+      return {
+         otherUser,
+         currentUser,
+      };
+   },
+})
+
 export const conversations = mutation({
    args: {
       userId1: v.id("users"),

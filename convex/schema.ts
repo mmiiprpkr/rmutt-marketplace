@@ -99,7 +99,8 @@ const schema = defineSchema({
       name: v.string(),
    }),
    notifications: defineTable({
-      userId: v.id("users"),
+      recieverId: v.id("users"),
+      senderId: v.id("users"),
       title: v.string(),
       body: v.string(),
       data: v.optional(v.string()),

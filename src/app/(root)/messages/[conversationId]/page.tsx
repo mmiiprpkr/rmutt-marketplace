@@ -26,6 +26,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EmojiPopover } from "@/components/common/emoji-popover";
 import { usePaginatedQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
+import { sendNotification } from "@/actions/send-notification";
+import { useGetConversationById } from "@/api/messages/get-conversation-by-id";
 
 type ConversationsIdPageProps = {
    params: {
@@ -49,6 +51,8 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
 
    // Queries and Mutations
    const { data: userData, isLoading: dataLoading } = useGetCurrentUser();
+   const { data: conversationData, isLoading: conversationLoading } =
+      useGetConversationById(params.conversationId as Id<"conversations">);
    const {
       results: messages,
       status,
@@ -86,10 +90,28 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
 
          if (file) {
             const imageUrl = await handleFileUpload(file);
-            await createMessageAsync({ ...messageData, image: imageUrl });
+            await Promise.all([
+               createMessageAsync({ ...messageData, image: imageUrl }),
+               sendNotification({
+                  senderId: conversationData?.currentUser!,
+                  recieverId: conversationData?.otherUser!,
+                  title: userData?.email ?? "New Image",
+                  message: `Image`,
+                  link: `/messages/${params.conversationId}`,
+               }),
+            ]);
             setFile(null);
          } else {
-            await createMessageAsync(messageData);
+            await Promise.all([
+               createMessageAsync(messageData),
+               sendNotification({
+                  senderId: conversationData?.currentUser!,
+                  recieverId: conversationData?.otherUser!,
+                  title: userData?.email ?? "New Message",
+                  message: `Message ${messageData.content}`,
+                  link: `/messages/${params.conversationId}`,
+               }),
+            ]);
          }
 
          setMessage("");
@@ -176,7 +198,7 @@ const ConversationsIdPage = ({ params }: ConversationsIdPageProps) => {
    };
 
    // Loading State
-   if (dataLoading || status === "LoadingFirstPage") {
+   if (dataLoading || conversationLoading || status === "LoadingFirstPage") {
       return <LoadingSpinner />;
    }
 

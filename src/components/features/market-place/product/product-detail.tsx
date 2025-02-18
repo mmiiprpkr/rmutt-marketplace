@@ -13,6 +13,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useLikeProduct } from "@/api/market-place/product/use-like-product";
 import { UserButton } from "@/components/common/user-button";
 import { useGetCurrentUser } from "@/api/get-current-user";
+import { sendNotification } from "@/actions/send-notification";
 
 interface ProductDetailProps {
    productDetail:
@@ -43,7 +44,7 @@ export const ProductDetail = ({
 }: ProductDetailProps) => {
    const { data, isLoading } = useGetCurrentUser();
    const [quantity, setQuantity] = useState(1);
-   const { mutate: createOrder, isPending: createOrderPending } =
+   const { mutateAsync: createOrder, isPending: createOrderPending } =
       useCreateOrder();
    const [Confirmation, confirm] = useConfirm(
       "Are you sure you want to create order?",
@@ -51,7 +52,7 @@ export const ProductDetail = ({
       "outline",
    );
 
-   const { mutate: likeProduct, isPending: likeProductPending } =
+   const { mutateAsync: likeProduct, isPending: likeProductPending } =
       useLikeProduct();
    const handleLikeProduct = async (e: React.MouseEvent) => {
       e.preventDefault();
@@ -59,7 +60,7 @@ export const ProductDetail = ({
 
       if (!productDetail?._id) return;
 
-      likeProduct(
+      await likeProduct(
          {
             productId: productDetail._id,
             action: isLiked ? "unlike" : "like", // Specify the action
@@ -77,28 +78,40 @@ export const ProductDetail = ({
       );
    };
 
-   const handleCreateOrder = () => {
-      if (!quantity) return toast.error("Quantity is required");
+   const handleCreateOrder = async () => {
+      try {
+         if (!quantity) return toast.error("Quantity is required");
 
-      if (quantity > productDetail!.quantity!) {
-         return toast.error("Quantity is greater than available quantity");
-      }
+         if (quantity > productDetail!.quantity!) {
+            return toast.error("Quantity is greater than available quantity");
+         }
 
-      createOrder(
-         {
-            sellerId: productDetail!.sellerId,
-            productId: productDetail!._id,
-            quantity: quantity,
-            totalPrice: productDetail!.price * quantity,
-         },
-         {
-            onSuccess: () => {
-               console.log("Order created");
-               setQuantity(1);
-               toast.success("Order created successfully");
+         createOrder(
+            {
+               sellerId: productDetail!.sellerId,
+               productId: productDetail!._id,
+               quantity: quantity,
+               totalPrice: productDetail!.price * quantity,
             },
-         },
-      );
+            {
+               onSuccess: () => {
+                  console.log("Order created");
+                  setQuantity(1);
+                  toast.success("Order created successfully");
+               },
+            },
+         );
+
+         await sendNotification({
+            senderId: data?._id!,
+            recieverId: productDetail!.sellerId,
+            title: "New Order",
+            message: `You have a new order for ${productDetail!.name}`,
+            link: `/market-place`,
+         });
+      } catch (error) {
+         toast.error("Failed to create order");
+      }
    };
 
    const handleConfirm = async () => {

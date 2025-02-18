@@ -21,6 +21,7 @@ import { ResponsiveDynamic } from "@/components/common/ui/responsive-dynamic";
 import useIsKeyboardOpen from "@/hooks/use-keyboard";
 import { UserButton } from "@/components/common/user-button";
 import { useGetCurrentUser } from "@/api/get-current-user";
+import { createCommentNotification } from "@/actions/create-comment-noti";
 
 const CommentItem = ({
    comment,
@@ -148,30 +149,39 @@ export const Comments = () => {
       postId: postId as Id<"posts">,
    });
 
-   const { mutate: createComment, isPending: isCreatingComment } =
+   const { mutateAsync: createComment, isPending: isCreatingComment } =
       useCreateComment();
 
-   const handleCreateComment = (event: React.FormEvent<HTMLFormElement>) => {
+   const handleCreateComment = async (
+      event: React.FormEvent<HTMLFormElement>,
+   ) => {
       event.preventDefault();
-
-      createComment(
-         {
-            postId: postId as Id<"posts">,
-            parentId: parentCommentId
-               ? (parentCommentId as Id<"comments">)
-               : null,
-            content: comment,
-         },
-         {
-            onSuccess(data, variables, context) {
-               console.log("data", data);
-               setComment("");
-            },
-            onError(error, variables, context) {
-               console.log("error", error);
-            },
-         },
-      );
+      try {
+         await Promise.all([
+            createComment(
+               {
+                  postId: postId as Id<"posts">,
+                  parentId: parentCommentId
+                     ? (parentCommentId as Id<"comments">)
+                     : null,
+                  content: comment,
+               },
+               {
+                  onSuccess(data, variables, context) {
+                     console.log("data", data);
+                     setComment("");
+                  },
+                  onError(error, variables, context) {
+                     console.log("error", error);
+                  },
+               },
+            ),
+            createCommentNotification({
+               parentCommentId: parentCommentId as Id<"comments">,
+               currentUserId: userDate?._id!,
+            }),
+         ]);
+      } catch (error) {}
    };
 
    const handleSetReplyTo = (replyTo: string) => {

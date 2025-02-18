@@ -25,6 +25,7 @@ import { useDropzone } from "react-dropzone";
 import { ImageIcon, Loader, X } from "lucide-react";
 import { useUploadPayment } from "@/api/market-place/order/use-upload-payment";
 import { uploadFiles } from "@/lib/uploadthing";
+import { sendNotification } from "@/actions/send-notification";
 
 interface UpdateOrderStatusDialogProps {
    open: boolean;
@@ -135,8 +136,17 @@ export const UpdateOrderStatusDialog = ({
          });
 
          onClose(false);
+
+         await sendNotification({
+            senderId: userId1,
+            recieverId: userId2,
+            title: "Order Status Updated",
+            message: `Your order status has been updated to ${data.status}`,
+            link: `/market-place/orders`,
+         });
          toast.success("Order status updated successfully");
       } catch (error) {
+         console.error("Error updating order status:", error);
          toast.error("Failed to update order status");
       }
    };

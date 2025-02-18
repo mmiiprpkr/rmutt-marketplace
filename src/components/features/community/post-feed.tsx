@@ -36,6 +36,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useDeletePost } from "@/api/communities/use-delete-post";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { sendNotification } from "@/actions/send-notification";
 
 type PostFeedProps = {
    post: {
@@ -73,7 +74,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
       "destructive",
    );
 
-   const handleLikeReactionsPost = (
+   const handleLikeReactionsPost = async (
       type: "like" | "save",
       postId: Id<"posts">,
    ) => {
@@ -86,6 +87,17 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
 
       likePost({
          postId,
+      });
+
+      if (post?.userId === userId) return;
+      if (post?.isLiked) return;
+
+      await sendNotification({
+         message: "liked your post <3",
+         recieverId: post.userId,
+         senderId: userId!,
+         title: "New Like",
+         link: "",
       });
    };
 

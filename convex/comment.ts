@@ -11,13 +11,11 @@ export const getComments = query({
    handler: async (ctx, args) => {
       console.log("args", args);
 
-      type Comment = Doc<"comments"> &{
+      type Comment = Doc<"comments"> & {
          user: Doc<"users"> | undefined;
-      }
+      };
 
-      async function getReplies(
-         parentId: Id<"comments">
-      ): Promise<Comment[]> {
+      async function getReplies(parentId: Id<"comments">): Promise<Comment[]> {
          const replies = await ctx.db
             .query("comments")
             .filter((q) => q.eq(q.field("parentId"), parentId))
@@ -28,9 +26,9 @@ export const getComments = query({
          const repliesWithNested: Comment[] = await Promise.all(
             replies.map(async (reply) => ({
                ...reply,
-               user: await populateUser(ctx, reply.author) as Doc<"users">,
+               user: (await populateUser(ctx, reply.author)) as Doc<"users">,
                replies: await getReplies(reply._id),
-            }))
+            })),
          );
 
          console.log("repliesWithNested", repliesWithNested);
@@ -43,8 +41,8 @@ export const getComments = query({
          .filter((q) =>
             q.and(
                q.eq(q.field("postId"), args.postId),
-               q.eq(q.field("parentId"), undefined)
-            )
+               q.eq(q.field("parentId"), undefined),
+            ),
          )
          .collect();
 
@@ -54,11 +52,26 @@ export const getComments = query({
          parentComments.map(async (comment) => ({
             ...comment,
             replies: await getReplies(comment._id),
-            user: await populateUser(ctx, comment.author) as Doc<"users">,
-         }))
+            user: (await populateUser(ctx, comment.author)) as Doc<"users">,
+         })),
       );
 
       return commentsWithNestedReplies;
+   },
+});
+
+export const getCommentById = query({
+   args: {
+      commentId: v.id("comments"),
+   },
+   handler: async (ctx, args) => {
+      const comment = await ctx.db.get(args.commentId);
+
+      if (!comment) {
+         throw new Error("Comment not found");
+      }
+
+      return comment;
    },
 });
 

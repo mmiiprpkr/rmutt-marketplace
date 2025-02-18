@@ -22,6 +22,7 @@ import { useCancelOrder as CancelOrder } from "@/api/market-place/order/use-canc
 import { toast } from "sonner";
 import { colorMapper } from "@/lib/mapper/color.mapper";
 import { Badge } from "@/components/common/ui/badge";
+import { sendNotification } from "@/actions/send-notification";
 
 export type Order = Doc<"orders"> & {
    seller: Doc<"users"> | null;
@@ -129,6 +130,14 @@ export const columns: ColumnDef<Order>[] = [
                   error: "Failed to cancel order",
                },
             );
+
+            await sendNotification({
+               senderId: row.original.buyerId,
+               recieverId: row.original.sellerId,
+               title: "Order Cancelled",
+               message: `Your order has been cancelled by the buyer`,
+               link: `/market-place/orders`,
+            });
          };
 
          return (

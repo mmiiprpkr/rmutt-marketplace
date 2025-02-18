@@ -1,5 +1,4 @@
 "use server";
-"use server";
 
 import admin from "firebase-admin";
 import { Message } from "firebase-admin/messaging";
@@ -16,54 +15,77 @@ if (!admin.apps.length) {
 }
 
 interface SendNotificationProps {
-   userId: Id<"users">;
+   senderId: Id<"users">;
+   recieverId: Id<"users">;
    title: string;
    message: string;
    link?: string;
 }
 
+interface NotificationResponse {
+   success: boolean;
+   message: string;
+   error?: { message: string };
+}
+
 export async function sendNotification({
-   userId,
+   senderId,
+   recieverId,
    title,
    message,
    link,
-}: SendNotificationProps) {
+}: SendNotificationProps): Promise<NotificationResponse> {
    try {
-      const user = await fetchQuery(api.user.getUserById, { userId: userId });
+      const user = await fetchQuery(api.user.getUserById, { userId: recieverId });
       const token = user?.fcmToken;
 
       if (!token) {
-         return { success: false, message: "User does not have FCM token" };
+         return {
+            success: false,
+            message: "User does not have FCM token"
+         };
       }
 
+      // Create notification in database first
+      await fetchMutation(api.notification.create, {
+         senderId,
+         recieverId,
+         title,
+         body: message,
+         data: JSON.stringify({ link }),
+      });
+
+      // Send FCM notification
       const payload: Message = {
          token,
          notification: {
             title,
             body: message,
          },
-         webpush: link
-            ? {
-                 fcmOptions: {
-                    link,
-                 },
-              }
-            : undefined,
+         webpush: link ? {
+            fcmOptions: {
+               link,
+            }
+         } : undefined,
+         data: {
+            link: link || "",
+         },
       };
 
-      const test = await fetchMutation(api.notification.create, {
-         userId: userId,
-         title: title,
-         body: message,
-         data: JSON.stringify({}),
-      });
-
-      console.log("test", test);
-
       await admin.messaging().send(payload);
-      return { success: true, message: "Notification sent!" };
+
+      return {
+         success: true,
+         message: "Notification sent successfully"
+      };
    } catch (error) {
       console.error("Error sending notification:", error);
-      return { success: false, error };
+      return {
+         success: false,
+         message: "Failed to send notification",
+         error: {
+            message: error instanceof Error ? error.message : "Unknown error"
+         }
+      };
    }
 }
