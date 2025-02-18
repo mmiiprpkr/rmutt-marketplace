@@ -67,7 +67,8 @@ const NotificationPage = () => {
                               <UserButton
                                  imageUrl={notification.sender?.image ?? ""}
                                  type="profile"
-                                 userId1={notification.sender?._id}
+                                 userId1={notification.recieverId}
+                                 userId2={notification.senderId}
                               />
                               <div className="flex-1 space-y-1">
                                  <div className="flex items-start justify-between">
