@@ -4,8 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
-   const serviceAccount = require("@/keys/fcm-rmutt-marketplace-firebase-adminsdk.json");
-   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+   admin.initializeApp({
+      credential: admin.credential.cert({
+         projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
+         privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+         clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+      }),
+   });
 }
 
 export async function POST(request: NextRequest) {
