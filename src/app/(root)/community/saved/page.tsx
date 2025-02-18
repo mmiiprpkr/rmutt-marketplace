@@ -1,17 +1,35 @@
 "use client";
 
-import { useGetSavePost } from "@/api/communities/get-savePost";
+import { useInView } from "react-intersection-observer";
 import { useGetCurrentUser } from "@/api/get-current-user";
 import { Comments } from "@/components/features/community/comments";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { ProfileStats } from "@/components/features/community/profile-stats";
-import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 import { SavePostSkeleton } from "@/components/features/community/skeleton/save-post-skeletion";
+import { usePaginatedQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
+import { useEffect } from "react";
 
 const SavedPostPage = () => {
-   const { data, isLoading } = useGetSavePost();
+   const { ref, inView } = useInView({
+      threshold: 0,
+      rootMargin: "100px",
+   });
+
+   const { results, loadMore, status } = usePaginatedQuery(
+      api.post.getSavedPosts,
+      {},
+      { initialNumItems: 10 },
+   );
+
    const { data: currentUser, isLoading: currentUserLoading } =
       useGetCurrentUser();
+
+   useEffect(() => {
+      if (inView && status === "CanLoadMore") {
+         loadMore(10);
+      }
+   }, [inView, status, loadMore]);
 
    return (
       <div className="p-4 min-h-screen max-w-7xl w-full mx-auto">
@@ -23,20 +41,41 @@ const SavedPostPage = () => {
                      My Saved Post
                   </h2>
                </div>
-               {isLoading || currentUserLoading ? (
+
+               {status === "LoadingFirstPage" || currentUserLoading ? (
                   Array.from({ length: 5 }).map((_, index) => (
                      <SavePostSkeleton key={index} />
                   ))
-               ) : Array.isArray(data) && data.length === 0 ? (
-                  <div>No Saved Post</div>
+               ) : results?.length === 0 ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                     No Saved Posts
+                  </div>
                ) : (
-                  data?.map((post) => (
-                     <PostFeed
-                        key={post._id}
-                        post={post}
-                        userId={currentUser?._id}
-                     />
-                  ))
+                  <>
+                     {results?.map((post) => {
+                        if (!post) return null;
+                        return (
+                           <PostFeed
+                              key={post?._id}
+                              post={post}
+                              userId={currentUser?._id}
+                           />
+                        );
+                     })}
+
+                     <div ref={ref} className="py-4">
+                        {status === "LoadingMore" && (
+                           <div className="flex justify-center">
+                              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
+                           </div>
+                        )}
+                        {status === "Exhausted" && (
+                           <p className="text-center text-muted-foreground">
+                              No more saved posts
+                           </p>
+                        )}
+                     </div>
+                  </>
                )}
             </div>
 

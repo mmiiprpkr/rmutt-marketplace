@@ -7,10 +7,12 @@ import {
    populateCommunity,
 } from "./helper";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 
 export const getFeed = query({
    args: {
       communityId: v.optional(v.id("communities")),
+      paginationOpts: paginationOptsValidator,
    },
    handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
@@ -32,7 +34,7 @@ export const getFeed = query({
             .query("posts")
             .filter((q) => q.eq(q.field("communityId"), args.communityId))
             .order("desc")
-            .take(100);
+            .paginate(args.paginationOpts);
       } else {
          posts = await ctx.db
             .query("posts")
@@ -45,11 +47,11 @@ export const getFeed = query({
                )
             )
             .order("desc")
-            .take(100);
+            .paginate(args.paginationOpts);
       }
 
       const refactoredPosts = await Promise.all(
-         posts.map(async (post) => {
+         posts.page.map(async (post) => {
             const interactions = await populateInteractions(ctx, post._id, userId);
             return {
                ...post,
@@ -63,13 +65,17 @@ export const getFeed = query({
          })
       );
 
-      return refactoredPosts;
+      return {
+         ...posts,
+         page: refactoredPosts,
+      };
    },
 });
 
 export const getMyPosts = query({
    args: {
       userId: v.optional(v.id("users")),
+      paginationOpts: paginationOptsValidator,
    },
    handler: async (ctx, args) => {
       const userId = args.userId || await getAuthUserId(ctx);
@@ -81,10 +87,11 @@ export const getMyPosts = query({
       const posts = await ctx.db
          .query("posts")
          .filter((q) => q.eq(q.field("userId"), userId))
-         .collect();
+         .order("desc")
+         .paginate(args.paginationOpts);
 
       const refactoredPosts = await Promise.all(
-         posts.map(async (post) => {
+         posts.page.map(async (post) => {
             const interactions = await populateInteractions(ctx, post._id, userId);
             return {
                ...post,
@@ -98,7 +105,10 @@ export const getMyPosts = query({
          })
       );
 
-      return refactoredPosts;
+      return {
+         ...posts,
+         page: refactoredPosts,
+      };
    }
 });
 
@@ -183,8 +193,10 @@ export const deletePost = mutation({
 })
 
 export const getSavedPosts = query({
-   args: {},
-   handler: async (ctx) => {
+   args: {
+      paginationOpts: paginationOptsValidator,
+   },
+   handler: async (ctx, args) => {
       const userId = await getAuthUserId(ctx);
 
       if (!userId) {
@@ -194,10 +206,10 @@ export const getSavedPosts = query({
       const savedPosts = await ctx.db
          .query("savedPosts")
          .filter((q) => q.eq(q.field("userId"), userId))
-         .collect();
+         .paginate(args.paginationOpts);
 
       const refactoredPosts = await Promise.all(
-         savedPosts.map(async (savedPost) => {
+         savedPosts.page.map(async (savedPost) => {
             const post = await ctx.db.get(savedPost.postId);
 
             if (!post) {
@@ -221,9 +233,10 @@ export const getSavedPosts = query({
       );
 
       // Filter out null values and assert the type
-      return refactoredPosts.filter(
-         (post): post is NonNullable<typeof post> => post !== null
-      );
+      return {
+         ...savedPosts,
+         page: refactoredPosts,
+      }
    },
 });
 
