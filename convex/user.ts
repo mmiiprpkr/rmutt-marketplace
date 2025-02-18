@@ -2,6 +2,18 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+export const updateFcmToken = mutation({
+   args: {
+      fcmToken: v.string(),
+   },
+   handler: async (ctx, args) => {
+      const userId = await getAuthUserId(ctx);
+      if (!userId) throw new Error("Unauthorized");
+
+      return await ctx.db.patch(userId, { fcmToken: args.fcmToken });
+   },
+});
+
 export const currentUser = query({
    args: {},
    handler: async (ctx) => {
@@ -12,7 +24,7 @@ export const currentUser = query({
       }
 
       return await ctx.db.get(userId);
-   }
+   },
 });
 
 export const getUserById = query({
@@ -25,8 +37,8 @@ export const getUserById = query({
          throw new Error("User not found");
       }
       return user;
-   }
-})
+   },
+});
 
 export const updateProfileImage = mutation({
    args: {
@@ -40,7 +52,7 @@ export const updateProfileImage = mutation({
       }
 
       return await ctx.db.patch(userId, { image: args.image });
-   }
+   },
 });
 
 export const profileStats = query({
@@ -79,8 +91,8 @@ export const profileStats = query({
          .filter((q) =>
             q.and(
                q.eq(q.field("userId"), userId),
-               q.neq(q.field("postId"), null)
-            )
+               q.neq(q.field("postId"), null),
+            ),
          )
          .collect();
 
@@ -94,16 +106,16 @@ export const profileStats = query({
          communities: {
             joined: userCommunities.length,
             created: createdCommunities.length,
-            total: userCommunities.length + createdCommunities.length
+            total: userCommunities.length + createdCommunities.length,
          },
          engagement: {
             posts: posts.length,
             comments: comments.length,
             likes: likedPosts.length,
             saved: savedPosts.length,
-            totalInteractions: posts.length + comments.length + likedPosts.length
-         }
+            totalInteractions:
+               posts.length + comments.length + likedPosts.length,
+         },
       };
-   }
+   },
 });
-

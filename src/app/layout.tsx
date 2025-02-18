@@ -7,6 +7,7 @@ import { ConvexClientProvider } from "@/components/providers/convex-client-provi
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import FCMNotificationProvider from "@/components/providers/fcm-nofi-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,17 +35,19 @@ export default function RootLayout({
          <html lang="en">
             <body className={inter.className}>
                <ConvexClientProvider>
-                  <Toaster position="top-right" />
-                  <NuqsAdapter>
-                     <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                     >
-                        {children}
-                     </ThemeProvider>
-                  </NuqsAdapter>
+                  <FCMNotificationProvider>
+                     <NuqsAdapter>
+                        <Toaster position="top-right" />
+                        <ThemeProvider
+                           attribute="class"
+                           defaultTheme="system"
+                           enableSystem
+                           disableTransitionOnChange
+                        >
+                           {children}
+                        </ThemeProvider>
+                     </NuqsAdapter>
+                  </FCMNotificationProvider>
                </ConvexClientProvider>
             </body>
          </html>
