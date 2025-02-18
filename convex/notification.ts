@@ -49,13 +49,42 @@ export const get = query({
             return {
                ...notification,
                sender: user,
-            }
-         })
+            };
+         }),
       );
 
       return {
          ...notifications,
          page: notificationWithSender,
       };
+   },
+});
+
+export const markAsRead = mutation({
+   args: {},
+   handler: async (ctx) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) {
+         throw new Error("Unauthorized");
+      }
+
+      const notiUnread = await ctx.db
+         .query("notifications")
+         .filter((q) =>
+            q.and(
+               q.eq(q.field("recieverId"), userId),
+               q.eq(q.field("isRead"), false),
+            ),
+         )
+         .collect();
+
+      if (notiUnread.length > 0) {
+         await Promise.all(
+            notiUnread.map((notification) =>
+               ctx.db.patch(notification._id, { isRead: true }),
+            ),
+         );
+      }
    },
 });

@@ -135,7 +135,7 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                                     className="h-auto p-0 text-xs font-normal"
                                     onClick={() =>
                                        router.push(
-                                          `/community/${post.community?._id}`,
+                                          `/community/communities/${post.community?._id}`,
                                        )
                                     }
                                  >

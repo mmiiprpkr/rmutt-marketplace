@@ -119,3 +119,32 @@ export const profileStats = query({
       };
    },
 });
+
+export const badgeCount = query({
+   args: {},
+   handler: async (ctx) => {
+      const userId = await getAuthUserId(ctx);
+
+      if (!userId) throw new Error("Unauthorized");
+
+      const notifications = await ctx.db
+         .query("notifications")
+         .filter((q) => q.and(
+            q.eq(q.field("recieverId"), userId),
+            q.eq(q.field("isRead"), false),
+         ))
+         .collect();
+
+      const orderCounts = await ctx.db.query("orders")
+         .filter((q) => q.and(
+            q.eq(q.field("sellerId"), userId),
+            q.eq(q.field("status"), "pending"),
+         ))
+         .collect();
+
+      return {
+         unreadNotifications: notifications.length,
+         pendingOrders: orderCounts.length,
+      };
+   },
+})

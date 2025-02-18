@@ -74,6 +74,7 @@ export const get = query({
       const order = await ctx.db
          .query("orders")
          .filter((q) => q.eq(q.field(fieldname), userId))
+         .order("desc")
          .collect();
 
       const orderWithProductWithUser = await Promise.all(

@@ -11,6 +11,7 @@ import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationSkeleton } from "@/components/features/community/skeleton/notification-skeletio";
 import { useEffect } from "react";
+import { useReadNotification } from "@/api/notification/use-read-noti";
 
 const NotificationPage = () => {
    const { ref, inView } = useInView({
@@ -18,11 +19,16 @@ const NotificationPage = () => {
       rootMargin: "100px",
    });
 
+   const { mutate: markAsRead } = useReadNotification();
    const { results, loadMore, status } = usePaginatedQuery(
       api.notification.get,
       {},
       { initialNumItems: 15 }, // ลดจำนวนลง
    );
+
+   useEffect(() => {
+      markAsRead({});
+   }, []);
 
    useEffect(() => {
       if (inView && status === "CanLoadMore") {
