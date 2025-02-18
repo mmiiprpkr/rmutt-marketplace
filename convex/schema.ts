@@ -98,6 +98,13 @@ const schema = defineSchema({
    categories: defineTable({
       name: v.string(),
    }),
+   notifications: defineTable({
+      userId: v.id("users"),
+      title: v.string(),
+      body: v.string(),
+      data: v.optional(v.string()),
+      isRead: v.optional(v.boolean()),
+   })
 })
 
 export default schema

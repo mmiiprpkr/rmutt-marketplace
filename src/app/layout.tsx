@@ -37,7 +37,7 @@ export default function RootLayout({
                <ConvexClientProvider>
                   <FCMNotificationProvider>
                      <NuqsAdapter>
-                        <Toaster position="top-right" />
+                        <Toaster position="top-right" expand />
                         <ThemeProvider
                            attribute="class"
                            defaultTheme="system"
