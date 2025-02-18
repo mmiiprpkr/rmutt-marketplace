@@ -6,7 +6,6 @@ import { Id } from "../../../../../../convex/_generated/dataModel";
 import { CreatePost } from "@/components/features/community/create-post";
 import { Comments } from "@/components/features/community/comments";
 import { useGetCurrentUser } from "@/api/get-current-user";
-import { useGetFeed } from "@/api/communities/get-feed";
 import { PostFeedSkeleton } from "@/components/features/community/skeleton/feed-skeleton";
 import Image from "next/image";
 import { CreatePostButton } from "@/components/features/community/create-post-button";
@@ -22,8 +21,17 @@ import {
    DropdownMenuItem,
    DropdownMenuTrigger,
 } from "@/components/common/ui/dropdown-menu";
+import { usePaginatedQuery } from "convex/react";
+import { api } from "../../../../../../convex/_generated/api";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
 
 const CommunityIdPage = () => {
+   const { ref, inView } = useInView({
+      threshold: 0,
+      rootMargin: "100px",
+   });
+
    const communityId = useCommunityId();
 
    const {
@@ -39,9 +47,15 @@ const CommunityIdPage = () => {
    const { mutateAsync: joinCommunity, isPending: joinPending } =
       useJoinCommunity();
 
-   const { data: feed, isLoading: feedLoading } = useGetFeed(
-      communityId as Id<"communities">,
-   );
+   const { results, loadMore, status } = usePaginatedQuery(api.post.getFeed, {
+      communityId: communityId as Id<"communities">,
+   }, { initialNumItems: 5 });
+
+   useEffect(() => {
+      if (inView && status === "CanLoadMore") {
+         loadMore(5);
+      }
+   }, [inView, status, loadMore]);
 
    if (communityError || userError) {
       return <div>Error</div>;
@@ -128,37 +142,47 @@ const CommunityIdPage = () => {
 
             {/* Main Content */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 relative">
-               {feedLoading || userLoading ? (
+               {status === "LoadingFirstPage" || userLoading ? (
                   <div className="w-full col-span-2 space-y-4">
                      {Array.from({ length: 5 }).map((_, index) => (
                         <PostFeedSkeleton key={index} />
                      ))}
                   </div>
+               ) : results?.length === 0 ? (
+                  <div className="w-full h-[40vh] flex flex-col items-center justify-center">
+                     <div className="mb-4">
+                        <CircleHelpIcon className="size-10 text-primary" />
+                     </div>
+                     <p className="text-primary text-xl font-semibold">
+                        No Post Found
+                     </p>
+                     <p className="text-muted-foreground text-sm text-center mt-2">
+                        It seems like there are no posts available in this community. <br />
+                        Be the first one to post something!
+                     </p>
+                  </div>
                ) : (
                   <div className="w-full col-span-2 space-y-4">
-                     {Array.isArray(feed) && feed.length === 0 ? (
-                        <div className="w-full h-[40vh] flex flex-col items-center justify-center">
-                           <div className="mb-4">
-                              <CircleHelpIcon className="size-10 text-primary" />
+                     {results?.map((post) => (
+                        <PostFeed
+                           key={post._id}
+                           post={post}
+                           userId={userData?._id}
+                        />
+                     ))}
+
+                     <div ref={ref} className="py-4">
+                        {status === "LoadingMore" && (
+                           <div className="flex justify-center">
+                              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
                            </div>
-                           <p className="text-primary text-xl font-semibold">
-                              No Post Found
+                        )}
+                        {status === "Exhausted" && (
+                           <p className="text-center text-muted-foreground">
+                              No more posts
                            </p>
-                           <p className="text-muted-foreground text-sm text-center mt-2">
-                              It seems like there are no communities available
-                              at the moment. <br />
-                              Please check back later or create a new community!
-                           </p>
-                        </div>
-                     ) : (
-                        feed?.map((post) => (
-                           <PostFeed
-                              key={post._id}
-                              post={post}
-                              userId={userData?._id}
-                           />
-                        ))
-                     )}
+                        )}
+                     </div>
                   </div>
                )}
                <div className="lg:block hidden">

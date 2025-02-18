@@ -1,7 +1,6 @@
 "use client";
 
 import { useInView } from "react-intersection-observer";
-import { useGetFeed } from "@/api/communities/get-feed";
 import { CreatePost } from "@/components/features/community/create-post";
 import { PostFeed } from "@/components/features/community/post-feed";
 import { Comments } from "@/components/features/community/comments";
