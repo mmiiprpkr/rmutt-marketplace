@@ -47,7 +47,7 @@ const NotificationPage = () => {
                   </div>
                </div>
 
-               <div className="space-y-2 px-6">
+               <div className="space-y-2">
                   {status === "LoadingFirstPage" ? (
                      Array.from({ length: 10 }).map((_, index) => (
                         <NotificationSkeleton key={index} />

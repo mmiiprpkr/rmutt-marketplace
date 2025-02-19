@@ -96,7 +96,7 @@ export const BrowsMyProduct = ({ userAccountId }: BrowsMyProductProps) => {
          </div>
 
          {/* Main Content Grid */}
-         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4">
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Products Grid */}
             <div className="md:col-span-3">
                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4">
