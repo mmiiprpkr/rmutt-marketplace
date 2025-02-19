@@ -1,6 +1,6 @@
-import { defineSchema, defineTable } from "convex/server"
-import { authTables } from "@convex-dev/auth/server"
-import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server";
+import { authTables } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 
 const schema = defineSchema({
    ...authTables,
@@ -13,7 +13,7 @@ const schema = defineSchema({
       phoneVerificationTime: v.optional(v.number()),
       isAnonymous: v.optional(v.boolean()),
       fcmToken: v.optional(v.string()),
-   }),
+   }).index("email", ["email"]),
    communities: defineTable({
       name: v.string(),
       description: v.optional(v.string()),
@@ -105,7 +105,7 @@ const schema = defineSchema({
       body: v.string(),
       data: v.optional(v.string()),
       isRead: v.optional(v.boolean()),
-   })
-})
+   }),
+});
 
-export default schema
+export default schema;
