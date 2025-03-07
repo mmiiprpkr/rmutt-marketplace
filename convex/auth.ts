@@ -7,5 +7,12 @@ export const { auth, signIn, signOut, store } = convexAuth({
       async afterUserCreatedOrUpdated(ctx, args) {
          // save token when create user
       },
-   }
+   },
+   jwt: {
+      durationMs: 1000 * 60 * 60 * 24 * 30,
+   },
+   session: {
+      inactiveDurationMs: 1000 * 60 * 60 * 24 * 30,
+      totalDurationMs: 1000 * 60 * 60 * 24 * 30,
+   },
 });
