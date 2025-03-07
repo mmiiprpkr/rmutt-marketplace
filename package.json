@@ -11,8 +11,8 @@
       "con": "concurrently \"bun run dev\" \"bunx convex dev\""
    },
    "dependencies": {
-      "@auth/core": "0.34.2",
-      "@convex-dev/auth": "0.0.61",
+      "@auth/core": "0.37.0",
+      "@convex-dev/auth": "^0.0.80",
       "@convex-dev/react-query": "^0.0.0-alpha.8",
       "@emoji-mart/data": "^1.2.1",
       "@emoji-mart/react": "^1.1.1",
