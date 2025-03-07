@@ -42,7 +42,7 @@ const menuItemsDefault: MenuItem[] = [
    {
       title: "Marketplace",
       icon: Store,
-      href: "/market-place",
+      href: "/marketplace",
       submenu: [
          {
             title: "Browse Products",
@@ -50,36 +50,48 @@ const menuItemsDefault: MenuItem[] = [
             href: "/market-place/browse",
          },
          {
+            title: "Favorite Items",
+            icon: Heart,
+            href: "/market-place/favorites",
+         },
+      ],
+   },
+   {
+      title: "My Purchases",
+      icon: ShoppingBag,
+      href: "/buyer",
+      submenu: [
+         {
             title: "My Orders",
             icon: ShoppingBag,
             href: "/market-place/orders",
          },
+         // {
+         //    title: "Purchase History",
+         //    icon: History,
+         //    href: "/market-place/history",
+         // },
+      ],
+   },
+   {
+      title: "My Shop",
+      icon: Tag,
+      href: "/selling",
+      submenu: [
          {
-            title: "My Favorites",
-            icon: Heart,
-            href: "/market-place/favorites",
+            title: "Received Orders",
+            icon: ShoppingBag,
+            href: "/market-place/selling/orders",
          },
          {
-            title: "Selling",
-            icon: Tag,
-            href: "/market-place/selling",
-            submenu: [
-               {
-                  title: "Order",
-                  icon: ShoppingBag,
-                  href: "/market-place/selling/orders",
-               },
-               {
-                  title: "My Products",
-                  icon: Package,
-                  href: "/market-place/selling/products",
-               },
-               {
-                  title: "Sales History",
-                  icon: History,
-                  href: "/market-place/selling/history",
-               },
-            ],
+            title: "My Products",
+            icon: Package,
+            href: "/market-place/selling/products",
+         },
+         {
+            title: "Sales History",
+            icon: History,
+            href: "/market-place/selling/history",
          },
       ],
    },
@@ -94,7 +106,7 @@ const menuItemsDefault: MenuItem[] = [
             href: "/community/my-communities",
          },
          {
-            title: "Communities",
+            title: "Explore Communities",
             icon: UsersIcon,
             href: "/community/communities",
          },
@@ -135,13 +147,13 @@ type SideBarProps = {
 };
 
 const getAllMenuTitles = (items: MenuItem[]): string[] => {
-  return items.reduce((titles: string[], item) => {
-    titles.push(item.title);
-    if (item.submenu) {
-      titles.push(...getAllMenuTitles(item.submenu));
-    }
-    return titles;
-  }, []);
+   return items.reduce((titles: string[], item) => {
+      titles.push(item.title);
+      if (item.submenu) {
+         titles.push(...getAllMenuTitles(item.submenu));
+      }
+      return titles;
+   }, []);
 };
 
 export const SideBar = ({
@@ -149,7 +161,8 @@ export const SideBar = ({
    menuItems = menuItemsDefault,
 }: SideBarProps) => {
    const { onClose } = useSideBarStore();
-   const [expandedMenus, setExpandedMenus] = useState<string[]>(defaultExpandedMenus);
+   const [expandedMenus, setExpandedMenus] =
+      useState<string[]>(defaultExpandedMenus);
 
    const { signOut } = useAuthActions();
 
@@ -177,7 +190,7 @@ export const SideBar = ({
       } catch (error) {
          console.log("[ConfirmationDialog]", error);
       }
-   }
+   };
 
    return (
       <>
