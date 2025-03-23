@@ -1,75 +1,34 @@
 "use client";
 
-import { useFetchConversations } from "@/api/messages/get-conversations";
-import { Skeleton } from "@/components/common/ui/skeleton";
-import { UserButton } from "@/components/common/user-button";
-import { cn } from "@/lib/utils";
-import { useParams, useRouter } from "next/navigation";
+import { MessageSquare } from "lucide-react";
 
 const MessagePage = () => {
-   const { data, isLoading } = useFetchConversations();
-   const params = useParams();
-   const router = useRouter();
-
-   const conversationId = params.conversationId;
-
    return (
-      <>
-         <div className="hidden md:block">
-            Select Conversations
+      <div className="hidden lg:flex flex-col items-center justify-center h-screen bg-gradient-to-b from-background to-muted/30">
+         <div className="text-center max-w-md p-8 rounded-xl bg-card shadow-sm border">
+            <div className="mb-6 bg-primary/10 p-4 rounded-full inline-block">
+               <MessageSquare className="h-10 w-10 text-primary" />
+            </div>
+
+            <h1 className="text-2xl font-bold mb-2">Select a Conversation</h1>
+
+            <p className="text-muted-foreground mb-6">
+               Choose a conversation from the sidebar to start messaging
+            </p>
+
+            <div className="grid grid-cols-3 gap-3 mb-6">
+               {[1, 2, 3].map((i) => (
+                  <div
+                     key={i}
+                     className="h-16 rounded-md bg-muted/50 border border-border/50 flex items-center justify-center"
+                  >
+                     <div className="w-8 h-8 rounded-full bg-primary/20"></div>
+                  </div>
+               ))}
+            </div>
          </div>
-
-         <div className="bg-background/20 border-r h-full w-full md:hidden">
-         {isLoading ? (
-            <div className="flex flex-col w-full gap-1 px-1">
-               {Array.from({ length: 10 }).map((_, i) => {
-                  return <Skeleton key={i} className="w-full h-12 mt-2" />;
-               })}
-            </div>
-         ) : (
-            <div className={cn("flex flex-col w-full gap-2")}>
-               {data?.map((conversation) => {
-                  return (
-                     <div
-                        key={conversation._id}
-                        className={cn(
-                           "flex items-center p-2 cursor-pointer hover:opacity-75 relative",
-                           conversation._id === conversationId
-                              ? "bg-secondary"
-                              : "",
-                        )}
-                        onClick={() => {
-                           router.push(`/messages/${conversation._id}`);
-                        }}
-                     >
-                        <UserButton
-                           imageUrl={conversation.otherUser?.image || ""}
-                           type="profile"
-                           key={conversation._id}
-                        />
-
-                        <div className="ml-2">
-                           <p className="text-sm font-semibold">
-                              {conversation.otherUser?.email}
-                           </p>
-                           <p className="text-xs text-gray-500">Last message</p>
-                        </div>
-
-                        {conversation.countOrder > 0 && (
-                           <div className="absolute right-2 top-2">
-                              <span className="bg-black text-white text-xs px-2 py-1 rounded-full">
-                                 {conversation.countOrder}
-                              </span>
-                           </div>
-                        )}
-                     </div>
-                  );
-               })}
-            </div>
-         )}
       </div>
-      </>
-   )
+   );
 };
 
 export default MessagePage;

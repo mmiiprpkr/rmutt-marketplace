@@ -14,7 +14,7 @@ export const Sidebar = () => {
    const conversationId = params.conversationId;
 
    return (
-      <div className="bg-background/20 border-r h-full w-64 fixed hidden lg:block">
+      <div className="bg-background/20 border-r h-full w-full lg:w-64 fixed lg:block truncate">
          {isLoading ? (
             <div className="flex flex-col w-full gap-1 px-1">
                {Array.from({ length: 10 }).map((_, i) => {
