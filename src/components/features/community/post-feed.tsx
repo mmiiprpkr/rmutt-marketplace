@@ -220,12 +220,14 @@ export const PostFeed = ({ post, userId }: PostFeedProps) => {
                   )}
                </div>
                {(post.image || post.gift) && (
-                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                  <div className="relative w-full rounded-lg overflow-hidden">
                      <Image
                         src={post.image ?? post.gift ?? ""}
                         alt={post.title}
-                        fill
-                        className="object-cover"
+                        width={800}
+                        height={600}
+                        className="w-full h-auto"
+                        layout="responsive"
                      />
                   </div>
                )}
