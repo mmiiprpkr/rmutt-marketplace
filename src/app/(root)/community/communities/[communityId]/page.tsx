@@ -47,9 +47,13 @@ const CommunityIdPage = () => {
    const { mutateAsync: joinCommunity, isPending: joinPending } =
       useJoinCommunity();
 
-   const { results, loadMore, status } = usePaginatedQuery(api.post.getFeed, {
-      communityId: communityId as Id<"communities">,
-   }, { initialNumItems: 5 });
+   const { results, loadMore, status } = usePaginatedQuery(
+      api.post.getFeed,
+      {
+         communityId: communityId as Id<"communities">,
+      },
+      { initialNumItems: 5 },
+   );
 
    useEffect(() => {
       if (inView && status === "CanLoadMore") {
@@ -86,7 +90,7 @@ const CommunityIdPage = () => {
             <div className="flex items-center">
                <div className="relative -mt-[76px] mb-4 flex items-end">
                   <div className="flex items-end gap-4">
-                     <div className="relative">
+                     <div className="relative aspect-square">
                         <Image
                            src={community?.image ?? ""}
                            alt="Community Avatar"
@@ -149,7 +153,7 @@ const CommunityIdPage = () => {
                      ))}
                   </div>
                ) : results?.length === 0 ? (
-                  <div className="w-full h-[40vh] flex flex-col items-center justify-center">
+                  <div className="w-full h-[40vh] col-span-2 flex flex-col items-center justify-center">
                      <div className="mb-4">
                         <CircleHelpIcon className="size-10 text-primary" />
                      </div>
@@ -157,7 +161,8 @@ const CommunityIdPage = () => {
                         No Post Found
                      </p>
                      <p className="text-muted-foreground text-sm text-center mt-2">
-                        It seems like there are no posts available in this community. <br />
+                        It seems like there are no posts available in this
+                        community. <br />
                         Be the first one to post something!
                      </p>
                   </div>
